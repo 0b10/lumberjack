@@ -1,0 +1,62 @@
+{
+  "name": "lumberjack",
+  "version": "1.0.0",
+  "description": "Pino logger wrapper that reduces boilerplate",
+  "keywords": [
+    "helpers",
+    "javascript",
+    "logging",
+    "log"
+  ],
+  "homepage": "https://github.com/0b10/lumberjack#readme",
+  "bugs": {
+    "url": "https://github.com/0b10/lumberjack/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0b10/lumberjack.git"
+  },
+  "license": "MIT",
+  "author": "0b10 <0b10@pm.me>",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:clean": "rm -rfv dist/*",
+    "build:publish": "yarn run lint && yarn run test && yarn run build:clean && yarn run build && yarn run build:types && cp README.md package.json dist/ && yarn publish",
+    "build:types": "tsc -p tsconfig-for-declarations.json",
+    "lint": "eslint '**/*.{js,json,ts}'",
+    "lint:compile": "tsc --noEmit && eslint '**/*.{js,json,ts}'",
+    "lint:fix": "eslint --fix '**/*.{js,json,ts}'",
+    "test": "jest",
+    "test:changed": "jest --onlyChanged"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-typescript": "^7.6.0",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.12",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.4.0",
+    "eslint-plugin-jest": "^22.17.0",
+    "eslint-plugin-jsdoc": "^15.9.2",
+    "eslint-plugin-json-format": "^2.0.1",
+    "eslint-plugin-optimize-regex": "^1.1.7",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-security": "^1.4.0",
+    "fast-check": "^1.17.0",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.6.3"
+  },
+  "engines": {
+    "node": ">=10.16.3"
+  },
+  "env": {
+    "jest": true
+  }
+}

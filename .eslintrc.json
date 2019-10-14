@@ -1,0 +1,56 @@
+{
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:jest/all",
+    "plugin:jest/style",
+    "plugin:jsdoc/recommended",
+    "plugin:promise/recommended",
+    "plugin:security/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/*", "**/*.test.*"],
+      "rules": {
+        "security/detect-object-injection": "off"
+      }
+    }
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "jest",
+    "jsdoc",
+    "json-format",
+    "optimize-regex",
+    "promise",
+    "security"
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/interface-name-prefix": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "jest/no-disabled-tests": "warn",
+    "jest/prefer-expect-assertions": "off",
+    "jsdoc/no-undefined-types": "off",
+    "no-console": "warn",
+    "optimize-regex/optimize-regex": "warn",
+    "security/detect-object-injection": "error"
+  },
+  "settings": {
+    "json/sort-package-json": "standard",
+    "json/json-with-comments-files": ["**/tsconfig.json"]
+  }
+}
