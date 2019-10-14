@@ -1,6 +1,4 @@
-import { ExtendedLogLevels } from "./types";
-
-export const EXTENDED_LOG_LEVELS: ExtendedLogLevels[] = [
+export const EXTENDED_LOG_LEVELS = Object.freeze([
   "critical",
   "debug",
   "error",
@@ -9,4 +7,4 @@ export const EXTENDED_LOG_LEVELS: ExtendedLogLevels[] = [
   "silly",
   "trace",
   "warn",
-];
+]);

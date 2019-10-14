@@ -42,6 +42,7 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/interface-name-prefix": "warn",
     "@typescript-eslint/no-explicit-any": "off",
+    "jest/expect-expect": "off",
     "jest/no-disabled-tests": "warn",
     "jest/prefer-expect-assertions": "off",
     "jsdoc/no-undefined-types": "off",

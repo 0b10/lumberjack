@@ -1,7 +1,9 @@
-import { LogLevels } from "./../../types";
+import fc from "fast-check";
+
 import { EXTENDED_LOG_LEVELS } from "./../../constants";
-import { lumberjackFactory } from "../../";
 import { handyLogLevelMapper } from "../helpers";
+import { LogLevels } from "./../../types";
+import { lumberjackFactory } from "../../";
 
 describe("smoke", () => {
   it("should exist", () => {
@@ -28,6 +30,26 @@ describe("logLevelMap precondition", () => {
           expect(() => lumberjackFactory({ logLevelMap })).not.toThrow();
         });
       });
+    });
+  });
+
+  SUPPORTED_KEYS.forEach((supportedKey) => {
+    it(`should throw when given an unsupported target`, () => {
+      fc.assert(
+        fc.property(fc.asciiString(), (invalidTarget) => {
+          fc.pre(!EXTENDED_LOG_LEVELS.includes(invalidTarget));
+          const logLevelMap = handyLogLevelMapper({ [supportedKey]: invalidTarget });
+          try {
+            lumberjackFactory({ logLevelMap });
+          } catch (error) {
+            if (error.name === "AssertionError [ERR_ASSERTION]") {
+              return true; // throwing is good
+            }
+          }
+          return false;
+        })
+      ),
+        { verbose: true };
     });
   });
 });

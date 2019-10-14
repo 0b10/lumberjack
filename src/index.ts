@@ -5,7 +5,7 @@ import { FactoryArgs, LogLevelsMap } from "./types";
 
 const logLevelMapPrecondition = (map: LogLevelsMap) => {
   // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
-  Object.values(map).every((customLevel) =>
+  Object.values(map).forEach((customLevel) =>
     assert(
       EXTENDED_LOG_LEVELS.includes(customLevel),
       `Unknown log level mapping target passed to lumberjackFactory: "${customLevel}"`
