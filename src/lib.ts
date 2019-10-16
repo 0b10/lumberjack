@@ -1,8 +1,8 @@
-import { LogLevelsMap, Logger, LoggerFunc } from "./types";
+import { LoggerMap, Logger, LoggerFunc } from "./types";
 
 export const mapLogger = <CustomLoggerFunc = LoggerFunc>(
   customLogger: object,
-  map: LogLevelsMap
+  map: LoggerMap
 ): Logger<CustomLoggerFunc> => {
   return {
     // Each of the map key/values should have been measured against a known set at runtime

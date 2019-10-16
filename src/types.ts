@@ -1,6 +1,6 @@
 export type LoggerFunc = (message: any) => void;
 
-export interface LogLevels<T = LoggerFunc> {
+export interface LogLevels<T> {
   critical: T;
   debug: T;
   error: T;
@@ -10,15 +10,16 @@ export interface LogLevels<T = LoggerFunc> {
   warn: T;
 }
 
-export type LoggerKeys = keyof LogLevels;
+export type LoggerKeys = keyof LogLevels<void>;
 export type Logger<T = LoggerFunc> = LogLevels<T>;
 
-export type LogLevelsMap = LogLevels<string>;
+export type LoggerMap = LogLevels<string>;
+export type LoggerMapKeys = keyof LoggerMap;
 
 // For mapping third-party levels to supported levels
-export type ExtendedLogLevels = keyof LogLevels | "silly";
+export type ExtendedLogLevels = keyof LogLevels<void> | "silly";
 
 export interface FactoryArgs {
   logger?: unknown;
-  logLevelMap?: LogLevels<string>;
+  mapTo?: LoggerMap;
 }

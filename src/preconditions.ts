@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "./constants";
 import { isValidKey } from "./helpers";
-import { Logger, LogLevelsMap } from "./types";
+import { Logger, LoggerMap } from "./types";
 
 // >>> HELPERS >>>
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
@@ -52,7 +52,7 @@ export const validateLoggerHasFunctions = (logger: object) => {
 };
 
 // >>> PRECONDITIONS >>>
-export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): logger is object => {
+export const validateMapMatchesLogger = (logger: unknown, map: LoggerMap): logger is object => {
   const targets = new Set<string>(Object.values(map)); // FIXME: validate is object first
   const invalidTargets: string[] = [];
 
@@ -76,7 +76,7 @@ export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): lo
   return true;
 };
 
-export const validateLogLevelMap = (map: LogLevelsMap) => {
+export const validateLoggerMap = (map: LoggerMap) => {
   // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
   Object.values(map).forEach((customTarget) =>
     assert(

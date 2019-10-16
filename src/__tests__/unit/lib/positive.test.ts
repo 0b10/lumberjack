@@ -1,9 +1,9 @@
 import { mapLogger } from "../../../lib";
 
-import { LogLevelsMap, LoggerKeys } from "./../../../types";
-import { makeLoggerWithMocks, makeLogLevelMap, getValidLoggerKeys } from "./../../helpers";
+import { LoggerMap, LoggerKeys } from "./../../../types";
+import { makeLoggerWithMocks, makeLoggerMap, getValidLoggerKeys } from "./../../helpers";
 
-const getUsedLoggerKey = (map: LogLevelsMap, targetKey: string): LoggerKeys => {
+const getUsedLoggerKey = (map: LoggerMap, targetKey: string): LoggerKeys => {
   const [[usedLoggerKey]] = Object.entries(map).filter(([_, mappedKey]) => mappedKey === targetKey);
   return usedLoggerKey as LoggerKeys;
 };
@@ -19,7 +19,7 @@ describe("mapLogger()", () => {
 
   it("should map to a logger with a single key", () => {
     const mockedLogger = makeLoggerWithMocks();
-    const map = makeLogLevelMap({
+    const map = makeLoggerMap({
       critical: "critical",
       debug: "critical",
       error: "critical",
@@ -42,7 +42,7 @@ describe("mapLogger()", () => {
 
   it("should map to a logger with two keys", () => {
     const mockedLogger = makeLoggerWithMocks();
-    const map = makeLogLevelMap({
+    const map = makeLoggerMap({
       critical: "critical",
       debug: "critical",
       error: "critical",
@@ -65,7 +65,7 @@ describe("mapLogger()", () => {
 
   it("should map a logger that has isolated functions (when instructed to do so)", () => {
     const mockedLogger = makeLoggerWithMocks();
-    const map = makeLogLevelMap();
+    const map = makeLoggerMap();
 
     const mappedLogger = mapLogger<jest.Mock>(mockedLogger, map);
     const loggerFuncs: Function[] = Object.values(mappedLogger);
@@ -84,7 +84,7 @@ describe("mapLogger()", () => {
       describe(`"${loggerKey}"`, () => {
         it("should not map to any other, unexpected keys", () => {
           const mockedLogger = makeLoggerWithMocks();
-          const map = makeLogLevelMap();
+          const map = makeLoggerMap();
           const mappedLogger = mapLogger<jest.Mock>(mockedLogger, map);
 
           mappedLogger[loggerKey]();
@@ -97,7 +97,7 @@ describe("mapLogger()", () => {
 
         it("should map to a function that accepts args", () => {
           const mockedLogger = makeLoggerWithMocks();
-          const map = makeLogLevelMap();
+          const map = makeLoggerMap();
           const mappedLogger = mapLogger<jest.Mock>(mockedLogger, map);
 
           mappedLogger[loggerKey]("first fake message", "second fake message");
@@ -120,7 +120,7 @@ describe("mapLogger()", () => {
         six: jest.fn(),
         seven: jest.fn(),
       };
-      const map = makeLogLevelMap({
+      const map = makeLoggerMap({
         critical: "one",
         debug: "two",
         error: "three",
@@ -154,7 +154,7 @@ describe("mapLogger()", () => {
             six: jest.fn(),
             seven: jest.fn(),
           };
-          const map = makeLogLevelMap({
+          const map = makeLoggerMap({
             critical: "one",
             debug: "two",
             error: "three",

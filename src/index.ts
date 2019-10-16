@@ -3,7 +3,7 @@ import { mapLogger } from "./lib";
 import { FactoryArgs, Logger } from "./types";
 import {
   validateMapMatchesLogger,
-  validateLogLevelMap,
+  validateLoggerMap,
   validateLoggerInterface,
 } from "./preconditions";
 
@@ -18,18 +18,18 @@ const stubLogger = {
 };
 
 const getDefaultArgs = (args?: FactoryArgs) => ({
-  ...{ logger: stubLogger, logLevelMap: undefined },
+  ...{ logger: stubLogger, mapTo: undefined },
   ...args,
 });
 
 export const lumberjackFactory = (args?: FactoryArgs): Logger => {
-  const { logLevelMap, logger } = getDefaultArgs(args);
+  const { mapTo, logger } = getDefaultArgs(args);
   let validLogger: Logger;
 
-  if (logLevelMap) {
-    validateLogLevelMap(logLevelMap);
-    if (validateMapMatchesLogger(logger, logLevelMap)) {
-      validLogger = mapLogger(logger, logLevelMap);
+  if (mapTo) {
+    validateLoggerMap(mapTo);
+    if (validateMapMatchesLogger(logger, mapTo)) {
+      validLogger = mapLogger(logger, mapTo);
       return validLogger;
     }
     throw new LumberjackError(

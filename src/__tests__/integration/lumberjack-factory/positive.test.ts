@@ -4,7 +4,7 @@ import {
   makeLoggerWithMocks,
   getValidLoggerKeys,
   makeLoggerWithCustomKeys,
-  makeLogLevelMap,
+  makeLoggerMap,
 } from "./../../helpers";
 
 describe("lumberjackFactory()", () => {
@@ -44,7 +44,7 @@ describe("lumberjackFactory()", () => {
   describe("non-standard logger, with map", () => {
     it("should not throw", () => {
       const logger = makeLoggerWithCustomKeys(getValidLoggerKeys(), ["info", "trace", "silly"]);
-      const map = makeLogLevelMap({
+      const map = makeLoggerMap({
         critical: "info",
         debug: "trace",
         error: "silly",
@@ -55,13 +55,13 @@ describe("lumberjackFactory()", () => {
       });
 
       expect(() => {
-        lumberjackFactory({ logger, logLevelMap: map });
+        lumberjackFactory({ logger, mapTo: map });
       }).not.toThrow();
     });
 
     it("should return an expected, standard interface", () => {
       const logger = makeLoggerWithCustomKeys(getValidLoggerKeys(), ["info", "trace", "silly"]);
-      const map = makeLogLevelMap({
+      const map = makeLoggerMap({
         critical: "info",
         debug: "trace",
         error: "silly",
@@ -70,7 +70,7 @@ describe("lumberjackFactory()", () => {
         trace: "silly",
         warn: "info",
       });
-      const mappedLogger = lumberjackFactory({ logger, logLevelMap: map });
+      const mappedLogger = lumberjackFactory({ logger, mapTo: map });
       const mappedLoggerKeys = new Set(Object.keys(mappedLogger));
 
       getValidLoggerKeys().forEach((validKey) => {
@@ -85,7 +85,7 @@ describe("lumberjackFactory()", () => {
         ["info", "trace", "silly"],
         spyLog
       );
-      const map = makeLogLevelMap({
+      const map = makeLoggerMap({
         critical: "info",
         debug: "trace",
         error: "silly",
@@ -94,7 +94,7 @@ describe("lumberjackFactory()", () => {
         trace: "silly",
         warn: "info",
       });
-      const mappedLogger = lumberjackFactory({ logger, logLevelMap: map });
+      const mappedLogger = lumberjackFactory({ logger, mapTo: map });
 
       Object.keys(mappedLogger).forEach((loggerKey, index) => {
         mappedLogger[loggerKey](`test ${index}`);

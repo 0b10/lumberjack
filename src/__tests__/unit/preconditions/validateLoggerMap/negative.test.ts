@@ -2,23 +2,25 @@ import { AssertionError } from "assert";
 
 import fc from "fast-check";
 
-import { makeLogLevelMap , isNotValidLogLevel } from "../../../helpers";
-import { validateLogLevelMap } from "../../../../preconditions";
+import { makeLoggerMap, isNotValidLogLevel } from "../../../helpers";
+import { validateLoggerMap } from "../../../../preconditions";
 
 import { MAPPER_KEYS } from "./constants";
 
 const TheExpectedError = AssertionError;
 
-describe("validateLogLevelMap()", () => {
+describe("validateLoggerMap()", () => {
   MAPPER_KEYS.forEach((mapperKey) => {
     describe(`for the mapper key: ${mapperKey}`, () => {
-      it(`should throw when given an invalid target type`, () => {
+      it(`should throw when given an unsupported target`, () => {
         fc.assert(
-          fc.property(fc.anything(), (invalidTarget) => {
+          fc.property(fc.asciiString(), (invalidTarget) => {
             fc.pre(isNotValidLogLevel(invalidTarget));
-            const logLevelMap = makeLogLevelMap({ [mapperKey]: invalidTarget });
+
+            const loggerMap = makeLoggerMap({ [mapperKey]: invalidTarget });
+
             try {
-              validateLogLevelMap(logLevelMap);
+              validateLoggerMap(loggerMap);
             } catch (error) {
               if (error instanceof TheExpectedError) {
                 return true; // throwing is good

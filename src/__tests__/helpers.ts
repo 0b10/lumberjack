@@ -1,10 +1,10 @@
 import _ from "lodash";
 
 import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "../constants";
-import { ExtendedLogLevels, LogLevels, LogLevelsMap, Logger, LoggerKeys } from "../types";
+import { ExtendedLogLevels, LoggerMap, Logger, LoggerKeys } from "../types";
 
-// use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LogLevelMap
-export const makeLogLevelMap = (map?: Partial<LogLevelsMap>) => {
+// use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LoggerMap
+export const makeLoggerMap = (map?: Partial<LoggerMap>) => {
   return {
     ...{
       critical: "critical",
@@ -19,7 +19,6 @@ export const makeLogLevelMap = (map?: Partial<LogLevelsMap>) => {
   };
 };
 
-// Use this to keep logLevelMap tests happy, this supports all extended (allowed) log levels
 export const extendedStubLogger: Readonly<Record<ExtendedLogLevels, Function>> = Object.freeze({
   critical: () => null,
   debug: () => null,
@@ -31,7 +30,7 @@ export const extendedStubLogger: Readonly<Record<ExtendedLogLevels, Function>> =
   warn: () => null,
 });
 
-export const validStubLogger: Readonly<LogLevels> = Object.freeze({
+export const validStubLogger: Readonly<Logger<Function>> = Object.freeze({
   critical: () => null,
   debug: () => null,
   error: () => null,
@@ -42,7 +41,7 @@ export const validStubLogger: Readonly<LogLevels> = Object.freeze({
 });
 
 export const makeLoggerWithCustomKeys = (
-  loggerKeys: Array<keyof LogLevels>,
+  loggerKeys: Array<LoggerKeys>,
   newKeys?: any[],
   newValue: any = () => null
 ) => {
@@ -62,10 +61,10 @@ export const makeLoggerWithCustomKeys = (
 };
 
 export const makeLoggerWithCustomFuncs = (
-  loggerKeys: Array<keyof LogLevels>,
+  loggerKeys: Array<LoggerKeys>,
   newValue: any // don't give default. undefined causes default, may break tests
 ) => {
-  const logger: LogLevels = _.cloneDeep(validStubLogger);
+  const logger: Logger<Function> = _.cloneDeep(validStubLogger);
 
   for (let key of loggerKeys) {
     logger[key] = newValue;
