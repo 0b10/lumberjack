@@ -1,21 +1,21 @@
 import _ from "lodash";
 import { AssertionError } from "assert";
 
-import { replaceStubLoggerKey, replaceStubLoggerValue } from "../../../helpers";
+import { makeLoggerWithCustomKeys, makeLoggerWithCustomFuncs } from "../../../helpers";
 import { validateLoggerInterface } from "../../../../preconditions";
 
 const TheExpectedError = AssertionError;
 
 describe("validateLoggerInterface()", () => {
   it(`should reject when a single key is invalid`, () => {
-    const logger = replaceStubLoggerKey(["critical"], ["invalidKey"]);
+    const logger = makeLoggerWithCustomKeys(["critical"], ["invalidKey"]);
     expect(() => {
       validateLoggerInterface(logger);
     }).toThrow(TheExpectedError);
   });
 
   it(`should reject when a single key is missing`, () => {
-    const logger = replaceStubLoggerKey(["critical"]);
+    const logger = makeLoggerWithCustomKeys(["critical"]);
     expect(() => {
       validateLoggerInterface(logger);
     }).toThrow(TheExpectedError);
@@ -28,7 +28,7 @@ describe("validateLoggerInterface()", () => {
   });
 
   it(`should reject when a single logger function is invalid`, () => {
-    const logger = replaceStubLoggerValue(["warn"], "invalid value");
+    const logger = makeLoggerWithCustomFuncs(["warn"], "a string instead of a function");
     expect(() => {
       validateLoggerInterface(logger);
     }).toThrow(TheExpectedError);

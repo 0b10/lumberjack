@@ -1,6 +1,6 @@
 import { AssertionError } from "assert";
 
-import { handyLogLevelMapper } from "../../../helpers";
+import { makeLogLevelMap } from "../../../helpers";
 import { validateMapMatchesLogger } from "../../../../preconditions";
 
 const TheExpectedError = AssertionError;
@@ -8,7 +8,7 @@ const TheExpectedError = AssertionError;
 describe("validateMapMatchesLogger()", () => {
   it("should reject a logger with a single invalid key mapping", () => {
     const logger = { foo: () => null };
-    const map = handyLogLevelMapper({
+    const map = makeLogLevelMap({
       critical: "invalid",
       debug: "invalid",
       error: "invalid",
@@ -24,7 +24,7 @@ describe("validateMapMatchesLogger()", () => {
 
   it("should reject a logger with multiple invalid key mappings", () => {
     const logger = { foo: () => null, bar: () => null };
-    const map = handyLogLevelMapper({
+    const map = makeLogLevelMap({
       critical: "invalid",
       debug: "invalid",
       error: "invalid",

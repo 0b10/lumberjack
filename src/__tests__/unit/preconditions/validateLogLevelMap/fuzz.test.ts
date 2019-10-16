@@ -1,10 +1,10 @@
 import { AssertionError } from "assert";
 import fc from "fast-check";
 
-import { EXTENDED_LOG_LEVELS } from "../../../../constants";
-import { handyLogLevelMapper } from "../../../helpers";
-import { validateLogLevelMap } from "../../../../preconditions";
+import { makeLogLevelMap } from "../../../helpers";
+import { isNotValidLogLevel } from "./../../../helpers";
 import { MAPPER_KEYS } from "./constants";
+import { validateLogLevelMap } from "../../../../preconditions";
 
 const TheExpectedError = AssertionError;
 
@@ -14,8 +14,8 @@ describe("validateLogLevelMap()", () => {
       it(`should throw when given an invalid target type`, () => {
         fc.assert(
           fc.property(fc.anything(), (invalidTarget) => {
-            fc.pre(!EXTENDED_LOG_LEVELS.includes(invalidTarget));
-            const logLevelMap = handyLogLevelMapper({ [mapperKey]: invalidTarget });
+            fc.pre(isNotValidLogLevel(invalidTarget));
+            const logLevelMap = makeLogLevelMap({ [mapperKey]: invalidTarget });
             try {
               validateLogLevelMap(logLevelMap);
             } catch (error) {

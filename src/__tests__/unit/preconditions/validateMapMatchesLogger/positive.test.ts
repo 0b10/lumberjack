@@ -1,12 +1,12 @@
 import fc from "fast-check";
 
-import { handyLogLevelMapper } from "../../../helpers";
+import { makeLogLevelMap } from "../../../helpers";
 import { validateMapMatchesLogger } from "../../../../preconditions";
 
 describe("validateMapMatchesLogger()", () => {
   it("should accept a logger with mappings to a single key", () => {
     const logger = { foo: () => null }; // a very limited logger needs to be mapped
-    const map = handyLogLevelMapper({
+    const map = makeLogLevelMap({
       critical: "foo",
       debug: "foo",
       error: "foo",
@@ -22,7 +22,7 @@ describe("validateMapMatchesLogger()", () => {
 
   it("should accept a logger with mapping to two keys", () => {
     const logger = { foo: () => null, bar: () => null };
-    const map = handyLogLevelMapper({
+    const map = makeLogLevelMap({
       critical: "foo",
       debug: "foo",
       error: "foo",
@@ -47,7 +47,7 @@ describe("validateMapMatchesLogger()", () => {
       seven: () => null,
     };
 
-    const map = handyLogLevelMapper({
+    const map = makeLogLevelMap({
       critical: "one",
       debug: "two",
       error: "three",
@@ -66,7 +66,7 @@ describe("validateMapMatchesLogger()", () => {
       fc.property(fc.asciiString(), (targetKey) => {
         fc.pre(/^[A-Za-z]+$/.test(targetKey));
         const logger = { [targetKey]: () => null };
-        const map = handyLogLevelMapper({
+        const map = makeLogLevelMap({
           critical: targetKey,
           debug: targetKey,
           error: targetKey,

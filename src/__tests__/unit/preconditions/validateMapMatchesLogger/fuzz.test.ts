@@ -1,7 +1,7 @@
 import { AssertionError } from "assert";
 import fc from "fast-check";
 
-import { handyLogLevelMapper, isNotValidLogLevel } from "../../../helpers";
+import { makeLogLevelMap, isNotValidLogLevel } from "../../../helpers";
 import { validateMapMatchesLogger } from "../../../../preconditions";
 
 const TheExpectedError = AssertionError;
@@ -14,7 +14,7 @@ describe("validateMapMatchesLogger()", () => {
 
         const logger = { foo: () => null };
 
-        const map = handyLogLevelMapper({
+        const map = makeLogLevelMap({
           critical: "foo",
           debug: "foo",
           error: "foo",
@@ -44,7 +44,7 @@ describe("validateMapMatchesLogger()", () => {
 
         const logger = { foo: () => null };
 
-        const map = handyLogLevelMapper({
+        const map = makeLogLevelMap({
           critical: "foo",
           debug: invalidTargetType,
           error: "foo",
@@ -74,7 +74,7 @@ describe("validateMapMatchesLogger()", () => {
 
         const logger = { foo: () => null };
 
-        const map = handyLogLevelMapper({
+        const map = makeLogLevelMap({
           critical: invalidTargetType,
           debug: invalidTargetType,
           error: invalidTargetType,

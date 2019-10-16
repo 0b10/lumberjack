@@ -6,7 +6,7 @@ describe("validateLoggerHasFunctions()", () => {
     expect(validateLoggerHasFunctions).toBeDefined();
   });
 
-  it(`should accept a logger that has only expected values - e.g. functions`, () => {
+  it(`should accept a logger that has only valid functions`, () => {
     expect(() => {
       validateLoggerHasFunctions(validStubLogger);
     }).not.toThrow();

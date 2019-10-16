@@ -1,7 +1,7 @@
 import fc from "fast-check";
 
 import { EXTENDED_LOG_LEVELS } from "./../../constants";
-import { extendedStubLogger, handyLogLevelMapper } from "../helpers";
+import { extendedStubLogger, makeLogLevelMap } from "../helpers";
 import { LogLevels } from "./../../types";
 import { lumberjackFactory } from "../../";
 
@@ -27,7 +27,7 @@ describe("logLevelMap precondition", () => {
       // >>> POSITIVE >>>
       EXTENDED_LOG_LEVELS.forEach((validTarget) => {
         it(`should not throw when mapped to "${validTarget}"`, () => {
-          const logLevelMap = handyLogLevelMapper({ [supportedKey]: validTarget });
+          const logLevelMap = makeLogLevelMap({ [supportedKey]: validTarget });
           expect(() =>
             lumberjackFactory({ logger: extendedStubLogger as LogLevels<any>, logLevelMap })
           ).not.toThrow();
@@ -39,7 +39,7 @@ describe("logLevelMap precondition", () => {
         fc.assert(
           fc.property(fc.asciiString(), (invalidTarget) => {
             fc.pre(!EXTENDED_LOG_LEVELS.includes(invalidTarget));
-            const logLevelMap = handyLogLevelMapper({ [supportedKey]: invalidTarget });
+            const logLevelMap = makeLogLevelMap({ [supportedKey]: invalidTarget });
             try {
               lumberjackFactory({ logger: extendedStubLogger as LogLevels<any>, logLevelMap });
             } catch (error) {
@@ -58,7 +58,7 @@ describe("logLevelMap precondition", () => {
         fc.assert(
           fc.property(fc.anything(), (invalidTarget) => {
             fc.pre(!EXTENDED_LOG_LEVELS.includes(invalidTarget));
-            const logLevelMap = handyLogLevelMapper({ [supportedKey]: invalidTarget });
+            const logLevelMap = makeLogLevelMap({ [supportedKey]: invalidTarget });
             try {
               lumberjackFactory({ logger: extendedStubLogger as LogLevels<any>, logLevelMap });
             } catch (error) {

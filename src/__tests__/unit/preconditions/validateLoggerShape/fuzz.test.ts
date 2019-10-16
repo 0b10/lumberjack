@@ -2,7 +2,7 @@ import { AssertionError } from "assert";
 import fc from "fast-check";
 
 import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
-import { replaceStubLoggerKey } from "../../../helpers";
+import { makeLoggerWithCustomKeys } from "../../../helpers";
 import { validateLoggerShape } from "../../../../preconditions";
 
 const TheExpectedError = AssertionError;
@@ -14,7 +14,7 @@ describe("validateLoggerShape()", () => {
         fc.assert(
           fc.property(fc.anything(), (newKey) => {
             fc.pre(!/^[\dA-Za-z]+$/.test(newKey)); // not alphanumeric
-            const logger = replaceStubLoggerKey([validKey as any], [newKey]);
+            const logger = makeLoggerWithCustomKeys([validKey as any], [newKey]);
             try {
               validateLoggerShape(logger);
             } catch (error) {

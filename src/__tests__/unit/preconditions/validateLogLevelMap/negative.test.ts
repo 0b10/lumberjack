@@ -1,9 +1,9 @@
 import { AssertionError } from "assert";
 
-import { handyLogLevelMapper } from "../../../helpers";
+import { makeLogLevelMap } from "../../../helpers";
 import { isNotValidLogLevel } from "../../../helpers";
-import { validateLogLevelMap } from "../../../../preconditions";
 import { MAPPER_KEYS } from "./constants";
+import { validateLogLevelMap } from "../../../../preconditions";
 import fc from "fast-check";
 
 const TheExpectedError = AssertionError;
@@ -16,7 +16,7 @@ describe("validateLogLevelMap()", () => {
           fc.property(fc.asciiString(), (invalidTarget) => {
             fc.pre(isNotValidLogLevel(invalidTarget));
 
-            const logLevelMap = handyLogLevelMapper({ [mapperKey]: invalidTarget });
+            const logLevelMap = makeLogLevelMap({ [mapperKey]: invalidTarget });
 
             try {
               validateLogLevelMap(logLevelMap);

@@ -1,7 +1,8 @@
 import assert from "assert";
 import _ from "lodash";
 
-import { EXTENDED_LOG_LEVELS, isValidKey, LOG_LEVELS } from "./constants";
+import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "./constants";
+import { isValidKey } from "./helpers";
 import { Logger, LogLevelsMap } from "./types";
 
 // >>> HELPERS >>>
@@ -54,12 +55,9 @@ export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): lo
   const targets = new Set<string>(Object.values(map)); // FIXME: validate is object first
   const invalidTargets: string[] = [];
 
-  assert(
-    typeof logger === "object" && logger !== null,
-    `logger is "${
-      logger === null ? "null" : _.isArray(logger) ? "array" : typeof logger // object, object, and object...
-    }", when it should be an object`
-  );
+  if (!isPlainObject(logger, "logger")) {
+    return false; // won't execute, isPlainObject() will throw - type guard essentially
+  }
 
   targets.forEach((target) => {
     if (!_.has(logger, target)) {
@@ -70,7 +68,7 @@ export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): lo
   assert(
     invalidTargets.length === 0,
     `The targeted logger keys: [ ${invalidTargets} ], do not exist in the provided logger object, which has only: [ ${Object.keys(
-      logger as object // an assertion guards this
+      logger // an assertion guards this
     )} ]`
   );
 

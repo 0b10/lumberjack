@@ -4,7 +4,7 @@ import { EXTENDED_LOG_LEVELS } from "../constants";
 import { ExtendedLogLevels, LogLevels, LogLevelsMap } from "./../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LogLevelMap
-export const handyLogLevelMapper = (map?: Partial<LogLevelsMap>) => {
+export const makeLogLevelMap = (map?: Partial<LogLevelsMap>) => {
   return {
     ...{
       critical: "critical",
@@ -20,7 +20,7 @@ export const handyLogLevelMapper = (map?: Partial<LogLevelsMap>) => {
 };
 
 // Use this to keep logLevelMap tests happy, this supports all extended (allowed) log levels
-export const extendedStubLogger: Record<ExtendedLogLevels, Function> = {
+export const extendedStubLogger: Readonly<Record<ExtendedLogLevels, Function>> = Object.freeze({
   critical: () => null,
   debug: () => null,
   error: () => null,
@@ -29,9 +29,9 @@ export const extendedStubLogger: Record<ExtendedLogLevels, Function> = {
   silly: () => null,
   trace: () => null,
   warn: () => null,
-};
+});
 
-export const validStubLogger: LogLevels = Object.freeze({
+export const validStubLogger: Readonly<LogLevels> = Object.freeze({
   critical: () => null,
   debug: () => null,
   error: () => null,
@@ -41,7 +41,7 @@ export const validStubLogger: LogLevels = Object.freeze({
   warn: () => null,
 });
 
-export const replaceStubLoggerKey = (
+export const makeLoggerWithCustomKeys = (
   loggerKeys: Array<keyof LogLevels>,
   newKeys?: any[],
   newValue: any = () => null
@@ -61,11 +61,11 @@ export const replaceStubLoggerKey = (
   return Object.freeze(logger);
 };
 
-export const replaceStubLoggerValue = (
+export const makeLoggerWithCustomFuncs = (
   loggerKeys: Array<keyof LogLevels>,
   newValue: any // don't give default. undefined causes default, may break tests
 ) => {
-  const logger = _.cloneDeep(validStubLogger);
+  const logger: LogLevels = _.cloneDeep(validStubLogger);
 
   for (let key of loggerKeys) {
     logger[key] = newValue;
