@@ -1,21 +1,33 @@
-import { EXTENDED_LOG_LEVELS } from "./constants";
-import assert from "assert";
+import { FactoryArgs } from "./types";
+import {
+  validateMapMatchesLogger,
+  validateLogLevelMap,
+  validateLoggerInterface,
+} from "./preconditions";
 
-import { FactoryArgs, LogLevelsMap } from "./types";
-
-const logLevelMapPrecondition = (map: LogLevelsMap) => {
-  // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
-  Object.values(map).forEach((customLevel) =>
-    assert(
-      EXTENDED_LOG_LEVELS.includes(customLevel),
-      `Unknown log level mapping target passed to lumberjackFactory: "${customLevel}"`
-    )
-  );
+const stubLogger = {
+  critical: () => null,
+  debug: () => null,
+  error: () => null,
+  fatal: () => null,
+  info: () => null,
+  trace: () => null,
+  warn: () => null,
 };
 
-export const lumberjackFactory = (args: FactoryArgs) => {
-  if (args.logLevelMap) {
-    logLevelMapPrecondition(args.logLevelMap);
+const getDefaultArgs = (args?: FactoryArgs) => ({
+  ...{ logger: stubLogger, logLevelMap: undefined },
+  ...args,
+});
+
+export const lumberjackFactory = (args?: FactoryArgs) => {
+  const { logLevelMap, logger } = getDefaultArgs(args);
+
+  if (logLevelMap) {
+    validateLogLevelMap(logLevelMap);
+    validateMapMatchesLogger(logger, logLevelMap);
+  } else {
+    validateLoggerInterface(logger);
   }
 };
 

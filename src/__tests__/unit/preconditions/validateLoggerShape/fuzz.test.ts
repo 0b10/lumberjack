@@ -1,0 +1,31 @@
+import { AssertionError } from "assert";
+import fc from "fast-check";
+
+import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
+import { replaceStubLoggerKey } from "../../../helpers";
+import { validateLoggerShape } from "../../../../preconditions";
+
+const TheExpectedError = AssertionError;
+
+describe("validateLoggerShape()", () => {
+  describe("replace a single logger key with an invalid, non-alphanumaeric key", () => {
+    VALID_KEYS.forEach((validKey) => {
+      it(`should reject when the "${validKey}" key is replaced`, () => {
+        fc.assert(
+          fc.property(fc.anything(), (newKey) => {
+            fc.pre(!/^[\dA-Za-z]+$/.test(newKey)); // not alphanumeric
+            const logger = replaceStubLoggerKey([validKey as any], [newKey]);
+            try {
+              validateLoggerShape(logger);
+            } catch (error) {
+              if (error instanceof TheExpectedError) {
+                return true;
+              }
+            }
+            return false;
+          })
+        );
+      });
+    });
+  });
+});

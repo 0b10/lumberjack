@@ -10,12 +10,14 @@ export interface LogLevels<T = LoggerFunc> {
   warn: T;
 }
 
+export type Logger = LogLevels<LoggerFunc>;
+
 export type LogLevelsMap = LogLevels<string>;
 
 // For mapping third-party levels to supported levels
 export type ExtendedLogLevels = keyof LogLevels | "silly";
 
 export interface FactoryArgs {
-  logger?: LogLevels;
+  logger?: unknown;
   logLevelMap?: LogLevels<string>;
 }
