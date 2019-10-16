@@ -1,4 +1,5 @@
 import { AssertionError } from "assert";
+
 import fc from "fast-check";
 
 import { makeLogLevelMap, isNotValidLogLevel } from "../../../helpers";

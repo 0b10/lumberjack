@@ -1,5 +1,5 @@
 import { validateLoggerInterface } from "../../../../preconditions";
-import { validStubLogger } from "./../../../helpers";
+import { validStubLogger } from "../../../helpers";
 
 describe("validateLoggerInterface()", () => {
   it("should exist", () => {

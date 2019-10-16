@@ -1,7 +1,8 @@
 import { EXTENDED_LOG_LEVELS as VALID_TARGETS } from "../../../../constants";
 import { makeLogLevelMap } from "../../../helpers";
-import { MAPPER_KEYS } from "./constants";
 import { validateLogLevelMap } from "../../../../preconditions";
+
+import { MAPPER_KEYS } from "./constants";
 
 describe("validateLogLevelMap()", () => {
   MAPPER_KEYS.forEach((mapperKey) => {

@@ -1,10 +1,11 @@
-import _ from "lodash";
 import { AssertionError } from "assert";
+
+import _ from "lodash";
 import fc from "fast-check";
 
-import { LOG_LEVELS as VALID_KEYS } from "./../../../../constants";
-import { makeLoggerWithCustomFuncs } from "./../../../helpers";
 import { validateLoggerHasFunctions } from "../../../../preconditions";
+import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
+import { makeLoggerWithCustomFuncs } from "../../../helpers";
 
 const TheExpectedError = AssertionError;
 

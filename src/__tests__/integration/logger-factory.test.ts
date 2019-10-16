@@ -1,9 +1,9 @@
 import fc from "fast-check";
 
-import { EXTENDED_LOG_LEVELS } from "./../../constants";
 import { extendedStubLogger, makeLogLevelMap } from "../helpers";
-import { LogLevels } from "./../../types";
 import { lumberjackFactory } from "../../";
+import { EXTENDED_LOG_LEVELS } from "../../constants";
+import { LogLevels } from "../../types";
 
 describe("smoke", () => {
   it("should exist", () => {

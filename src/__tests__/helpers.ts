@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { EXTENDED_LOG_LEVELS } from "../constants";
-import { ExtendedLogLevels, LogLevels, LogLevelsMap } from "./../types";
+import { ExtendedLogLevels, LogLevels, LogLevelsMap } from "../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LogLevelMap
 export const makeLogLevelMap = (map?: Partial<LogLevelsMap>) => {

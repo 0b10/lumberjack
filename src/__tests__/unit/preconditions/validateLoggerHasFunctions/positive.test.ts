@@ -1,5 +1,5 @@
 import { validateLoggerHasFunctions } from "../../../../preconditions";
-import { validStubLogger } from "./../../../helpers";
+import { validStubLogger } from "../../../helpers";
 
 describe("validateLoggerHasFunctions()", () => {
   it("should exist", () => {

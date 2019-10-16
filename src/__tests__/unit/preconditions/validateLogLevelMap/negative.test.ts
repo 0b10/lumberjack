@@ -1,10 +1,11 @@
 import { AssertionError } from "assert";
 
-import { makeLogLevelMap } from "../../../helpers";
-import { isNotValidLogLevel } from "../../../helpers";
-import { MAPPER_KEYS } from "./constants";
-import { validateLogLevelMap } from "../../../../preconditions";
 import fc from "fast-check";
+
+import { makeLogLevelMap , isNotValidLogLevel } from "../../../helpers";
+import { validateLogLevelMap } from "../../../../preconditions";
+
+import { MAPPER_KEYS } from "./constants";
 
 const TheExpectedError = AssertionError;
 
