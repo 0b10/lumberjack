@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { EXTENDED_LOG_LEVELS } from "../constants";
-import { ExtendedLogLevels, LogLevels, LogLevelsMap } from "../types";
+import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "../constants";
+import { ExtendedLogLevels, LogLevels, LogLevelsMap, Logger, LoggerKeys } from "../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LogLevelMap
 export const makeLogLevelMap = (map?: Partial<LogLevelsMap>) => {
@@ -73,6 +73,20 @@ export const makeLoggerWithCustomFuncs = (
 
   return Object.freeze(logger);
 };
+
+export const makeLoggerWithMocks = (): Logger<jest.Mock> => {
+  return {
+    critical: jest.fn((message: any) => null),
+    debug: jest.fn((message: any) => null),
+    error: jest.fn((message: any) => null),
+    fatal: jest.fn((message: any) => null),
+    info: jest.fn((message: any) => null),
+    trace: jest.fn((message: any) => null),
+    warn: jest.fn((message: any) => null),
+  };
+};
+
+export const getValidLoggerKeys = () => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
 
 export const isValidLogLevel = (logLevel: any) => EXTENDED_LOG_LEVELS.includes(logLevel);
 export const isNotValidLogLevel = (logLevel: any) => !isValidLogLevel(logLevel);

@@ -1,4 +1,6 @@
-import { FactoryArgs } from "./types";
+import { LumberjackError } from "./error";
+import { mapLogger } from "./lib";
+import { FactoryArgs, Logger } from "./types";
 import {
   validateMapMatchesLogger,
   validateLogLevelMap,
@@ -20,14 +22,27 @@ const getDefaultArgs = (args?: FactoryArgs) => ({
   ...args,
 });
 
-export const lumberjackFactory = (args?: FactoryArgs) => {
+export const lumberjackFactory = (args?: FactoryArgs): Logger => {
   const { logLevelMap, logger } = getDefaultArgs(args);
+  let validLogger: Logger;
 
   if (logLevelMap) {
     validateLogLevelMap(logLevelMap);
-    validateMapMatchesLogger(logger, logLevelMap);
+    if (validateMapMatchesLogger(logger, logLevelMap)) {
+      validLogger = mapLogger(logger, logLevelMap);
+      return validLogger;
+    }
+    throw new LumberjackError(
+      "The logger map doesn't match the logger interface, but it didn't throw - this is a bug, or assertions are not working"
+    );
   } else {
-    validateLoggerInterface(logger);
+    if (validateLoggerInterface(logger)) {
+      validLogger = logger;
+      return validLogger;
+    }
+    throw new LumberjackError(
+      "The logger interface is invalid but it didn't throw - this is a bug, or assertions are not working"
+    );
   }
 };
 

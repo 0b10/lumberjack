@@ -1,4 +1,4 @@
-export type LoggerFunc = () => void;
+export type LoggerFunc = (message: any) => void;
 
 export interface LogLevels<T = LoggerFunc> {
   critical: T;
@@ -10,7 +10,8 @@ export interface LogLevels<T = LoggerFunc> {
   warn: T;
 }
 
-export type Logger = LogLevels<LoggerFunc>;
+export type LoggerKeys = keyof LogLevels;
+export type Logger<T = LoggerFunc> = LogLevels<T>;
 
 export type LogLevelsMap = LogLevels<string>;
 

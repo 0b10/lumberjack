@@ -52,7 +52,7 @@ export const validateLoggerHasFunctions = (logger: object) => {
 };
 
 // >>> PRECONDITIONS >>>
-export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): logger is any => {
+export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): logger is object => {
   const targets = new Set<string>(Object.values(map)); // FIXME: validate is object first
   const invalidTargets: string[] = [];
 
