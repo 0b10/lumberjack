@@ -68,7 +68,7 @@ export const validateMapMatchesLogger = (logger: unknown, map: LogLevelsMap): lo
   assert(
     invalidTargets.length === 0,
     `The targeted logger keys: [ ${invalidTargets} ], do not exist in the provided logger object, which has only: [ ${Object.keys(
-      logger // an assertion guards this
+      logger
     )} ]`
   );
 
