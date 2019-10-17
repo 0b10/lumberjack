@@ -28,6 +28,8 @@
     {
       "files": ["**/__tests__/*", "**/*.test.*"],
       "rules": {
+        "max-lines-per-function": "off",
+        "no-unused-expressions": "off",
         "security/detect-object-injection": "off"
       }
     }
@@ -45,6 +47,14 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/interface-name-prefix": "warn",
     "@typescript-eslint/no-explicit-any": "off",
+    "array-callback-return": "error",
+    "block-scoped-var": "error",
+    "complexity": ["warn", 5],
+    "consistent-return": "error",
+    "curly": "error",
+    "default-case": "error",
+    "eqeqeq": "warn",
+    "guard-for-in": "error",
     "import/export": "error",
     "import/first": "error",
     "import/named": "error",
@@ -60,9 +70,37 @@
     "jest/no-disabled-tests": "warn",
     "jest/prefer-expect-assertions": "off",
     "jsdoc/no-undefined-types": "off",
+    "max-depth": ["warn", { "max": 3 }],
+    "max-len": [
+      "error",
+      {
+        "code": 100,
+        "ignoreComments": true,
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "tabWidth": 2
+      }
+    ],
+    "max-lines-per-function": ["warn", { "max": 40, "skipBlankLines": true, "skipComments": true }],
     "no-console": "warn",
+    "no-empty-function": "warn",
+    "no-eq-null": "error",
+    "no-eval": "error",
+    "no-floating-decimal": "error",
+    "no-implied-eval": "error",
+    "no-import-assign": "error",
+    "no-labels": "error",
+    "no-lone-blocks": "error",
+    "no-multi-spaces": "error",
+    "no-template-curly-in-string": "error",
+    "no-unused-expressions": "error",
     "no-unused-vars": "off",
+    "no-warning-comments": ["warn", { "terms": ["BUG", "FIXME"] }],
     "optimize-regex/optimize-regex": "warn",
+    "require-await": "warn",
     "security/detect-object-injection": "error"
   },
   "settings": {
