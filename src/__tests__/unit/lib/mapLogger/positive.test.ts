@@ -1,7 +1,8 @@
-import { mapLogger } from "../../../lib";
-
-import { LoggerMap, LoggerKeys } from "./../../../types";
-import { makeLoggerWithMocks, makeLoggerMap, getValidLoggerKeys } from "./../../helpers";
+import { mapLogger } from "../../../../lib";
+import { CONFIG_FILE_NAME } from "../../../../constants";
+import { LoggerMap, LoggerKeys } from "../../../../types";
+import { makeLoggerWithMocks, makeLoggerMap, getValidLoggerKeys } from "../../../helpers";
+import { MockFs } from "../../../../__mocks__/fs"; // eslint-disable-line
 
 const getUsedLoggerKey = (map: LoggerMap, targetKey: string): LoggerKeys => {
   const [[usedLoggerKey]] = Object.entries(map).filter(([_, mappedKey]) => mappedKey === targetKey);

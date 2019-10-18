@@ -4,3 +4,10 @@ export class LumberjackError extends Error {
     this.name = "LumberjackError";
   }
 }
+
+export class LumberjackMockError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LumberjackMockError";
+  }
+}

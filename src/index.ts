@@ -1,5 +1,5 @@
 import { LumberjackError } from "./error";
-import { mapLogger } from "./lib";
+import { getConfig, mapLogger } from "./lib";
 import { FactoryArgs, Logger } from "./types";
 import {
   validateMapMatchesLogger,
@@ -27,13 +27,12 @@ export const lumberjackFactory = (args?: FactoryArgs): Logger => {
   let validLogger: Logger;
 
   if (mapTo) {
-    validateLoggerMap(mapTo);
-    if (validateMapMatchesLogger(logger, mapTo)) {
+    if (validateLoggerMap(mapTo) && validateMapMatchesLogger(logger, mapTo)) {
       validLogger = mapLogger(logger, mapTo);
       return validLogger;
     }
     throw new LumberjackError(
-      "The logger map doesn't match the logger interface, but it didn't throw - this is a bug, or assertions are not working"
+      "The logger map is invalid, but it didn't throw - this is a bug, or assertions are not working"
     );
   } else {
     if (validateLoggerInterface(logger)) {
@@ -45,5 +44,12 @@ export const lumberjackFactory = (args?: FactoryArgs): Logger => {
     );
   }
 };
+
+export const logger = getConfig().then((config) => {
+  // TODO: test both paths after refactoring - after lumberjackFactory has been moved to a module, and can be mocked
+  return config
+    ? lumberjackFactory({ logger: config.logger, mapTo: config.map })
+    : lumberjackFactory();
+});
 
 export * from "./types";

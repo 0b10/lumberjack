@@ -10,7 +10,7 @@
     "incremental": true,
     "isolatedModules": true,
     "lib": ["esnext"],
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "noEmit": false,
     "noImplicitAny": true,

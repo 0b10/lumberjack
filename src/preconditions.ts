@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert, { AssertionError } from "assert";
 
 import _ from "lodash";
 
@@ -76,14 +76,20 @@ export const validateMapMatchesLogger = (logger: unknown, map: LoggerMap): logge
   return true;
 };
 
-export const validateLoggerMap = (map: LoggerMap) => {
+export const validateLoggerMap = (map: unknown): map is LoggerMap => {
   // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
-  Object.values(map).forEach((customTarget) =>
-    assert(
-      EXTENDED_LOG_LEVELS.includes(customTarget),
-      `Unknown log level mapping target passed to lumberjackFactory: "${customTarget}"`
-    )
-  );
+  if (_.isPlainObject(map)) {
+    Object.values(map as object).forEach((customTarget) =>
+      assert(
+        EXTENDED_LOG_LEVELS.includes(customTarget),
+        `Unknown log level mapping target passed to lumberjackFactory: "${customTarget}"`
+      )
+    );
+  } else {
+    // TODO: test non-object throws
+    throw new AssertionError({ message: "Map should be an object, when it's not" });
+  }
+  return true;
 };
 
 export const validateLoggerInterface = (logger: unknown): logger is Logger => {
