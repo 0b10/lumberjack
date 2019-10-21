@@ -1,6 +1,8 @@
+import _ from "lodash";
+
+import { getConfig, mapLogger, logMessage, logArgs, logResult, logError, getLogger } from "./lib";
 import { LumberjackError } from "./error";
-import { getConfig, mapLogger } from "./lib";
-import { FactoryArgs, Logger } from "./types";
+import { FactoryArgs, Logger, DefaultTemplate, Template, Messages, MergedTemplate } from "./types";
 import {
   validateMapMatchesLogger,
   validateLoggerMap,
@@ -8,20 +10,21 @@ import {
 } from "./preconditions";
 
 const stubLogger = {
-  critical: () => null,
-  debug: () => null,
-  error: () => null,
-  fatal: () => null,
-  info: () => null,
-  trace: () => null,
-  warn: () => null,
+  critical: (): null => null,
+  debug: (): null => null,
+  error: (): null => null,
+  fatal: (): null => null,
+  info: (): null => null,
+  trace: (): null => null,
+  warn: (): null => null,
 };
 
-const getDefaultArgs = (args?: FactoryArgs) => ({
+const getDefaultArgs = (args?: FactoryArgs): FactoryArgs => ({
   ...{ logger: stubLogger, mapTo: undefined },
   ...args,
 });
 
+// >>> LUMBERJACK FACTORY >>>
 export const lumberjackFactory = (args?: FactoryArgs): Logger => {
   const { mapTo, logger } = getDefaultArgs(args);
   let validLogger: Logger;
@@ -51,5 +54,37 @@ export const logger = getConfig().then((config) => {
     ? lumberjackFactory({ logger: config.logger, mapTo: config.map })
     : lumberjackFactory();
 });
+
+const defaultTemplate: DefaultTemplate = Object.freeze({
+  messageLevel: "info",
+  errorLevel: "error",
+});
+
+// TODO: template validation
+const validateTemplate = (template: unknown): template is Template => true;
+
+// >>> TEMPLATE FACTORY >>>
+export interface ForTestingTemplateFactory {
+  logger?: Logger; // should have been validated in lumberjackFactory. Use manual type assertion if needed for error tests
+}
+
+export const templateFactory = async (
+  template: unknown,
+  forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
+): Promise<(messages: Messages) => void> => {
+  let usableTemplate!: MergedTemplate;
+  if (validateTemplate(template)) {
+    usableTemplate = { ...defaultTemplate, ...template };
+  }
+
+  const { info, error, trace, debug, warn, critical, fatal } = await getLogger(logger, forTesting);
+
+  return (messages: Messages): void => {
+    logMessage(messages, usableTemplate, info, debug);
+    logArgs(messages, trace);
+    logResult(messages, trace);
+    logError({ messages, template: usableTemplate, error, warn, critical, fatal, trace });
+  };
+};
 
 export * from "./types";

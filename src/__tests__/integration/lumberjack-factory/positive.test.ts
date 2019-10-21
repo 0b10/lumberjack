@@ -7,6 +7,8 @@ import {
   makeLoggerMap,
 } from "./../../helpers";
 
+// TODO: integeration, test correct logger is used - and not the logic behind logging
+
 describe("lumberjackFactory()", () => {
   it("should exist", () => {
     expect(lumberjackFactory).toBeDefined();

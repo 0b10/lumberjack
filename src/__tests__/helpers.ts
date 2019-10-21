@@ -1,10 +1,10 @@
 import _ from "lodash";
 
 import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "../constants";
-import { ExtendedLogLevels, LoggerMap, Logger, LoggerKeys } from "../types";
+import { ExtendedLogger, Logger, LoggerKeys, LoggerMap, Messages, Template } from "../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LoggerMap
-export const makeLoggerMap = (map?: Partial<LoggerMap>) => {
+export const makeLoggerMap = (map?: Partial<LoggerMap>): LoggerMap => {
   return {
     ...{
       critical: "critical",
@@ -19,7 +19,7 @@ export const makeLoggerMap = (map?: Partial<LoggerMap>) => {
   };
 };
 
-export const extendedStubLogger: Readonly<Record<ExtendedLogLevels, Function>> = Object.freeze({
+export const extendedStubLogger: Readonly<ExtendedLogger> = Object.freeze({
   critical: () => null,
   debug: () => null,
   error: () => null,
@@ -30,7 +30,7 @@ export const extendedStubLogger: Readonly<Record<ExtendedLogLevels, Function>> =
   warn: () => null,
 });
 
-export const validStubLogger: Readonly<Logger<Function>> = Object.freeze({
+export const validStubLogger: Readonly<Logger> = Object.freeze({
   critical: () => null,
   debug: () => null,
   error: () => null,
@@ -43,8 +43,8 @@ export const validStubLogger: Readonly<Logger<Function>> = Object.freeze({
 export const makeLoggerWithCustomKeys = (
   loggerKeys: Array<LoggerKeys>,
   newKeys?: any[],
-  newValue: any = () => null
-) => {
+  newValue: any = (): null => null
+): Readonly<Logger> => {
   const logger = _.cloneDeep(validStubLogger);
 
   for (let oldKey of loggerKeys) {
@@ -57,24 +57,24 @@ export const makeLoggerWithCustomKeys = (
     }
   }
 
-  return Object.freeze(logger);
+  return logger;
 };
 
 export const makeLoggerWithCustomFuncs = (
   loggerKeys: Array<LoggerKeys>,
   newValue: any // don't give default. undefined causes default, may break tests
-) => {
-  const logger: Logger<Function> = _.cloneDeep(validStubLogger);
+): Readonly<Logger> => {
+  const logger: Logger = _.cloneDeep(validStubLogger);
 
   for (let key of loggerKeys) {
     logger[key] = newValue;
   }
 
-  return Object.freeze(logger);
+  return logger;
 };
 
-export const makeLoggerWithMocks = (): Logger<jest.Mock> => {
-  return {
+export const makeLoggerWithMocks = (): Readonly<Logger<jest.Mock>> => {
+  return Object.freeze({
     critical: jest.fn((message: any) => null),
     debug: jest.fn((message: any) => null),
     error: jest.fn((message: any) => null),
@@ -82,10 +82,34 @@ export const makeLoggerWithMocks = (): Logger<jest.Mock> => {
     info: jest.fn((message: any) => null),
     trace: jest.fn((message: any) => null),
     warn: jest.fn((message: any) => null),
-  };
+  });
 };
 
-export const getValidLoggerKeys = () => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
+const _defaultTemplateValues: Required<Template> = {
+  message: "a default message",
+  errorMessagePrefix: "a default errror message prefix",
+  errorLevel: "error",
+  messageLevel: "info",
+};
 
-export const isValidLogLevel = (logLevel: any) => EXTENDED_LOG_LEVELS.includes(logLevel);
-export const isNotValidLogLevel = (logLevel: any) => !isValidLogLevel(logLevel);
+export const validTemplateValues = (
+  overrides?: Partial<Template>
+): Readonly<Required<Template>> => {
+  return Object.freeze({ ..._defaultTemplateValues, ...overrides });
+};
+
+const _defaultMessageValues: Messages = {
+  // Only put args in here that may throw if not provided
+  message: "a default message",
+};
+
+export const validMessageValues = (overrides?: Partial<Messages>): Readonly<Messages> => {
+  return Object.freeze({ ..._defaultMessageValues, ...overrides });
+};
+
+export const getValidLoggerKeys = (): LoggerKeys[] => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
+
+export const isValidLogLevel = (logLevel: any): boolean => EXTENDED_LOG_LEVELS.includes(logLevel);
+export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);
+
+export const stringify = (anything: unknown) => JSON.stringify(anything, undefined, 2);

@@ -17,7 +17,7 @@ export const isPlainObject = (subject: unknown, subjectName: string): subject is
   return true;
 };
 
-export const validateLoggerShape = (logger: object) => {
+export const validateLoggerShape = (logger: object): void => {
   const keys = new Set(Object.keys(logger));
   const missingKeys: string[] = [];
 
@@ -33,7 +33,7 @@ export const validateLoggerShape = (logger: object) => {
   );
 };
 
-export const validateLoggerHasFunctions = (logger: object) => {
+export const validateLoggerHasFunctions = (logger: object): void => {
   const loggerKeyValuePairs = Object.entries(logger);
   const keysWithInvalidFuncs: string[] = [];
 

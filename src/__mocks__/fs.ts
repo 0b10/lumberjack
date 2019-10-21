@@ -51,10 +51,10 @@ export class MockFs {
   }
 
   lstatSync(path: PathLike): { isDirectory: () => boolean } {
-    return { isDirectory: () => this.isDirectoryPredicate(path) };
+    return { isDirectory: (): boolean => this.isDirectoryPredicate(path) };
   }
 
-  __setMock_findConfigAt(dirPath: PathLike) {
+  __setMock_findConfigAt(dirPath: PathLike): void {
     const filePath = path.resolve(dirPath as string, CONFIG_FILE_NAME);
     this.__setMock_existsSync((p) => p === filePath);
     this.__setMock_lstatSync((p) => p !== filePath); // only target isn't a dir
