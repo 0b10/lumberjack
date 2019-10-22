@@ -154,12 +154,12 @@ export const isValidErrorLevelArg: TemplatePrecondition = (template: {
 export const isValidErrorMessagePrefixArg: TemplatePrecondition = (template: {
   errorMessagePrefix?: UntrustedTemplate;
 }): true | never => {
-  const elp = template.errorMessagePrefix;
-  if (_.isUndefined(elp) || (_.isString(elp) && !_isEmptyString(elp))) {
+  const emp = template.errorMessagePrefix;
+  if (_.isUndefined(emp) || (_.isString(emp) && !_isEmptyString(emp))) {
     return true;
   }
   throw new LumberjackError(
-    `errorMessagePrefix is invalid - it must be undefined, or a meaningful string: ${typeof elp}:${elp}`
+    `errorMessagePrefix is invalid - it must be undefined, or a meaningful string: ${typeof emp}:${emp}`
   );
 };
 
