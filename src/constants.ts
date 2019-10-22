@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import { LogLevelEnv, MessageLevel } from "./types";
+import { LogLevelEnv, MessageLevel, ErrorLevel } from "./types";
 
 export const EXTENDED_LOG_LEVELS = Object.freeze([
   "critical",
@@ -20,7 +20,8 @@ export const LOG_LEVELS = Object.freeze(
 
 export const CONFIG_FILE_NAME = "lumberjack.config.js";
 
-export const VALID_MESSAGE_LEVEL: Set<MessageLevel> = new Set(["info", "debug"]);
+export const VALID_MESSAGE_LEVELS: Set<MessageLevel> = new Set(["info", "debug"]);
+export const VALID_ERROR_LEVELS: Set<ErrorLevel> = new Set(["error", "warn", "critical", "fatal"]);
 
 // >>> LOG_LEVEL >>>
 const tempLogLevelEnv = process.env.LOG_LEVEL || "SILENT"; // undefined means no logs

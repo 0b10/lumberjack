@@ -8,6 +8,7 @@ import {
 } from "./../../helpers";
 
 // TODO: integeration, test correct logger is used - and not the logic behind logging
+// TODO: test default template values
 
 describe("lumberjackFactory()", () => {
   it("should exist", () => {

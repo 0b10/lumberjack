@@ -2,11 +2,12 @@ import _ from "lodash";
 
 import { getConfig, mapLogger, logMessage, logArgs, logResult, logError, getLogger } from "./lib";
 import { LumberjackError } from "./error";
-import { FactoryArgs, Logger, DefaultTemplate, Template, Messages, MergedTemplate } from "./types";
+import { FactoryArgs, Logger, DefaultTemplate, Messages, MergedTemplate } from "./types";
 import {
   validateMapMatchesLogger,
   validateLoggerMap,
   validateLoggerInterface,
+  isValidTemplate,
 } from "./preconditions";
 
 const stubLogger = {
@@ -60,9 +61,6 @@ const defaultTemplate: DefaultTemplate = Object.freeze({
   errorLevel: "error",
 });
 
-// TODO: template validation
-const validateTemplate = (template: unknown): template is Template => true;
-
 // >>> TEMPLATE FACTORY >>>
 export interface ForTestingTemplateFactory {
   logger?: Logger; // should have been validated in lumberjackFactory. Use manual type assertion if needed for error tests
@@ -73,7 +71,7 @@ export const templateFactory = async (
   forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
 ): Promise<(messages: Messages) => void> => {
   let usableTemplate!: MergedTemplate;
-  if (validateTemplate(template)) {
+  if (isValidTemplate(template)) {
     usableTemplate = { ...defaultTemplate, ...template };
   }
 

@@ -37,7 +37,11 @@ export type Config = Partial<{
 // >>> TEMPLATE|MESSAGES >>>
 export type DefaultTemplate = Required<Pick<Template, "messageLevel" | "errorLevel">>;
 
-export type Template = Partial<
+export type Template<T = StandardTemplate> = T extends undefined
+  ? Record<keyof StandardTemplate, T>
+  : StandardTemplate;
+
+type StandardTemplate = Partial<
   Pick<Messages, "message" | "messageLevel" | "errorLevel"> & { errorMessagePrefix: string }
 >;
 

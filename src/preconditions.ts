@@ -2,9 +2,15 @@ import assert, { AssertionError } from "assert";
 
 import _ from "lodash";
 
-import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "./constants";
-import { isValidKey } from "./helpers";
-import { Logger, LoggerMap } from "./types";
+import { LumberjackError } from "./error";
+import {
+  EXTENDED_LOG_LEVELS,
+  LOG_LEVELS,
+  VALID_MESSAGE_LEVELS,
+  VALID_ERROR_LEVELS,
+} from "./constants";
+import { isValidKey, isValidMessageLevel, isValidErrorLevel } from "./helpers";
+import { Logger, LoggerMap, Template } from "./types";
 
 // >>> HELPERS >>>
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
@@ -98,4 +104,84 @@ export const validateLoggerInterface = (logger: unknown): logger is Logger => {
     validateLoggerHasFunctions(logger);
   }
   return true;
+};
+
+// >>> TEMPLATE >>>
+interface UntrustedTemplate {
+  [key: string]: unknown;
+}
+
+const RE_EMPTY_STRING = /^ *$/;
+const _isEmptyString = (val: string): boolean => RE_EMPTY_STRING.test(val);
+
+export const isValidMessageArg: TemplatePrecondition = (template: {
+  message?: UntrustedTemplate;
+}): true | never => {
+  const msg = template.message;
+  // console.log({ msg });
+  if (_.isUndefined(msg) || (_.isString(msg) && !_isEmptyString(msg))) {
+    return true;
+  }
+  throw new LumberjackError(
+    `message is invalid - it must be undefined, or a meaningful string: ${typeof msg}:${msg}`
+  );
+};
+
+export const isValidMessageLevelArg: TemplatePrecondition = (template: {
+  messageLevel?: UntrustedTemplate;
+}): true | never => {
+  const ml = template.messageLevel;
+  if (_.isUndefined(ml) || isValidMessageLevel(ml)) {
+    return true;
+  }
+  throw new LumberjackError(
+    `messageLevel is invalid - it must be undefined, or one of [${VALID_MESSAGE_LEVELS}]: ${ml}`
+  );
+};
+
+export const isValidErrorLevelArg: TemplatePrecondition = (template: {
+  errorLevel?: UntrustedTemplate;
+}): true | never => {
+  const el = template.errorLevel;
+  if (_.isUndefined(el) || isValidErrorLevel(el)) {
+    return true;
+  }
+  throw new LumberjackError(
+    `errorLevel is invalid - it must be undefined, or one of [${VALID_ERROR_LEVELS}]: ${el}`
+  );
+};
+
+export const isValidErrorMessagePrefixArg: TemplatePrecondition = (template: {
+  errorMessagePrefix?: UntrustedTemplate;
+}): true | never => {
+  const elp = template.errorMessagePrefix;
+  if (_.isUndefined(elp) || (_.isString(elp) && !_isEmptyString(elp))) {
+    return true;
+  }
+  throw new LumberjackError(
+    `errorMessagePrefix is invalid - it must be undefined, or a meaningful string: ${typeof elp}:${elp}`
+  );
+};
+
+export type TemplatePrecondition = (template: UntrustedTemplate) => true | never;
+const _templatePreconditions: TemplatePrecondition[] = [
+  isValidMessageArg,
+  isValidMessageLevelArg,
+  isValidErrorLevelArg,
+  isValidErrorMessagePrefixArg,
+];
+
+const _allPreconditionsPass = (template: UntrustedTemplate): boolean => {
+  return _templatePreconditions.every((precondition) => precondition(template));
+};
+
+export const isValidTemplate = (template: unknown): template is Template => {
+  if (_.isPlainObject(template)) {
+    if (_allPreconditionsPass(template as UntrustedTemplate /* isPlainObject() => bool */)) {
+      return true;
+    }
+  }
+  throw new LumberjackError(
+    `The template is invalid - it must be an object: ${typeof template}:${template}`
+  );
 };

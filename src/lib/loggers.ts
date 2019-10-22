@@ -1,15 +1,9 @@
 import _ from "lodash";
 
 import { LumberjackError } from "../error";
-import {
-  Logger,
-  LoggerFunc,
-  MergedTemplate,
-  MessageLevel,
-  Messages,
-  ParsedError,
-  Template,
-} from "../types";
+import { Logger, LoggerFunc, MergedTemplate, Messages, ParsedError, Template } from "../types";
+
+import { isValidMessageLevel } from "./../helpers";
 
 import { parseError, getConditionalLogger } from ".";
 
@@ -89,10 +83,9 @@ const _getMessageLogger = (
   infoLogger: LoggerFunc,
   debugLogger: LoggerFunc
 ): LoggerFunc => {
-  const messageLevels: MessageLevel[] = ["info", "debug"];
   const messageLevel = messages.messageLevel || template.messageLevel;
 
-  if (!messageLevels.includes(messageLevel)) {
+  if (!isValidMessageLevel(messageLevel)) {
     throw new LumberjackError(
       `Invalid messageLevel: ${messages.messageLevel}, must be "info", or "debug`
     );

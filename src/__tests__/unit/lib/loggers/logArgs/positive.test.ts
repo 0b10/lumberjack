@@ -1,9 +1,9 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { stringify } from "../../../../helpers";
+import { stringify , makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../../helpers";
 import { logArgs } from "../../../../../lib";
-import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../../helpers";
+
 
 describe("logArgs()", () => {
   it("should exist", () => {

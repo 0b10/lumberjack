@@ -1,6 +1,6 @@
 import { templateFactory } from "../../../../index";
-import { LoggerKeys, TemplateKey, MessageKey, Messages } from "../../../../types";
-import { makeLoggerWithMocks, validTemplateValues, validMessageValues } from "../../../helpers";
+import { LoggerKeys, TemplateKey, MessageKey, Messages, Template } from "../../../../types";
+import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../helpers";
 
 describe("templateFactory()", () => {
   it("should exist", () => {
@@ -16,6 +16,7 @@ describe("templateFactory()", () => {
       result: object | string | RegExp; // The expected result that's logged
       extraArgs?: Messages; // you can use this to pass extra args. set a value to undefined to disable an arg
       description?: string; // replace the default test message
+      templateOverrides?: Template; // remove, or override specific template keys
     }
 
     const normalMessageFixtures: NormalMessageFixture[] = [
@@ -30,6 +31,10 @@ describe("templateFactory()", () => {
         messageKey: "error",
         messageValue: new Error("fake error message yevswf"),
         result: { message: "fake error message yevswf", name: "Error" },
+        templateOverrides: {
+          // The helper (validTemplateValues()) provides a default, just disable it
+          errorMessagePrefix: undefined,
+        },
       },
       {
         targetFunc: "trace",
@@ -68,7 +73,15 @@ describe("templateFactory()", () => {
     ];
 
     normalMessageFixtures.forEach(
-      ({ targetFunc, messageKey, messageValue, result, extraArgs, description }) => {
+      ({
+        targetFunc,
+        messageKey,
+        messageValue,
+        result,
+        extraArgs,
+        description,
+        templateOverrides,
+      }) => {
         describe(`"${targetFunc}"`, () => {
           it(
             description ||
@@ -76,8 +89,9 @@ describe("templateFactory()", () => {
             async () => {
               const mockLogger = makeLoggerWithMocks();
               const mockTarget = mockLogger[targetFunc];
+              const template = validTemplateValues(templateOverrides);
 
-              const log = await templateFactory(undefined, { logger: mockLogger });
+              const log = await templateFactory(template, { logger: mockLogger });
               log(validMessageValues({ ...{ [messageKey]: messageValue }, ...extraArgs }));
 
               expect(mockTarget).toHaveBeenCalledWith(result);
@@ -109,9 +123,9 @@ describe("templateFactory()", () => {
       describe(`stack trace`, () => {
         it(`should be provided to the trace log after an error is passed in`, async () => {
           const mockLogger = makeLoggerWithMocks();
-          const mockTarget = mockLogger.trace;
+          const template = validTemplateValues();
 
-          const log = await templateFactory(undefined, { logger: mockLogger });
+          const log = await templateFactory(template, { logger: mockLogger });
           log(validMessageValues({ error: messageValue, args: undefined }));
           expect(anyCallMatches(mockLogger.trace.mock.calls, result)).toBe(true);
         });

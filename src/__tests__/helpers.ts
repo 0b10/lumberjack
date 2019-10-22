@@ -1,7 +1,15 @@
 import _ from "lodash";
 
 import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "../constants";
-import { ExtendedLogger, Logger, LoggerKeys, LoggerMap, Messages, Template } from "../types";
+import {
+  ExtendedLogger,
+  Logger,
+  LoggerKeys,
+  LoggerMap,
+  Messages,
+  Template,
+  TemplateKey,
+} from "../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LoggerMap
 export const makeLoggerMap = (map?: Partial<LoggerMap>): LoggerMap => {
@@ -86,8 +94,8 @@ export const makeLoggerWithMocks = (): Readonly<Logger<jest.Mock>> => {
 };
 
 const _defaultTemplateValues: Required<Template> = {
-  message: "a default message",
-  errorMessagePrefix: "a default errror message prefix",
+  message: "a test helper message",
+  errorMessagePrefix: "a test helper errror message prefix",
   errorLevel: "error",
   messageLevel: "info",
 };
@@ -107,9 +115,24 @@ export const validMessageValues = (overrides?: Partial<Messages>): Readonly<Mess
   return Object.freeze({ ..._defaultMessageValues, ...overrides });
 };
 
+const _isExcluded = <T = any>(key: T, excluded: T[]): boolean => excluded.includes(key);
+
+export const undefinedTemplateValues = (
+  except?: Template,
+  exclude: Array<TemplateKey> = []
+): Template<undefined> => {
+  const undefinedTemplate = {};
+  for (let key of Object.keys(_defaultTemplateValues)) {
+    if (!_isExcluded(key as TemplateKey, exclude)) {
+      undefinedTemplate[key] = undefined;
+    }
+  }
+  return { ...undefinedTemplate, ...except } as Template<undefined>;
+};
+
 export const getValidLoggerKeys = (): LoggerKeys[] => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
 
 export const isValidLogLevel = (logLevel: any): boolean => EXTENDED_LOG_LEVELS.includes(logLevel);
 export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);
 
-export const stringify = (anything: unknown) => JSON.stringify(anything, undefined, 2);
+export const stringify = (anything: unknown): string => JSON.stringify(anything, undefined, 2);
