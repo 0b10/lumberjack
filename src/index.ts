@@ -49,12 +49,11 @@ export const lumberjackFactory = (args?: FactoryArgs): Logger => {
   }
 };
 
-export const logger = getConfig().then((config) => {
-  // TODO: test both paths after refactoring - after lumberjackFactory has been moved to a module, and can be mocked
-  return config
-    ? lumberjackFactory({ logger: config.logger, mapTo: config.map })
-    : lumberjackFactory();
-});
+// FIXME: refactor, and use a function
+const config = getConfig();
+export const logger = config
+  ? lumberjackFactory({ logger: config.logger, mapTo: config.map })
+  : lumberjackFactory();
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
   messageLevel: "info",
@@ -66,16 +65,16 @@ export interface ForTestingTemplateFactory {
   logger?: Logger; // should have been validated in lumberjackFactory. Use manual type assertion if needed for error tests
 }
 
-export const templateFactory = async (
+export const templateFactory = (
   template: unknown,
   forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
-): Promise<(messages: Messages) => void> => {
+): ((messages: Messages) => void) => {
   let usableTemplate!: MergedTemplate;
   if (isValidTemplate(template)) {
     usableTemplate = { ...defaultTemplate, ...template };
   }
 
-  const { info, error, trace, debug, warn, critical, fatal } = await getLogger(logger, forTesting);
+  const { info, error, trace, debug, warn, critical, fatal } = getLogger(logger, forTesting);
 
   return (messages: Messages): void => {
     logMessage(messages, usableTemplate, info, debug);

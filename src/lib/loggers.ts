@@ -13,14 +13,11 @@ const _stringify = (obj: object): string => {
   return JSON.stringify(obj, undefined, 2);
 };
 
-export const getLogger = async (
-  logger: Promise<Logger>,
-  forTesting?: ForTestingTemplateFactory
-): Promise<Logger> => {
+export const getLogger = (logger: Logger, forTesting?: ForTestingTemplateFactory): Logger => {
   if (forTesting && forTesting.logger) {
     return getConditionalLogger(forTesting.logger);
   } else {
-    return getConditionalLogger(await logger);
+    return getConditionalLogger(logger);
   }
 };
 

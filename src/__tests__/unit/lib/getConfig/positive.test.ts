@@ -9,16 +9,16 @@ describe("getConfig()", () => {
     expect(getConfig).toBeDefined();
   });
 
-  it("should return a defined object", async () => {
-    expect(await getConfig()).toBeDefined();
+  it("should return a defined object", () => {
+    expect(getConfig()).toBeDefined();
   });
 
-  it("should not return false", async () => {
-    expect(await getConfig(getFakeConfigPath("default-config"))).not.toBe(false);
+  it("should not return false", () => {
+    expect(getConfig(getFakeConfigPath("default-config"))).not.toBe(false);
   });
 
-  it("should return an expected object interface", async () => {
-    const result = await getConfig(getFakeConfigPath("default-config"));
+  it("should return an expected object interface", () => {
+    const result = getConfig(getFakeConfigPath("default-config"));
     // eslint-disable-next-line jest/no-if
     if (result !== false) {
       // Keeps ts happy

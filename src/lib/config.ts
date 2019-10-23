@@ -15,14 +15,14 @@ const _configFilePath = (dirPath: string): string => path.resolve(dirPath, CONFI
 const _hasConfig = (dirPath: string): boolean => _isFile(_configFilePath(dirPath));
 const _traverseUp = (dirPath: string): string => path.resolve(dirPath, "..");
 
-export const findConfig = async (dirPath = __dirname): Promise<string | false> => {
+export const findConfig = (dirPath = __dirname): string | false => {
   if (_isRootDir(dirPath)) {
     return false;
   }
 
   let result: string | false;
   if (!_hasConfig(dirPath)) {
-    result = await findConfig(_traverseUp(dirPath));
+    result = findConfig(_traverseUp(dirPath));
   } else {
     result = _configFilePath(dirPath);
   }
@@ -33,10 +33,10 @@ export const isValidConfig = (configFile: unknown): configFile is Config => {
   return _.isPlainObject(configFile); // Config is Partial, so could be empty object
 };
 
-export const getConfig = async (dirPath?: string): Promise<Config | false> => {
-  const configPath = await findConfig(dirPath);
+export const getConfig = (dirPath?: string): Config | false => {
+  const configPath = findConfig(dirPath);
   if (configPath) {
-    const configFile: unknown = await import(configPath);
+    const configFile: unknown = require(configPath);
     if (isValidConfig(configFile)) {
       return configFile;
     }
