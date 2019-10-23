@@ -4,8 +4,7 @@ import path from "path";
 import _ from "lodash";
 
 import { CONFIG_FILE_NAME } from "../constants";
-
-import { Config } from "..";
+import { Config } from "../types";
 
 const _isFile = (filePath: string): boolean => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename

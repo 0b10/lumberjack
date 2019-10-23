@@ -19,12 +19,13 @@
   "license": "MIT",
   "author": "0b10 <0b10@pm.me>",
   "files": [
-    "dist/*"
+    "dist/"
   ],
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:clean && tsc -p tsconfig.json && tsc -p tsconfig-for-declarations.json && tree dist",
     "build:clean": "rm -rfv dist/*",
-    "build:publish": "yarn run lint && yarn run test && yarn run build:clean && yarn run build && yarn run build:types && cp README.md package.json dist/ && yarn publish",
+    "build:publish": "yarn run lint && yarn run test && yarn run build && yarn publish",
     "build:types": "tsc -p tsconfig-for-declarations.json",
     "lint": "eslint '**/*.{js,json,ts}'",
     "lint:compile": "tsc --noEmit && eslint '**/*.{js,json,ts}'",

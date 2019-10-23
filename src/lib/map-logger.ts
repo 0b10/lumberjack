@@ -1,4 +1,4 @@
-import { LoggerFunc, LoggerMap, Logger } from "..";
+import { LoggerFunc, LoggerMap, Logger } from "../types";
 
 export const mapLogger = <CustomLoggerFunc = LoggerFunc>(
   customLogger: object,

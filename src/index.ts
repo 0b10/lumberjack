@@ -84,5 +84,3 @@ export const templateFactory = async (
     logError({ messages, template: usableTemplate, error, warn, critical, fatal, trace });
   };
 };
-
-export * from "./types";

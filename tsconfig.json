@@ -28,5 +28,12 @@
     "target": "esnext"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/__tests__/*", "**/*.test"]
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*",
+    "**/*.test",
+    "**/__mocks__/*",
+    "**/types",
+    "**/interfaces"
+  ]
 }
