@@ -30,10 +30,12 @@ export const findConfig = (dirPath = __dirname): string | false => {
 };
 
 export const isValidConfig = (configFile: unknown): configFile is Config => {
+  // TODO: validate existing keys
   return _.isPlainObject(configFile); // Config is Partial, so could be empty object
 };
 
 export const getConfig = (dirPath?: string): Config | false => {
+  // TODO: check testing env to accept dirPath, don't allow it to be set outside of testing (security)
   const configPath = findConfig(dirPath);
   if (configPath) {
     const configFile: unknown = require(configPath);
