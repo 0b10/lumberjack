@@ -114,6 +114,19 @@ interface UntrustedTemplate {
 const RE_EMPTY_STRING = /^ *$/;
 const _isEmptyString = (val: string): boolean => RE_EMPTY_STRING.test(val);
 
+export const isValidContextArg: TemplatePrecondition = (template: {
+  context?: UntrustedTemplate;
+}): true | never => {
+  const context = template.context;
+  // console.log({ msg });
+  if (_.isUndefined(context) || (_.isString(context) && !_isEmptyString(context))) {
+    return true;
+  }
+  throw new LumberjackError(
+    `context is invalid - it must be undefined, or a meaningful string: ${typeof context}:${context}`
+  );
+};
+
 export const isValidMessageArg: TemplatePrecondition = (template: {
   message?: UntrustedTemplate;
 }): true | never => {
@@ -165,10 +178,11 @@ export const isValidErrorMessagePrefixArg: TemplatePrecondition = (template: {
 
 export type TemplatePrecondition = (template: UntrustedTemplate) => true | never;
 const _templatePreconditions: TemplatePrecondition[] = [
-  isValidMessageArg,
-  isValidMessageLevelArg,
+  isValidContextArg,
   isValidErrorLevelArg,
   isValidErrorMessagePrefixArg,
+  isValidMessageArg,
+  isValidMessageLevelArg,
 ];
 
 const _allPreconditionsPass = (template: UntrustedTemplate): boolean => {

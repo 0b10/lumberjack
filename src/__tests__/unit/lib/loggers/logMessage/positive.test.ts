@@ -14,19 +14,20 @@ describe("logMessage()", () => {
     expect(logMessage).toBeDefined();
   });
 
-  interface Fixture {
-    messageLevel: MessageLevel;
-    targetLogger: LoggerKeys;
-  }
-  const fixtures: Fixture[] = [
-    { messageLevel: "info", targetLogger: "info" },
-    { messageLevel: "debug", targetLogger: "debug" },
-  ];
-
   describe("messages", () => {
+    interface Fixture {
+      messageLevel: MessageLevel;
+      targetLogger: LoggerKeys;
+    }
+    const fixtures: Fixture[] = [
+      { messageLevel: "info", targetLogger: "info" },
+      { messageLevel: "debug", targetLogger: "debug" },
+    ];
+
     fixtures.forEach(({ messageLevel, targetLogger }) => {
       describe(`when given messageLevel="${messageLevel}"`, () => {
         const template = validTemplateValues({
+          context: undefined,
           messageLevel,
           message: undefined,
         });
@@ -53,6 +54,46 @@ describe("logMessage()", () => {
           loggersNotCalled.forEach((otherLogger) => {
             expect(mockedLogger[otherLogger]).not.toHaveBeenCalled();
           });
+        });
+      });
+    });
+  });
+
+  describe(`context`, () => {
+    describe("when given a context via a template, but none via messages", () => {
+      it("should use the template context", () => {
+        const message = "a random log message usjdywt";
+        const context = "A-TEST-TEMPLATE-CONTEXT-YSIWS";
+        const expected = `${context}: ${message}`;
+        const mockedLogger = makeLoggerWithMocks();
+        const template = validTemplateValues({
+          messageLevel: "info",
+          message: undefined,
+          context,
+        });
+        const messages = validMessageValues({ message });
+
+        logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+
+        expect(mockedLogger.info).toHaveBeenCalledWith(expected);
+      });
+
+      describe('when a context via messages', () => {
+        it("should use the message context", () => {
+          const message = "a random log message ehamdi";
+          const context = "A-TEST-TEMPLATE-CONTEXT-CKSUSO";
+          const expected = `${context}: ${message}`;
+          const mockedLogger = makeLoggerWithMocks();
+          const template = validTemplateValues({
+            messageLevel: "info",
+            message: undefined,
+            context: "THIS-CONTEXT-SHOULD-NOT-BE-USED",
+          });
+          const messages = validMessageValues({ message, context });
+
+          logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+
+          expect(mockedLogger.info).toHaveBeenCalledWith(expected);
         });
       });
     });

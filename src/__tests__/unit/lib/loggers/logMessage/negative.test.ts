@@ -107,4 +107,37 @@ describe("logMessage()", () => {
         { verbose: true };
     });
   });
+
+  describe("context", () => {
+    describe("when context is an invalid type", () => {
+      it("should throw", () => {
+        fc.assert(
+          fc.property(fc.anything(), (input) => {
+            // undefined and non-empty strings should be rejected
+            fc.pre(!(typeof input === "string" && input.length > 0) && input !== undefined);
+
+            const message = "a random log message ehamdi";
+            const context = input;
+            const TheExpectedError = LumberjackError;
+            const mockedLogger = makeLoggerWithMocks();
+            const template = validTemplateValues({
+              messageLevel: "info",
+              message: undefined,
+              context,
+            });
+            const messages = validMessageValues({ message, context: input });
+
+            try {
+              logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+            } catch (error) {
+              if (error instanceof TheExpectedError) {
+                return true;
+              }
+            }
+            return false;
+          })
+        );
+      });
+    });
+  });
 });

@@ -91,6 +91,19 @@ const _getMessageLogger = (
   return messageLevel === "info" ? infoLogger : debugLogger;
 };
 
+const _getValidContext = (
+  messages: Messages,
+  template: Readonly<MergedTemplate>
+): string | undefined => {
+  const usableContext = messages.context || template.context;
+  if ((_.isString(usableContext) && usableContext.length > 0) || _.isUndefined(usableContext)) {
+    return usableContext;
+  }
+  throw new LumberjackError(
+    `Invalid context - it must be a truthy string, or undefined: ${typeof usableContext}:${usableContext}`
+  );
+};
+
 export const logMessage = (
   messages: Messages,
   template: MergedTemplate,
@@ -100,7 +113,8 @@ export const logMessage = (
   const message: unknown = messages.message || template.message;
   if (_.isString(message) && message.length > 0) {
     const logger = _getMessageLogger(messages, template, infoLogger, debugLogger);
-    logger(message);
+    const validContext = _getValidContext(messages, template);
+    logger(validContext ? `${validContext}: ${message}` : `${message}`); // prevent undefined appearing as string
   } else {
     throw new LumberjackError(
       "A message is invalid. You must pass a truthy string messsage either directly, or to the template"

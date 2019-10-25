@@ -1,22 +1,24 @@
 import fc from "fast-check";
 import _ from "lodash";
 
+import { contextPredicate ,
+  errorLevelPredicate,
+  errorMessagePrefixPredicate,
+  messageLevelPredicate,
+  messagePredicate,
+} from "../predicates";
 import {
-  TemplatePrecondition,
-  isValidMessageArg,
+  isValidContextArg,
   isValidErrorLevelArg,
-  isValidMessageLevelArg,
   isValidErrorMessagePrefixArg,
+  isValidMessageArg,
+  isValidMessageLevelArg,
+  TemplatePrecondition,
 } from "../../../../../preconditions";
 import { LumberjackError } from "../../../../../error";
 import { validTemplateValues } from "../../../../helpers";
 import { TemplateKey } from "../../../../../types";
-import {
-  messagePredicate,
-  errorLevelPredicate,
-  messageLevelPredicate,
-  errorMessagePrefixPredicate,
-} from "../predicates";
+
 
 import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "./../../../../../constants";
 
@@ -39,6 +41,10 @@ describe("isValidTemplate()", () => {
     {
       name: "isValidErrorMessagePrefixArg",
       targetFunc: isValidErrorMessagePrefixArg,
+    },
+    {
+      name: "isValidContextArg",
+      targetFunc: isValidContextArg,
     },
   ].forEach(({ name, targetFunc }) => {
     it(`${name}() should exist`, () => {
@@ -111,6 +117,11 @@ describe("isValidTemplate()", () => {
         key: "errorMessagePrefix",
         targetFunc: isValidErrorMessagePrefixArg,
         isInvalidArg: errorMessagePrefixPredicate,
+      },
+      {
+        key: "context",
+        targetFunc: isValidContextArg,
+        isInvalidArg: contextPredicate,
       },
     ];
 

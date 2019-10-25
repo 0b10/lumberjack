@@ -13,6 +13,7 @@ import {
   errorLevelPredicate,
   messageLevelPredicate,
   errorMessagePrefixPredicate,
+  contextPredicate,
 } from "./predicates";
 
 const TheExpectedError = LumberjackError;
@@ -24,7 +25,13 @@ describe("isValidTemplate()", () => {
 
   describe("undefined values", () => {
     type Fixture = TemplateKey;
-    const fixtures: Fixture[] = ["message", "errorLevel", "messageLevel", "errorMessagePrefix"];
+    const fixtures: Fixture[] = [
+      "context",
+      "errorLevel",
+      "errorMessagePrefix",
+      "message",
+      "messageLevel",
+    ];
 
     fixtures.forEach((key) => {
       describe(`${key}`, () => {
@@ -111,6 +118,10 @@ describe("isValidTemplate()", () => {
       {
         key: "errorMessagePrefix",
         predicate: errorMessagePrefixPredicate,
+      },
+      {
+        key: "context",
+        predicate: contextPredicate,
       },
     ];
 

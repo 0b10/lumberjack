@@ -94,6 +94,7 @@ export const makeLoggerWithMocks = (): Readonly<Logger<jest.Mock>> => {
 };
 
 const _defaultTemplateValues: Required<Template> = {
+  context: "A-TEST-HELPER-CONTEXT",
   message: "a test helper message",
   errorMessagePrefix: "a test helper errror message prefix",
   errorLevel: "error",

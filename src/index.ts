@@ -2,7 +2,7 @@ import _ from "lodash";
 
 import { getConfig, mapLogger, logMessage, logArgs, logResult, logError, getLogger } from "./lib";
 import { LumberjackError } from "./error";
-import { FactoryArgs, Logger, DefaultTemplate, Messages, MergedTemplate } from "./types";
+import { FactoryArgs, Logger, DefaultTemplate, Messages, MergedTemplate, Template } from "./types";
 import {
   validateMapMatchesLogger,
   validateLoggerMap,
@@ -65,13 +65,15 @@ export interface ForTestingTemplateFactory {
   logger?: Logger; // should have been validated in lumberjackFactory. Use manual type assertion if needed for error tests
 }
 
-export const templateFactory = (
-  template: unknown,
+export const templateFactory = <Context>(
+  template: Template<Context>,
   forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
 ): ((messages: Messages) => void) => {
+  const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args
+
   let usableTemplate!: MergedTemplate;
-  if (isValidTemplate(template)) {
-    usableTemplate = { ...defaultTemplate, ...template };
+  if (isValidTemplate(templateArg)) {
+    usableTemplate = { ...defaultTemplate, ...templateArg };
   }
 
   const { info, error, trace, debug, warn, critical, fatal } = getLogger(logger, forTesting);

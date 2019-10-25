@@ -25,6 +25,10 @@ describe("templateFactory()", () => {
         messageKey: "message",
         messageValue: "info message",
         result: "info message",
+        templateOverrides: {
+          // context will be prefixed to logs - you don't want that
+          context: undefined,
+        },
       },
       {
         targetFunc: "error",
@@ -58,17 +62,55 @@ describe("templateFactory()", () => {
         },
         description:
           "should be called with an expected value when passed a message, and messageLevel=debug",
+        templateOverrides: {
+          // context will be prefixed to logs - you don't want that
+          context: undefined,
+        },
       },
       {
         targetFunc: "info",
         messageKey: "message",
-        messageValue: "a debug message",
-        result: "a debug message",
+        messageValue: "an info message",
+        result: "an info message",
         extraArgs: {
           messageLevel: "info",
         },
         description:
           "should be called with an expected value when passed a message, and messageLevel=info",
+        templateOverrides: {
+          // context will be prefixed to logs - you don't want that
+          context: undefined,
+        },
+      },
+      {
+        // test that an info log is made with a context
+        targetFunc: "info",
+        messageKey: "context",
+        messageValue: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH",
+        result: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH: a default message",
+        extraArgs: {
+          messageLevel: "info",
+        },
+        description: "should be called with the expected message.context",
+        templateOverrides: {
+          // context will be prefixed to logs - you don't want that
+          context: "A-DEFAULT-CONTEXT",
+        },
+      },
+      {
+        // test that a debug log is made with a context
+        targetFunc: "debug",
+        messageKey: "context",
+        messageValue: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO",
+        result: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO: a default message",
+        extraArgs: {
+          messageLevel: "debug",
+        },
+        description: "should be called with the expected message.context",
+        templateOverrides: {
+          // context will be prefixed to logs - you don't want that
+          context: "A-DEFAULT-CONTEXT",
+        },
       },
     ];
 
@@ -143,6 +185,7 @@ describe("templateFactory()", () => {
       messageValue?: object | string; // the input message. leave undefined unless special circumstance
       result: object | string; // The expected result that's logged
       description?: string; // replace the default test message
+      templateOverrides?: Template;
     }
 
     const fixtures: Fixture[] = [
@@ -153,6 +196,10 @@ describe("templateFactory()", () => {
         templateValue: "info message template",
         messageKey: "message",
         result: "info message template",
+        templateOverrides: {
+          // The helper (validTemplateValues()) provides a default, just disable it
+          context: undefined,
+        },
       },
       {
         // test that an error message prefix is present within an error log
@@ -175,6 +222,34 @@ describe("templateFactory()", () => {
         messageValue: "a test message alziw36",
         result: "a test message alziw36",
         description: "should subsequently log an expected message when messageLevel=debug",
+        templateOverrides: {
+          // The helper (validTemplateValues()) provides a default, just disable it
+          context: undefined,
+        },
+      },
+      {
+        // test that context is logged to an info log
+        targetFunc: "info",
+        templateKey: "context",
+        templateValue: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW",
+        messageKey: "context",
+        messageValue: undefined, // fall back to template
+        result: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW: a default message",
+        description: "should use the template context when a message context is not provided",
+      },
+      {
+        // test that context is logged to a debug log
+        targetFunc: "debug",
+        templateKey: "context",
+        templateValue: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO",
+        messageKey: "context",
+        messageValue: undefined, // fall back to template
+        result: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO: a default message",
+        description: "should use the template context when a message context is not provided",
+        templateOverrides: {
+          // The helper (validTemplateValues()) provides a default, just disable it
+          messageLevel: "debug",
+        },
       },
     ];
 
@@ -187,6 +262,7 @@ describe("templateFactory()", () => {
         targetFunc,
         templateKey,
         templateValue,
+        templateOverrides,
       }) => {
         describe(`"${targetFunc}"`, () => {
           it(
@@ -197,7 +273,7 @@ describe("templateFactory()", () => {
               const mockTarget = mockLogger[targetFunc];
               // use template instead
               const log = await templateFactory(
-                validTemplateValues({ [templateKey]: templateValue }),
+                validTemplateValues({ [templateKey]: templateValue, ...templateOverrides }),
                 { logger: mockLogger }
               );
               log(validMessageValues({ [messageKey]: messageValue })); // remove default value from the helper

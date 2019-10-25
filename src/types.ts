@@ -37,12 +37,14 @@ export type Config = Partial<{
 // >>> TEMPLATE|MESSAGES >>>
 export type DefaultTemplate = Required<Pick<Template, "messageLevel" | "errorLevel">>;
 
-export type Template<T = StandardTemplate> = T extends undefined
-  ? Record<keyof StandardTemplate, T>
-  : StandardTemplate;
+export type Template<Context = string, T = StandardTemplate<Context>> = T extends undefined
+  ? Record<keyof StandardTemplate<Context>, T>
+  : StandardTemplate<Context>;
 
-type StandardTemplate = Partial<
-  Pick<Messages, "message" | "messageLevel" | "errorLevel"> & { errorMessagePrefix: string }
+type StandardTemplate<Context> = Partial<
+  Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+    errorMessagePrefix: string;
+  }
 >;
 
 export type MergedTemplate = Template & DefaultTemplate;
@@ -53,13 +55,14 @@ export type MessageLevel = keyof Pick<LogLevels, "info" | "debug">;
 
 export type ErrorLevel = keyof Pick<LogLevels, "error" | "warn" | "critical" | "fatal">;
 
-export interface Messages {
+export interface Messages<Context = string> {
   args?: any;
   message?: string;
   error?: Error;
   errorLevel?: ErrorLevel;
   result?: any;
   messageLevel?: MessageLevel;
+  context?: Context;
 }
 export type MessageKey = keyof Messages;
 
