@@ -99,9 +99,9 @@ const _getValidContext = (
   if ((_.isString(usableContext) && usableContext.length > 0) || _.isUndefined(usableContext)) {
     return usableContext;
   }
-  throw new LumberjackError(
-    `Invalid context - it must be a truthy string, or undefined: ${typeof usableContext}:${usableContext}`
-  );
+  throw new LumberjackError(`Invalid context - it must be a truthy string, or undefined`, {
+    context: usableContext,
+  });
 };
 
 export const logMessage = (
@@ -117,7 +117,8 @@ export const logMessage = (
     logger(validContext ? `${validContext}: ${message}` : `${message}`); // prevent undefined appearing as string
   } else {
     throw new LumberjackError(
-      "A message is invalid. You must pass a truthy string messsage either directly, or to the template"
+      "A message is invalid. You must pass a truthy string messsage either directly, or to the template",
+      { message }
     );
   }
 };
@@ -133,7 +134,7 @@ export const logResult = (messages: Messages, logger: LoggerFunc): void => {
 export const logArgs = (messages: Messages, logger: LoggerFunc): void => {
   // undefined is allowed - no args, not unusual. just don't log
   if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
-    throw new LumberjackError(`Args must be an object: ${messages.args}`);
+    throw new LumberjackError(`Args must be an object`, { args: messages.args });
   } else {
     // TODO: use _stringify somehow, but this may interfere with logging the object.
     // perhaps a console friendly logger

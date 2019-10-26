@@ -1,13 +1,12 @@
-import { AssertionError } from "assert";
-
 import _ from "lodash";
 import fc from "fast-check";
 
+import { LumberjackError } from "../../../../error";
 import { validateLoggerHasFunctions } from "../../../../preconditions";
 import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
 import { makeLoggerWithCustomFuncs } from "../../../helpers";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateLoggerHasFunctions()", () => {
   describe("replace a single logger functions with a non-function", () => {

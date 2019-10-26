@@ -1,5 +1,3 @@
-import { AssertionError } from "assert";
-
 import { LumberjackError } from "../../../../error";
 import {
   makeLoggerWithMocks,
@@ -44,7 +42,7 @@ describe("templateFactory()", () => {
 
   // TODO: template validation first
   it.skip(`should throw when an invalid messageLevel template is passed in`, () => {
-    const TheExpectedError = AssertionError;
+    const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
 
     expect(async () => {

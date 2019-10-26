@@ -1,12 +1,11 @@
-import { AssertionError } from "assert";
-
 import fc from "fast-check";
 
+import { LumberjackError } from "../../../../error";
 import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
 import { makeLoggerWithCustomKeys } from "../../../helpers";
 import { validateLoggerShape } from "../../../../preconditions";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateLoggerShape()", () => {
   describe("replace a single logger key with an invalid, non-alphanumaeric key", () => {

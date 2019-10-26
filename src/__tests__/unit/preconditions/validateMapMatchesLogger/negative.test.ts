@@ -1,9 +1,8 @@
-import { AssertionError } from "assert";
-
+import { LumberjackError } from "../../../../error";
 import { makeLoggerMap } from "../../../helpers";
 import { validateMapMatchesLogger } from "../../../../preconditions";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateMapMatchesLogger()", () => {
   it("should reject a logger with a single invalid key mapping", () => {

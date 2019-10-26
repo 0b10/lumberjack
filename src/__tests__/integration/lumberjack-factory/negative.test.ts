@@ -1,9 +1,8 @@
-import { AssertionError } from "assert";
-
+import { LumberjackError } from "../../../error";
 import { lumberjackFactory } from "../../../index";
 import { makeLoggerWithCustomKeys, makeLoggerMap } from "../../helpers";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("lumberjackFactory()", () => {
   describe("non-standard logger", () => {

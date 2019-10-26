@@ -1,13 +1,12 @@
-import { AssertionError } from "assert";
-
 import fc from "fast-check";
 
-import { makeLoggerMap , isNotValidLogLevel } from "../../../helpers";
+import { LumberjackError } from "../../../../error";
+import { makeLoggerMap, isNotValidLogLevel } from "../../../helpers";
 import { validateLoggerMap } from "../../../../preconditions";
 
 import { MAPPER_KEYS } from "./constants";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateLoggerMap()", () => {
   MAPPER_KEYS.forEach((mapperKey) => {

@@ -1,5 +1,3 @@
-import assert, { AssertionError } from "assert";
-
 import _ from "lodash";
 
 import { LumberjackError } from "./error";
@@ -14,12 +12,11 @@ import { Logger, LoggerMap, Template } from "./types";
 
 // >>> HELPERS >>>
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
-  assert(!_.isNull(subject), `${subjectName} should be a plain object, when it's null`); // null is object, less confusion
-  assert(!_.isArray(subject), `${subjectName} should be a plain object, when it's an array`); // array is object, less confusion
-  assert(
-    _.isPlainObject(subject),
-    `${subjectName} should be a plain object, when it's: typeof === ${typeof subject}`
-  );
+  if (!_.isPlainObject(subject)) {
+    throw new LumberjackError(`${subjectName} should be a plain object`, {
+      [subjectName]: subject,
+    });
+  }
   return true;
 };
 
@@ -33,10 +30,11 @@ export const validateLoggerShape = (logger: object): void => {
     }
   });
 
-  assert(
-    missingKeys.length === 0,
-    `Unexpected logger interface - make sure it conforms to the expected shape, or use a mapper. Missing keys: [${missingKeys}]`
-  );
+  if (missingKeys.length !== 0) {
+    throw new LumberjackError(
+      `Unexpected logger interface - make sure it conforms to the expected shape, or use a mapper. Missing keys: [${missingKeys}]`
+    );
+  }
 };
 
 export const validateLoggerHasFunctions = (logger: object): void => {
@@ -51,10 +49,11 @@ export const validateLoggerHasFunctions = (logger: object): void => {
     }
   });
 
-  assert(
-    keysWithInvalidFuncs.length === 0,
-    `Key values for logger should be functions. Offending key value pairs: [${keysWithInvalidFuncs}]`
-  );
+  if (keysWithInvalidFuncs.length !== 0) {
+    throw new LumberjackError(
+      `Key values for logger should be functions. Offending key value pairs: [${keysWithInvalidFuncs}]`
+    );
+  }
 };
 
 // >>> PRECONDITIONS >>>
@@ -72,12 +71,13 @@ export const validateMapMatchesLogger = (logger: unknown, map: LoggerMap): logge
     }
   });
 
-  assert(
-    invalidTargets.length === 0,
-    `The targeted logger keys: [ ${invalidTargets} ], do not exist in the provided logger object, which has only: [ ${Object.keys(
-      logger
-    )} ]`
-  );
+  if (invalidTargets.length !== 0) {
+    throw new LumberjackError(
+      `The targeted logger keys: [ ${invalidTargets} ], do not exist in the provided logger object, which has only: [ ${Object.keys(
+        logger
+      )} ]`
+    );
+  }
 
   return true;
 };
@@ -85,15 +85,16 @@ export const validateMapMatchesLogger = (logger: unknown, map: LoggerMap): logge
 export const validateLoggerMap = (map: unknown): map is LoggerMap => {
   // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
   if (_.isPlainObject(map)) {
-    Object.values(map as object).forEach((customTarget) =>
-      assert(
-        EXTENDED_LOG_LEVELS.includes(customTarget),
-        `Unknown log level mapping target passed to lumberjackFactory: "${customTarget}"`
-      )
-    );
+    Object.values(map as object).forEach((customTarget) => {
+      if (!EXTENDED_LOG_LEVELS.includes(customTarget)) {
+        throw new LumberjackError(
+          `Unknown log level mapping target passed to lumberjackFactory: "${customTarget}"`
+        );
+      }
+    });
   } else {
     // TODO: test non-object throws
-    throw new AssertionError({ message: "Map should be an object, when it's not" });
+    throw new LumberjackError("The logger map should be an plain object", { map });
   }
   return true;
 };
@@ -122,9 +123,9 @@ export const isValidContextArg: TemplatePrecondition = (template: {
   if (_.isUndefined(context) || (_.isString(context) && !_isEmptyString(context))) {
     return true;
   }
-  throw new LumberjackError(
-    `context is invalid - it must be undefined, or a meaningful string: ${typeof context}:${context}`
-  );
+  throw new LumberjackError(`context is invalid - it must be undefined, or a meaningful string`, {
+    context,
+  });
 };
 
 export const isValidMessageArg: TemplatePrecondition = (template: {
@@ -135,9 +136,9 @@ export const isValidMessageArg: TemplatePrecondition = (template: {
   if (_.isUndefined(msg) || (_.isString(msg) && !_isEmptyString(msg))) {
     return true;
   }
-  throw new LumberjackError(
-    `message is invalid - it must be undefined, or a meaningful string: ${typeof msg}:${msg}`
-  );
+  throw new LumberjackError(`message is invalid - it must be undefined, or a meaningful string`, {
+    message: msg,
+  });
 };
 
 export const isValidMessageLevelArg: TemplatePrecondition = (template: {
@@ -172,7 +173,8 @@ export const isValidErrorMessagePrefixArg: TemplatePrecondition = (template: {
     return true;
   }
   throw new LumberjackError(
-    `errorMessagePrefix is invalid - it must be undefined, or a meaningful string: ${typeof emp}:${emp}`
+    `errorMessagePrefix is invalid - it must be undefined, or a meaningful string`,
+    { errorMessagePrefix: emp }
   );
 };
 
@@ -195,7 +197,5 @@ export const isValidTemplate = (template: unknown): template is Template => {
       return true;
     }
   }
-  throw new LumberjackError(
-    `The template is invalid - it must be an object: ${typeof template}:${template}`
-  );
+  throw new LumberjackError(`The template is invalid - it must be an object`, { template });
 };

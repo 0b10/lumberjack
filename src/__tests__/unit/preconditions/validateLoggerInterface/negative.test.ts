@@ -1,11 +1,10 @@
-import { AssertionError } from "assert";
-
 import _ from "lodash";
 
+import { LumberjackError } from "../../../../error";
 import { makeLoggerWithCustomKeys, makeLoggerWithCustomFuncs } from "../../../helpers";
 import { validateLoggerInterface } from "../../../../preconditions";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateLoggerInterface()", () => {
   it(`should reject when a single key is invalid`, () => {

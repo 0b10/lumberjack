@@ -1,5 +1,4 @@
-import assert from "assert";
-
+import { LumberjackError } from "./error";
 import { LogLevelEnv, MessageLevel, ErrorLevel } from "./types";
 
 export const EXTENDED_LOG_LEVELS = Object.freeze([
@@ -30,11 +29,13 @@ export const ALLOWED_ACTIVE_LOG_LEVEL_ENVS = [...(LOG_LEVELS as Set<string>), "S
   (level) => level.toLocaleUpperCase()
 ) as LogLevelEnv[];
 
-assert(() => {
-  return ALLOWED_ACTIVE_LOG_LEVEL_ENVS.includes(ACTIVE_LOG_LEVEL_ENV);
-}, `Invalid LOG_LEVEL env value: "${process.env.LOG_LEVEL}", must be one of: [${ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`);
+const ACTIVE_LOG_LEVEL_ENV = tempLogLevelEnv.toUpperCase() as LogLevelEnv;
 
-const ACTIVE_LOG_LEVEL_ENV = tempLogLevelEnv as LogLevelEnv;
+if (!ALLOWED_ACTIVE_LOG_LEVEL_ENVS.includes(ACTIVE_LOG_LEVEL_ENV)) {
+  throw new LumberjackError(
+    `Invalid LOG_LEVEL env value: "${process.env.LOG_LEVEL}", must be one of: [${ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`
+  );
+}
 
 export { ACTIVE_LOG_LEVEL_ENV };
 

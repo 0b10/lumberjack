@@ -36,7 +36,7 @@ export const lumberjackFactory = (args?: FactoryArgs): Logger => {
       return validLogger;
     }
     throw new LumberjackError(
-      "The logger map is invalid, but it didn't throw - this is a bug, or assertions are not working"
+      "The logger map is invalid, but it didn't throw - this is a bug, or preconditions are not throwing"
     );
   } else {
     if (validateLoggerInterface(logger)) {
@@ -44,7 +44,7 @@ export const lumberjackFactory = (args?: FactoryArgs): Logger => {
       return validLogger;
     }
     throw new LumberjackError(
-      "The logger interface is invalid but it didn't throw - this is a bug, or assertions are not working"
+      "The logger interface is invalid but it didn't throw - this is a bug, or preconditions are not throwing"
     );
   }
 };

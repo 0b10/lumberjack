@@ -1,11 +1,10 @@
-import { AssertionError } from "assert";
-
 import fc from "fast-check";
 
+import { LumberjackError } from "../../../../error";
 import { makeLoggerMap, isNotValidLogLevel } from "../../../helpers";
 import { validateMapMatchesLogger } from "../../../../preconditions";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("validateMapMatchesLogger()", () => {
   it("should reject a logger with a single invalid type for key mappings", () => {

@@ -1,10 +1,9 @@
-import { AssertionError } from "assert";
-
 import fc from "fast-check";
 
 import { isPlainObject } from "../../../../preconditions";
+import { LumberjackError } from "../../../../error";
 
-const TheExpectedError = AssertionError;
+const TheExpectedError = LumberjackError;
 
 describe("isPlainObject()", () => {
   it(`should reject anything that isn't an object`, () => {
