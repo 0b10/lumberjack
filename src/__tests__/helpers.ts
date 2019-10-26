@@ -9,6 +9,7 @@ import {
   Messages,
   Template,
   TemplateKey,
+  MessageKey,
 } from "../types";
 
 // use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LoggerMap

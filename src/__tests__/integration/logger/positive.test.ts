@@ -9,8 +9,8 @@ describe("logger", () => {
     expect(logger).toBeDefined();
   });
 
-  it("should be initialised with the default config file", async () => {
-    const theLogger = await logger;
+  it("should be initialised with the default config file", () => {
+    const theLogger = logger;
     expect(_.isPlainObject(theLogger)).toBe(true);
     expect(Object.keys(theLogger)).toMatchObject(LOGGER_KEYS);
   });

@@ -128,12 +128,12 @@ describe("templateFactory()", () => {
           it(
             description ||
               `should be called with an expected value when ${messageKey} is given a value`,
-            async () => {
+            () => {
               const mockLogger = makeLoggerWithMocks();
               const mockTarget = mockLogger[targetFunc];
               const template = validTemplateValues(templateOverrides);
 
-              const log = await templateFactory(template, { logger: mockLogger });
+              const log = templateFactory(template, { logger: mockLogger });
               log(validMessageValues({ ...{ [messageKey]: messageValue }, ...extraArgs }));
 
               expect(mockTarget).toHaveBeenCalledWith(result);
@@ -163,11 +163,11 @@ describe("templateFactory()", () => {
     // These tests are separate because the output requires a different approach to check - RegExp
     stackTraceFixtures.forEach(({ messageValue, result }) => {
       describe(`stack trace`, () => {
-        it(`should be provided to the trace log after an error is passed in`, async () => {
+        it(`should be provided to the trace log after an error is passed in`, () => {
           const mockLogger = makeLoggerWithMocks();
           const template = validTemplateValues();
 
-          const log = await templateFactory(template, { logger: mockLogger });
+          const log = templateFactory(template, { logger: mockLogger });
           log(validMessageValues({ error: messageValue, args: undefined }));
           expect(anyCallMatches(mockLogger.trace.mock.calls, result)).toBe(true);
         });
@@ -268,11 +268,11 @@ describe("templateFactory()", () => {
           it(
             description ||
               `should subsequently log an expected value, that's passed via the template key: \`${templateKey}\``,
-            async () => {
+            () => {
               const mockLogger = makeLoggerWithMocks();
               const mockTarget = mockLogger[targetFunc];
               // use template instead
-              const log = await templateFactory(
+              const log = templateFactory(
                 validTemplateValues({ [templateKey]: templateValue, ...templateOverrides }),
                 { logger: mockLogger }
               );
@@ -283,5 +283,34 @@ describe("templateFactory()", () => {
         });
       }
     );
+
+    describe("args", () => {
+      it("should accept undefined (no object) as a template", () => {
+        expect(() => {
+          templateFactory();
+        }).not.toThrow();
+      });
+
+      it("should use a default messageLevel - when it's undefined in the template, and messages", () => {
+        const mockLogger = makeLoggerWithMocks();
+
+        const log = templateFactory(undefined, { logger: mockLogger });
+        log({ message: "test message askjduye" });
+
+        expect(mockLogger.info).toHaveBeenCalledWith("test message askjduye");
+      });
+
+      it("should use a default errorLevel - when it's undefined in the template, and messages", () => {
+        const mockLogger = makeLoggerWithMocks();
+
+        const log = templateFactory(undefined, { logger: mockLogger });
+        log(validMessageValues({ error: new Error("test error message yydhajsgd") }));
+
+        expect(mockLogger.error).toHaveBeenCalledWith({
+          message: "test error message yydhajsgd",
+          name: "Error",
+        });
+      });
+    });
   });
 });

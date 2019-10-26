@@ -9,12 +9,12 @@ import { MessageLevel } from "../../../../types";
 import { templateFactory } from "../../../../index";
 
 describe("templateFactory()", () => {
-  it(`should throw when neither a message nor a template message is provided`, async () => {
+  it(`should throw when neither a message nor a template message is provided`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
     const messages = validMessageValues({ message: undefined });
 
-    const log = await templateFactory(validTemplateValues({ message: undefined }), {
+    const log = templateFactory(validTemplateValues({ message: undefined }), {
       logger: mockLogger,
     });
 
@@ -23,7 +23,7 @@ describe("templateFactory()", () => {
     }, stringify({ messages, mockLogger })).toThrow(TheExpectedError);
   });
 
-  it(`should throw when an invalid messageLevel message is passed in`, async () => {
+  it(`should throw when an invalid messageLevel message is passed in`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
     const messages = validMessageValues({
@@ -31,7 +31,7 @@ describe("templateFactory()", () => {
       messageLevel: "invalidLevel" as MessageLevel,
     });
 
-    const log = await templateFactory(validTemplateValues(), {
+    const log = templateFactory(validTemplateValues(), {
       logger: mockLogger,
     });
 
@@ -45,18 +45,18 @@ describe("templateFactory()", () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
 
-    expect(async () => {
-      await templateFactory(validTemplateValues({ messageLevel: "invalidLevel" as MessageLevel }), {
+    expect(() => {
+      templateFactory(validTemplateValues({ messageLevel: "invalidLevel" as MessageLevel }), {
         logger: mockLogger,
       });
     }).toThrow(TheExpectedError);
   });
 
-  it(`should throw when an invalid error object is provided`, async () => {
+  it(`should throw when an invalid error object is provided`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
 
-    const log = await templateFactory(validTemplateValues(), {
+    const log = templateFactory(validTemplateValues(), {
       logger: mockLogger,
     });
 

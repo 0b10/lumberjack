@@ -45,10 +45,10 @@ describe("isValidTemplate()", () => {
     });
   });
 
-  it("should reject all non-objects", () => {
+  it("should reject all non-objects (except undefined)", () => {
     fc.assert(
       fc.property(fc.anything(), (input) => {
-        fc.pre(!_.isPlainObject(input));
+        fc.pre(!_.isPlainObject(input) && !_.isUndefined(input));
         try {
           isValidTemplate(input);
         } catch (error) {

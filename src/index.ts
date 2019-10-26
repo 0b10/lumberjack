@@ -26,6 +26,7 @@ const getDefaultArgs = (args?: FactoryArgs): FactoryArgs => ({
 });
 
 // >>> LUMBERJACK FACTORY >>>
+// TODO: rename, not a factory, but a validator
 export const lumberjackFactory = (args?: FactoryArgs): Logger => {
   const { mapTo, logger } = getDefaultArgs(args);
   let validLogger: Logger;
@@ -61,12 +62,13 @@ const defaultTemplate: DefaultTemplate = Object.freeze({
 });
 
 // >>> TEMPLATE FACTORY >>>
+// TODO: rename, use a generic ForTesting interface
 export interface ForTestingTemplateFactory {
   logger?: Logger; // should have been validated in lumberjackFactory. Use manual type assertion if needed for error tests
 }
 
 export const templateFactory = <Context>(
-  template: Template<Context>,
+  template?: Template<Context>,
   forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
 ): ((messages: Messages) => void) => {
   const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args

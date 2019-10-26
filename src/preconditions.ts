@@ -10,6 +10,8 @@ import {
 import { isValidKey, isValidMessageLevel, isValidErrorLevel } from "./helpers";
 import { Logger, LoggerMap, Template } from "./types";
 
+// TODO: move to lib/
+
 // >>> HELPERS >>>
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
   if (!_.isPlainObject(subject)) {
@@ -192,6 +194,10 @@ const _allPreconditionsPass = (template: UntrustedTemplate): boolean => {
 };
 
 export const isValidTemplate = (template: unknown): template is Template => {
+  if (_.isUndefined(template)) {
+    // undefined means a default template will be used
+    return true;
+  }
   if (_.isPlainObject(template)) {
     if (_allPreconditionsPass(template as UntrustedTemplate /* isPlainObject() => bool */)) {
       return true;
