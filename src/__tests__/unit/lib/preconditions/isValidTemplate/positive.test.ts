@@ -1,12 +1,12 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { isValidTemplate } from "../../../../preconditions";
-import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../constants";
+import { isValidTemplate } from "../../../../../lib/preconditions";
+import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../../constants";
+import { LumberjackError } from "../../../../../error";
+import { validTemplateValues } from "../../../../helpers";
+import { TemplateKey } from "../../../../../types";
 
-import { LumberjackError } from "./../../../../error";
-import { validTemplateValues } from "./../../../helpers";
-import { TemplateKey } from "./../../../../types";
 import {
   Predicate,
   messagePredicate,

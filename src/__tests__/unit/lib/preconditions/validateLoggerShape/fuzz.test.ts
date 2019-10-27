@@ -1,9 +1,9 @@
 import fc from "fast-check";
 
-import { LumberjackError } from "../../../../error";
-import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
-import { makeLoggerWithCustomKeys } from "../../../helpers";
-import { validateLoggerShape } from "../../../../preconditions";
+import { LumberjackError } from "../../../../../error";
+import { LOG_LEVELS as VALID_KEYS } from "../../../../../constants";
+import { makeLoggerWithCustomKeys } from "../../../../helpers";
+import { validateLoggerShape } from "../../../../../lib/preconditions";
 
 const TheExpectedError = LumberjackError;
 

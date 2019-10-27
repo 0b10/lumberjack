@@ -1,4 +1,4 @@
-import { isPlainObject } from "../../../../preconditions";
+import { isPlainObject } from "../../../../../lib/preconditions";
 
 describe("isPlainObject()", () => {
   it("should exist", () => {

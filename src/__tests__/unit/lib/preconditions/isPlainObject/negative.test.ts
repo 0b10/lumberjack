@@ -1,7 +1,7 @@
 import fc from "fast-check";
 
-import { isPlainObject } from "../../../../preconditions";
-import { LumberjackError } from "../../../../error";
+import { isPlainObject } from "../../../../../lib/preconditions";
+import { LumberjackError } from "../../../../../error";
 
 const TheExpectedError = LumberjackError;
 

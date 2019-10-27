@@ -1,8 +1,8 @@
 import _ from "lodash";
 
-import { LumberjackError } from "../../../../error";
-import { makeLoggerWithCustomKeys, makeLoggerWithCustomFuncs } from "../../../helpers";
-import { validateLoggerInterface } from "../../../../preconditions";
+import { LumberjackError } from "../../../../../error";
+import { makeLoggerWithCustomKeys, makeLoggerWithCustomFuncs } from "../../../../helpers";
+import { validateLoggerInterface } from "../../../../../lib/preconditions";
 
 const TheExpectedError = LumberjackError;
 

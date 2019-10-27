@@ -2,7 +2,7 @@ import _ from "lodash";
 
 import { DefaultTemplate, ForTesting, MergedTemplate, Messages, Template } from "./types";
 import { getLogger, logArgs, logError, logMessage, logResult } from "./lib";
-import { isValidTemplate } from "./preconditions";
+import { isValidTemplate } from "./lib/preconditions";
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
   messageLevel: "info",

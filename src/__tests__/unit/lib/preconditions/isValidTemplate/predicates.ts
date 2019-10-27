@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { isValidErrorLevel, isValidMessageLevel } from "../../../../helpers";
+import { isValidErrorLevel, isValidMessageLevel } from "../../../../../lib/helpers";
 
 // ! These predicates should be written from the perspective of allowed values that should fail a test
 // !  in other words, predicates should define the complete space of invalid value - by negating those

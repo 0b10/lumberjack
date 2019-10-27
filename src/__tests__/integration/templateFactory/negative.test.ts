@@ -1,12 +1,12 @@
-import { LumberjackError } from "../../../../error";
+import { LumberjackError } from "../../../error";
 import {
   makeLoggerWithMocks,
   validTemplateValues,
   validMessageValues,
   stringify,
-} from "../../../helpers";
-import { MessageLevel } from "../../../../types";
-import { templateFactory } from "../../../../index";
+} from "../../helpers";
+import { MessageLevel } from "../../../types";
+import { templateFactory } from "../../../index";
 
 describe("templateFactory()", () => {
   it(`should throw when neither a message nor a template message is provided`, () => {

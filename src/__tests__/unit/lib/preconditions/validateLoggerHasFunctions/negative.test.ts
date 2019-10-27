@@ -1,10 +1,10 @@
 import _ from "lodash";
 import fc from "fast-check";
 
-import { LumberjackError } from "../../../../error";
-import { validateLoggerHasFunctions } from "../../../../preconditions";
-import { LOG_LEVELS as VALID_KEYS } from "../../../../constants";
-import { makeLoggerWithCustomFuncs } from "../../../helpers";
+import { LumberjackError } from "../../../../../error";
+import { validateLoggerHasFunctions } from "../../../../../lib/preconditions";
+import { LOG_LEVELS as VALID_KEYS } from "../../../../../constants";
+import { makeLoggerWithCustomFuncs } from "../../../../helpers";
 
 const TheExpectedError = LumberjackError;
 

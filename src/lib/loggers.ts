@@ -1,8 +1,6 @@
 import _ from "lodash";
 
-import { isValidMessageLevel } from "../helpers";
 import { LumberjackError } from "../error";
-import { validateLoggerInterface } from "../preconditions";
 import {
   ForTesting,
   Logger,
@@ -12,6 +10,9 @@ import {
   ParsedError,
   Template,
 } from "../types";
+
+import { isValidMessageLevel } from "./helpers";
+import { validateLoggerInterface } from "./preconditions";
 
 import { parseError, getConditionalLogger, getConfig } from ".";
 

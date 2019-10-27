@@ -1,9 +1,10 @@
 import _ from "lodash";
 
-import { LumberjackError } from "./error";
-import { LOG_LEVELS, VALID_MESSAGE_LEVELS, VALID_ERROR_LEVELS } from "./constants";
+import { LumberjackError } from "../error";
+import { LOG_LEVELS, VALID_MESSAGE_LEVELS, VALID_ERROR_LEVELS } from "../constants";
+import { Logger, Template } from "../types";
+
 import { isValidKey, isValidMessageLevel, isValidErrorLevel } from "./helpers";
-import { Logger, Template } from "./types";
 
 // TODO: move to lib/
 

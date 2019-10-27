@@ -1,6 +1,6 @@
-import { templateFactory } from "../../../../index";
-import { LoggerKeys, TemplateKey, MessageKey, Messages, Template } from "../../../../types";
-import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../helpers";
+import { templateFactory } from "../../../index";
+import { LoggerKeys, TemplateKey, MessageKey, Messages, Template } from "../../../types";
+import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../helpers";
 
 describe("templateFactory()", () => {
   it("should exist", () => {

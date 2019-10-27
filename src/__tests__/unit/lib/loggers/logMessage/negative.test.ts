@@ -1,6 +1,6 @@
 import fc from "fast-check";
 
-import { isValidMessageLevel } from "../../../../../helpers";
+import { isValidMessageLevel } from "../../../../../lib/helpers";
 import { logMessage } from "../../../../../lib";
 import { LumberjackError } from "../../../../../error";
 import { makeLoggerWithMocks, validTemplateValues, validMessageValues } from "../../../../helpers";

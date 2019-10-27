@@ -1,7 +1,8 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { contextPredicate ,
+import {
+  contextPredicate,
   errorLevelPredicate,
   errorMessagePrefixPredicate,
   messageLevelPredicate,
@@ -14,13 +15,11 @@ import {
   isValidMessageArg,
   isValidMessageLevelArg,
   TemplatePrecondition,
-} from "../../../../../preconditions";
-import { LumberjackError } from "../../../../../error";
-import { validTemplateValues } from "../../../../helpers";
-import { TemplateKey } from "../../../../../types";
-
-
-import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "./../../../../../constants";
+} from "../../../../../../lib/preconditions";
+import { LumberjackError } from "../../../../../../error";
+import { validTemplateValues } from "../../../../../helpers";
+import { TemplateKey } from "../../../../../../types";
+import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../../../constants";
 
 const TheExpectedError = LumberjackError;
 

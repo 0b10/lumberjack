@@ -1,5 +1,5 @@
-import { validateLoggerShape } from "../../../../preconditions";
-import { validStubLogger } from "../../../helpers";
+import { validateLoggerShape } from "../../../../../lib/preconditions";
+import { validStubLogger } from "../../../../helpers";
 
 describe("validateLoggerShape()", () => {
   it("should exist", () => {
