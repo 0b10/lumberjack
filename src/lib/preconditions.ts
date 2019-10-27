@@ -2,11 +2,9 @@ import _ from "lodash";
 
 import { LumberjackError } from "../error";
 import { LOG_LEVELS, VALID_MESSAGE_LEVELS, VALID_ERROR_LEVELS } from "../constants";
-import { Logger, Template } from "../types";
+import { Logger, Template, ForTesting } from "../types";
 
-import { isValidKey, isValidMessageLevel, isValidErrorLevel } from "./helpers";
-
-// TODO: move to lib/
+import { isValidKey, isValidMessageLevel, isValidErrorLevel, isTestEnv } from "./helpers";
 
 // >>> HELPERS >>>
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
@@ -158,4 +156,14 @@ export const isValidTemplate = (template: unknown): template is Template => {
     }
   }
   throw new LumberjackError(`The template is invalid - it must be an object`, { template });
+};
+
+// >>> TESTING >>>
+export const canTest = (forTesting?: ForTesting): boolean | never => {
+  if (forTesting && !isTestEnv()) {
+    throw new LumberjackError(
+      `You cannot use forTesting outside of a test env - set NODE_ENV to "test", or "testing"`
+    );
+  }
+  return true;
 };

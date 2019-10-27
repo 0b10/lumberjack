@@ -10,8 +10,8 @@ export interface LogLevels<T = void> {
   warn: T;
 }
 
-export type LoggerKeys = keyof LogLevels<void>; // FIXME: non-plural
-export type LogLevelEnv = LoggerKeys | "silent";
+export type LoggerKey = keyof LogLevels<void>;
+export type LogLevelEnv = LoggerKey | "silent";
 export type LogLevel = keyof LogLevels;
 export type Logger<T = LoggerFunc> = LogLevels<T>;
 

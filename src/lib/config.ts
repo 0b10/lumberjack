@@ -6,6 +6,9 @@ import _ from "lodash";
 import { CONFIG_FILE_NAME } from "../constants";
 import { Config } from "../types";
 
+import { isTestEnv } from "./helpers";
+import { LumberjackError } from "./../error";
+
 const _isFile = (filePath: string): boolean => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
   return fs.existsSync(filePath) && !fs.lstatSync(filePath).isDirectory();
@@ -34,14 +37,21 @@ export const isValidConfig = (configFile: unknown): configFile is Config => {
   return _.isPlainObject(configFile); // Config is Partial, so could be empty object
 };
 
-export const getConfig = (dirPath?: string): Config | false => {
-  // TODO: check testing env to accept dirPath, don't allow it to be set outside of testing (security)
+// TODO: make cached config, instead of cached logger
+export const getConfig = (dirPath?: string): Config | never => {
+  if (dirPath && !isTestEnv()) {
+    // because non-literal require
+    throw new LumberjackError("You cannot set the dirPath for getConfig outside of a testing env");
+  }
+
   const configPath = findConfig(dirPath);
   if (configPath) {
-    const configFile: unknown = require(configPath);
+    const configFile: unknown = require(configPath); //eslint-disable-line security/detect-non-literal-require
     if (isValidConfig(configFile)) {
       return configFile;
     }
   }
-  return false; // TODO: throw instead
+  throw new LumberjackError(
+    "Unable to find a config file, make a config at the root of your project"
+  );
 };

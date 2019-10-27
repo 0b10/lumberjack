@@ -17,6 +17,7 @@ import { validateLoggerInterface } from "./preconditions";
 import { parseError, getConditionalLogger, getConfig } from ".";
 
 const _stringify = (obj: object): string => {
+  // TODO: check config for consoleMode = true, and conditionally stringify, when a cached config has been implemented
   return JSON.stringify(obj, undefined, 2);
 };
 
@@ -30,19 +31,19 @@ const _getCachedLoggerClosure = (forTesting?: ForTesting): ClosedOverLogger => {
     dirPath = forTesting.configDir;
   }
 
-  const config = getConfig(dirPath);
+  const config = getConfig(dirPath); // throws if not found
 
   if (config) {
     if (validateLoggerInterface(config.logger)) {
       // throws when invalid
       logger = config.logger;
     }
-  } else {
-    throw new LumberjackError("A config file could not be found"); // TODO: rely upo getConfig to throw
   }
+
   return (): Readonly<Logger> => Object.freeze(logger);
 };
 
+// TODO: use cached config, and not cached logger
 let _getCachedLogger: ClosedOverLogger | undefined;
 
 export const getLogger = (forTesting?: ForTesting): Logger => {

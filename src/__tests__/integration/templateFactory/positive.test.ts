@@ -1,5 +1,5 @@
 import { templateFactory } from "../../../index";
-import { LoggerKeys, TemplateKey, MessageKey, Messages, Template } from "../../../types";
+import { LoggerKey, TemplateKey, MessageKey, Messages, Template } from "../../../types";
 import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../helpers";
 
 describe("templateFactory()", () => {
@@ -10,7 +10,7 @@ describe("templateFactory()", () => {
   // >>> MESSAGES >>>
   describe("direct messages", () => {
     interface NormalMessageFixture {
-      targetFunc: LoggerKeys; // The logger function to be called - is a spy
+      targetFunc: LoggerKey; // The logger function to be called - is a spy
       messageKey: MessageKey; // The corresponding message key to be populated - the input
       messageValue: object | string | Error; // The actual input value
       result: object | string | RegExp; // The expected result that's logged
@@ -178,7 +178,7 @@ describe("templateFactory()", () => {
   // >>> TEMPLATES >>>
   describe("from template", () => {
     interface Fixture {
-      targetFunc: LoggerKeys; // The logger function to be called - is a spy
+      targetFunc: LoggerKey; // The logger function to be called - is a spy
       templateKey: TemplateKey; // the template value to be targeted
       templateValue: string; // The template value - which will be in the result
       messageKey: MessageKey; // The corresponding message key to be populated

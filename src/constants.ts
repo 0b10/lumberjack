@@ -1,6 +1,10 @@
 import { LumberjackError } from "./error";
 import { LogLevelEnv, MessageLevel, ErrorLevel } from "./types";
 
+export const CACHED_NODE_ENV = process.env.NODE_ENV;
+
+export const TEST_ENVS = new Set(["test", "testing", "debug"]);
+
 // FIXME: types
 export const LOG_LEVELS = Object.freeze(
   new Set(["critical", "debug", "error", "fatal", "info", "trace", "warn"])

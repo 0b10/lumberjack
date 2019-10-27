@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { LOG_LEVELS } from "../constants";
-import { Logger, LoggerKeys, Messages, Template, TemplateKey } from "../types";
+import { Logger, LoggerKey, Messages, Template, TemplateKey } from "../types";
 
 export const validStubLogger: Readonly<Logger> = Object.freeze({
   critical: () => null,
@@ -14,13 +14,13 @@ export const validStubLogger: Readonly<Logger> = Object.freeze({
 });
 
 export const makeLoggerWithCustomKeys = (
-  loggerKeys: Array<LoggerKeys>,
+  LoggerKey: Array<LoggerKey>,
   newKeys?: any[],
   newValue: any = (): null => null
 ): Readonly<Logger> => {
   const logger = _.cloneDeep(validStubLogger);
 
-  for (let oldKey of loggerKeys) {
+  for (let oldKey of LoggerKey) {
     delete logger[oldKey];
   }
 
@@ -34,12 +34,12 @@ export const makeLoggerWithCustomKeys = (
 };
 
 export const makeLoggerWithCustomFuncs = (
-  loggerKeys: Array<LoggerKeys>,
+  LoggerKey: Array<LoggerKey>,
   newValue: any // don't give default. undefined causes default, may break tests
 ): Readonly<Logger> => {
   const logger: Logger = _.cloneDeep(validStubLogger);
 
-  for (let key of loggerKeys) {
+  for (let key of LoggerKey) {
     logger[key] = newValue;
   }
 
@@ -96,7 +96,7 @@ export const undefinedTemplateValues = (
   return { ...undefinedTemplate, ...except } as Template<undefined>;
 };
 
-export const getValidLoggerKeys = (): LoggerKeys[] => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
+export const getValidLoggerKeys = (): LoggerKey[] => [...(LOG_LEVELS as Set<LoggerKey>)]; // FIXME: fix RO Set interface
 
 export const isValidLogLevel = (logLevel: any): boolean => LOG_LEVELS.has(logLevel);
 export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);

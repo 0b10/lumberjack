@@ -7,7 +7,7 @@ import { getFakeConfigPath } from "./helpers";
 describe("getConfig()", () => {
   describe("when not found", () => {
     it.skip("should return false", () => {
-      // This is finding the default config in src/ - use mock
+      // TODO: This is finding the default config in src/ - use mock
       const result = getConfig(getFakeConfigPath("non-existant"));
       expect(result).toBe(false);
     });

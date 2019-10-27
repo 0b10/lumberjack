@@ -1,6 +1,6 @@
 import faker from "faker";
 
-import { ErrorLevel, LoggerKeys } from "../../../../../types";
+import { ErrorLevel, LoggerKey } from "../../../../../types";
 import { logError } from "../../../../../lib";
 
 import {
@@ -16,7 +16,7 @@ describe("logError()", () => {
 
   interface Fixture {
     errorLevel: ErrorLevel;
-    targetLogger: LoggerKeys;
+    targetLogger: LoggerKey;
   }
   const fixtures: Fixture[] = [
     { errorLevel: "critical", targetLogger: "critical" },

@@ -1,6 +1,6 @@
 import faker from "faker";
 
-import { MessageLevel, LoggerKeys } from "../../../../../types";
+import { MessageLevel, LoggerKey } from "../../../../../types";
 import { logMessage } from "../../../../../lib";
 
 import {
@@ -17,7 +17,7 @@ describe("logMessage()", () => {
   describe("messages", () => {
     interface Fixture {
       messageLevel: MessageLevel;
-      targetLogger: LoggerKeys;
+      targetLogger: LoggerKey;
     }
     const fixtures: Fixture[] = [
       { messageLevel: "info", targetLogger: "info" },

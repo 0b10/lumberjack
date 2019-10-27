@@ -2,7 +2,7 @@ import _ from "lodash";
 
 import { DefaultTemplate, ForTesting, MergedTemplate, Messages, Template } from "./types";
 import { getLogger, logArgs, logError, logMessage, logResult } from "./lib";
-import { isValidTemplate } from "./lib/preconditions";
+import { isValidTemplate, canTest } from "./lib/preconditions";
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
   messageLevel: "info",
@@ -15,6 +15,8 @@ export const templateFactory = <Context>(
   forTesting?: ForTesting
 ): ((messages: Messages) => void) => {
   const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args
+
+  canTest(forTesting);
 
   let usableTemplate!: MergedTemplate;
   if (isValidTemplate(templateArg)) {
