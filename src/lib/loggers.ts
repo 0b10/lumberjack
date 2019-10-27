@@ -1,13 +1,19 @@
 import _ from "lodash";
 
 import { isValidMessageLevel } from "../helpers";
-import { Logger, LoggerFunc, MergedTemplate, Messages, ParsedError, Template } from "../types";
 import { LumberjackError } from "../error";
 import { validateLoggerInterface } from "../preconditions";
+import {
+  ForTesting,
+  Logger,
+  LoggerFunc,
+  MergedTemplate,
+  Messages,
+  ParsedError,
+  Template,
+} from "../types";
 
 import { parseError, getConditionalLogger, getConfig } from ".";
-
-import { ForTestingTemplateFactory } from "..";
 
 const _stringify = (obj: object): string => {
   return JSON.stringify(obj, undefined, 2);
@@ -15,7 +21,7 @@ const _stringify = (obj: object): string => {
 
 // >>> GET >>>
 type ClosedOverLogger = () => Readonly<Logger>;
-const _getCachedLoggerClosure = (forTesting?: ForTestingTemplateFactory): ClosedOverLogger => {
+const _getCachedLoggerClosure = (forTesting?: ForTesting): ClosedOverLogger => {
   let logger: Logger;
 
   let dirPath: string | undefined;
@@ -38,9 +44,9 @@ const _getCachedLoggerClosure = (forTesting?: ForTestingTemplateFactory): Closed
 
 let _getCachedLogger: ClosedOverLogger | undefined;
 
-export const getLogger = (forTesting?: ForTestingTemplateFactory): Logger => {
+export const getLogger = (forTesting?: ForTesting): Logger => {
   if (forTesting && forTesting.logger) {
-    return getConditionalLogger(forTesting.logger);
+    return getConditionalLogger(forTesting.logger, forTesting);
   }
 
   if (_.isUndefined(_getCachedLogger)) {
@@ -48,7 +54,7 @@ export const getLogger = (forTesting?: ForTestingTemplateFactory): Logger => {
     _getCachedLogger = _getCachedLoggerClosure(forTesting);
   }
 
-  return getConditionalLogger(_getCachedLogger());
+  return getConditionalLogger(_getCachedLogger(), forTesting);
 };
 
 // >>> ERROR >>>

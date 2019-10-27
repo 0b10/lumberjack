@@ -61,3 +61,10 @@ export interface ParsedError {
     stack?: string;
   };
 }
+
+// >>> TESTING >>>
+export type ForTesting = Readonly<{
+  logger?: Logger; // A logger object, with all the typical logger behaviours
+  configDir?: string; // a directory that contains the config file
+  logLevelEnv?: LogLevelEnv; // directly injects the LOG_LEVEL into relevant functions
+}>;

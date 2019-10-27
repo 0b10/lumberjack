@@ -1,5 +1,5 @@
-import { LOG_LEVEL, ACTIVE_LOG_LEVEL_ENV } from "../constants";
-import { LogLevel, LogLevelEnv } from "../types";
+import { ACTIVE_LOG_LEVEL_ENV, LOG_LEVEL } from "../constants";
+import { ForTesting, LogLevel, LogLevelEnv } from "../types";
 
 const _shouldLog = (targetLevel: LogLevel, activeLevel: LogLevelEnv): boolean => {
   return LOG_LEVEL[targetLevel.toUpperCase()] >= LOG_LEVEL[activeLevel.toUpperCase()];
@@ -33,7 +33,3 @@ export const shouldLog = (targetLevel: LogLevel, forTesting?: ForTesting): boole
   const activeLevel = _getActiveLogLevel(ACTIVE_LOG_LEVEL_ENV, forTesting);
   return _shouldLog(targetLevel, activeLevel);
 };
-
-export interface ForTesting {
-  logLevelEnv?: LogLevelEnv;
-}

@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { logMessage, logArgs, logResult, logError, getLogger } from "./lib";
-import { Logger, DefaultTemplate, Messages, MergedTemplate, Template } from "./types";
+import { DefaultTemplate, ForTesting, MergedTemplate, Messages, Template } from "./types";
+import { getLogger, logArgs, logError, logMessage, logResult } from "./lib";
 import { isValidTemplate } from "./preconditions";
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
@@ -9,16 +9,10 @@ const defaultTemplate: DefaultTemplate = Object.freeze({
   errorLevel: "error",
 });
 
-// TODO: rename, use a generic ForTesting interface
-export interface ForTestingTemplateFactory {
-  logger?: Logger; // A logger object, with all the typical logger behaviours
-  configDir?: string; // a directory that contains the config file
-}
-
 // TODO: add documentation. mention that forTesting.logger defers config loading
 export const templateFactory = <Context>(
   template?: Template<Context>,
-  forTesting?: ForTestingTemplateFactory // TODO: rename me, once refactored
+  forTesting?: ForTesting
 ): ((messages: Messages) => void) => {
   const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args
 
