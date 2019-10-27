@@ -1,11 +1,11 @@
 import _ from "lodash";
 
-import { LumberjackError } from "../error";
+import { isValidMessageLevel } from "../helpers";
 import { Logger, LoggerFunc, MergedTemplate, Messages, ParsedError, Template } from "../types";
+import { LumberjackError } from "../error";
+import { validateLoggerInterface } from "../preconditions";
 
-import { isValidMessageLevel } from "./../helpers";
-
-import { parseError, getConditionalLogger } from ".";
+import { parseError, getConditionalLogger, getConfig } from ".";
 
 import { ForTestingTemplateFactory } from "..";
 
@@ -13,12 +13,42 @@ const _stringify = (obj: object): string => {
   return JSON.stringify(obj, undefined, 2);
 };
 
-export const getLogger = (logger: Logger, forTesting?: ForTestingTemplateFactory): Logger => {
+// >>> GET >>>
+type ClosedOverLogger = () => Readonly<Logger>;
+const _getCachedLoggerClosure = (forTesting?: ForTestingTemplateFactory): ClosedOverLogger => {
+  let logger: Logger;
+
+  let dirPath: string | undefined;
+  if (forTesting && forTesting.configDir) {
+    dirPath = forTesting.configDir;
+  }
+
+  const config = getConfig(dirPath);
+
+  if (config) {
+    if (validateLoggerInterface(config.logger)) {
+      // throws when invalid
+      logger = config.logger;
+    }
+  } else {
+    throw new LumberjackError("A config file could not be found"); // TODO: rely upo getConfig to throw
+  }
+  return (): Readonly<Logger> => Object.freeze(logger);
+};
+
+let _getCachedLogger: ClosedOverLogger | undefined;
+
+export const getLogger = (forTesting?: ForTestingTemplateFactory): Logger => {
   if (forTesting && forTesting.logger) {
     return getConditionalLogger(forTesting.logger);
-  } else {
-    return getConditionalLogger(logger);
   }
+
+  if (_.isUndefined(_getCachedLogger)) {
+    // This should come after checking for a test logger - tests don't need a logger from the config
+    _getCachedLogger = _getCachedLoggerClosure(forTesting);
+  }
+
+  return getConditionalLogger(_getCachedLogger());
 };
 
 // >>> ERROR >>>

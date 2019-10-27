@@ -7,7 +7,7 @@ jest.mock("fs"); // for findConfig()
 
 describe("findConfig()", () => {
   const fs: { default: MockFs } = require("fs");
-  const { findConfig } = require("../../../../lib");
+  const { findConfig } = require("../../../../lib/config");
 
   /* eslint-disable-next-line jest/no-hooks */
   afterEach(() => fs.default.__setMock_reset()); // ! reset is an absolute must

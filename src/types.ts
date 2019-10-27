@@ -15,11 +15,6 @@ export type LogLevelEnv = LoggerKeys | "silent";
 export type LogLevel = keyof LogLevels;
 export type Logger<T = LoggerFunc> = LogLevels<T>;
 
-export interface FactoryArgs {
-  // These can be input from a config file, and must be validated
-  logger?: unknown;
-}
-
 export type Config = Partial<{
   logger: unknown;
 }>;

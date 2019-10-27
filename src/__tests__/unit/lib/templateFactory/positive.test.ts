@@ -287,7 +287,7 @@ describe("templateFactory()", () => {
     describe("args", () => {
       it("should accept undefined (no object) as a template", () => {
         expect(() => {
-          templateFactory();
+          templateFactory(undefined, { logger: makeLoggerWithMocks() });
         }).not.toThrow();
       });
 

@@ -43,5 +43,5 @@ export const getConfig = (dirPath?: string): Config | false => {
       return configFile;
     }
   }
-  return false;
+  return false; // TODO: throw instead
 };
