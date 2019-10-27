@@ -1,14 +1,9 @@
 import _ from "lodash";
 
-import { getConfig, mapLogger, logMessage, logArgs, logResult, logError, getLogger } from "./lib";
+import { getConfig, logMessage, logArgs, logResult, logError, getLogger } from "./lib";
 import { LumberjackError } from "./error";
 import { FactoryArgs, Logger, DefaultTemplate, Messages, MergedTemplate, Template } from "./types";
-import {
-  validateMapMatchesLogger,
-  validateLoggerMap,
-  validateLoggerInterface,
-  isValidTemplate,
-} from "./preconditions";
+import { validateLoggerInterface, isValidTemplate } from "./preconditions";
 
 const stubLogger = {
   critical: (): null => null,
@@ -21,40 +16,28 @@ const stubLogger = {
 };
 
 const getDefaultArgs = (args?: FactoryArgs): FactoryArgs => ({
-  ...{ logger: stubLogger, mapTo: undefined },
+  ...{ logger: stubLogger },
   ...args,
 });
 
 // >>> LUMBERJACK FACTORY >>>
 // TODO: rename, not a factory, but a validator
 export const lumberjackFactory = (args?: FactoryArgs): Logger => {
-  const { mapTo, logger } = getDefaultArgs(args);
+  const { logger } = getDefaultArgs(args);
   let validLogger: Logger;
 
-  if (mapTo) {
-    if (validateLoggerMap(mapTo) && validateMapMatchesLogger(logger, mapTo)) {
-      validLogger = mapLogger(logger, mapTo);
-      return validLogger;
-    }
-    throw new LumberjackError(
-      "The logger map is invalid, but it didn't throw - this is a bug, or preconditions are not throwing"
-    );
-  } else {
-    if (validateLoggerInterface(logger)) {
-      validLogger = logger;
-      return validLogger;
-    }
-    throw new LumberjackError(
-      "The logger interface is invalid but it didn't throw - this is a bug, or preconditions are not throwing"
-    );
+  if (validateLoggerInterface(logger)) {
+    validLogger = logger;
+    return validLogger;
   }
+  throw new LumberjackError(
+    "The logger interface is invalid but it didn't throw - this is a bug, or preconditions are not throwing"
+  );
 };
 
 // FIXME: refactor, and use a function
 const config = getConfig();
-export const logger = config
-  ? lumberjackFactory({ logger: config.logger, mapTo: config.map })
-  : lumberjackFactory();
+export const logger = config ? lumberjackFactory({ logger: config.logger }) : lumberjackFactory();
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
   messageLevel: "info",

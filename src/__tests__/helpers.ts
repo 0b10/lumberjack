@@ -1,43 +1,7 @@
 import _ from "lodash";
 
-import { EXTENDED_LOG_LEVELS, LOG_LEVELS } from "../constants";
-import {
-  ExtendedLogger,
-  Logger,
-  LoggerKeys,
-  LoggerMap,
-  Messages,
-  Template,
-  TemplateKey,
-  MessageKey,
-} from "../types";
-
-// use it to minimise boilerplate when testing - e,g, foo({ critical: "whatever" }) // => LoggerMap
-export const makeLoggerMap = (map?: Partial<LoggerMap>): LoggerMap => {
-  return {
-    ...{
-      critical: "critical",
-      debug: "debug",
-      error: "error",
-      fatal: "fatal",
-      info: "info",
-      trace: "trace",
-      warn: "warn",
-    },
-    ...map,
-  };
-};
-
-export const extendedStubLogger: Readonly<ExtendedLogger> = Object.freeze({
-  critical: () => null,
-  debug: () => null,
-  error: () => null,
-  fatal: () => null,
-  info: () => null,
-  silly: () => null,
-  trace: () => null,
-  warn: () => null,
-});
+import { LOG_LEVELS } from "../constants";
+import { Logger, LoggerKeys, Messages, Template, TemplateKey } from "../types";
 
 export const validStubLogger: Readonly<Logger> = Object.freeze({
   critical: () => null,
@@ -134,7 +98,7 @@ export const undefinedTemplateValues = (
 
 export const getValidLoggerKeys = (): LoggerKeys[] => [...(LOG_LEVELS as Set<LoggerKeys>)]; // FIXME: fix RO Set interface
 
-export const isValidLogLevel = (logLevel: any): boolean => EXTENDED_LOG_LEVELS.includes(logLevel);
+export const isValidLogLevel = (logLevel: any): boolean => LOG_LEVELS.has(logLevel);
 export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);
 
 export const stringify = (anything: unknown): string => JSON.stringify(anything, undefined, 2);

@@ -14,24 +14,14 @@ export type LoggerKeys = keyof LogLevels<void>; // FIXME: non-plural
 export type LogLevelEnv = LoggerKeys | "silent";
 export type LogLevel = keyof LogLevels;
 export type Logger<T = LoggerFunc> = LogLevels<T>;
-// FIXME: shouldn't a logger be just be a Partial that implements extended keys?, or maybe just unknown..
-
-export type LoggerMap = LogLevels<string>;
-export type LoggerMapKeys = keyof LoggerMap;
-
-// For mapping third-party levels to supported levels
-export type ExtendedLogLevels = keyof LogLevels<void> | "silly";
-export type ExtendedLogger = Record<ExtendedLogLevels, LoggerFunc>;
 
 export interface FactoryArgs {
   // These can be input from a config file, and must be validated
   logger?: unknown;
-  mapTo?: unknown;
 }
 
 export type Config = Partial<{
   logger: unknown;
-  map: unknown;
 }>;
 
 // >>> TEMPLATE|MESSAGES >>>

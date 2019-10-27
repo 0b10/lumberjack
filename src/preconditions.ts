@@ -1,14 +1,9 @@
 import _ from "lodash";
 
 import { LumberjackError } from "./error";
-import {
-  EXTENDED_LOG_LEVELS,
-  LOG_LEVELS,
-  VALID_MESSAGE_LEVELS,
-  VALID_ERROR_LEVELS,
-} from "./constants";
+import { LOG_LEVELS, VALID_MESSAGE_LEVELS, VALID_ERROR_LEVELS } from "./constants";
 import { isValidKey, isValidMessageLevel, isValidErrorLevel } from "./helpers";
-import { Logger, LoggerMap, Template } from "./types";
+import { Logger, Template } from "./types";
 
 // TODO: move to lib/
 
@@ -34,7 +29,7 @@ export const validateLoggerShape = (logger: object): void => {
 
   if (missingKeys.length !== 0) {
     throw new LumberjackError(
-      `Unexpected logger interface - make sure it conforms to the expected shape, or use a mapper. Missing keys: [${missingKeys}]`
+      `Unexpected logger interface - make sure it conforms to the expected shape. Missing keys: [${missingKeys}]`
     );
   }
 };
@@ -59,48 +54,6 @@ export const validateLoggerHasFunctions = (logger: object): void => {
 };
 
 // >>> PRECONDITIONS >>>
-export const validateMapMatchesLogger = (logger: unknown, map: LoggerMap): logger is object => {
-  const targets = new Set<string>(Object.values(map)); // FIXME: validate is object first
-  const invalidTargets: string[] = [];
-
-  if (!isPlainObject(logger, "logger")) {
-    return false; // won't execute, isPlainObject() will throw - type guard essentially
-  }
-
-  targets.forEach((target) => {
-    if (!_.has(logger, target)) {
-      invalidTargets.push(target);
-    }
-  });
-
-  if (invalidTargets.length !== 0) {
-    throw new LumberjackError(
-      `The targeted logger keys: [ ${invalidTargets} ], do not exist in the provided logger object, which has only: [ ${Object.keys(
-        logger
-      )} ]`
-    );
-  }
-
-  return true;
-};
-
-export const validateLoggerMap = (map: unknown): map is LoggerMap => {
-  // This is necessary because the mapping will depend on object[key] syntax, potentially opening a vuln
-  if (_.isPlainObject(map)) {
-    Object.values(map as object).forEach((customTarget) => {
-      if (!EXTENDED_LOG_LEVELS.includes(customTarget)) {
-        throw new LumberjackError(
-          `Unknown log level mapping target passed to lumberjackFactory: "${customTarget}"`
-        );
-      }
-    });
-  } else {
-    // TODO: test non-object throws
-    throw new LumberjackError("The logger map should be an plain object", { map });
-  }
-  return true;
-};
-
 export const validateLoggerInterface = (logger: unknown): logger is Logger => {
   if (isPlainObject(logger, "logger")) {
     validateLoggerShape(logger);

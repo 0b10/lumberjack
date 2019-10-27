@@ -1,11 +1,5 @@
 import { lumberjackFactory } from "./../../../index";
-import {
-  validStubLogger,
-  makeLoggerWithMocks,
-  getValidLoggerKeys,
-  makeLoggerWithCustomKeys,
-  makeLoggerMap,
-} from "./../../helpers";
+import { validStubLogger, makeLoggerWithMocks, getValidLoggerKeys } from "./../../helpers";
 
 // TODO: integeration, test correct logger is used - and not the logic behind logging
 // TODO: test default template values
@@ -15,7 +9,7 @@ describe("lumberjackFactory()", () => {
     expect(lumberjackFactory).toBeDefined();
   });
 
-  describe("standard logger, no map", () => {
+  describe("standard logger", () => {
     it("should not throw", () => {
       const logger = validStubLogger;
       expect(() => {
@@ -23,13 +17,13 @@ describe("lumberjackFactory()", () => {
       }).not.toThrow();
     });
 
-    it("should return an expected, standard interface", () => {
+    it("should return an expected interface", () => {
       const mockedLogger = makeLoggerWithMocks();
       const logger = lumberjackFactory({ logger: mockedLogger });
-      const mappedLoggerKeys = new Set(Object.keys(logger));
+      const loggerKeys = new Set(Object.keys(logger));
 
       getValidLoggerKeys().forEach((validKey) => {
-        expect(mappedLoggerKeys.has(validKey)).toBe(true);
+        expect(loggerKeys.has(validKey)).toBe(true);
       });
     });
 
@@ -40,68 +34,6 @@ describe("lumberjackFactory()", () => {
       Object.keys(logger).forEach((loggerKey, index) => {
         logger[loggerKey](`test ${index}`);
         expect(logger[loggerKey]).toHaveBeenCalledWith(`test ${index}`);
-      });
-    });
-  });
-
-  describe("non-standard logger, with map", () => {
-    it("should not throw", () => {
-      const logger = makeLoggerWithCustomKeys(getValidLoggerKeys(), ["info", "trace", "silly"]);
-      const map = makeLoggerMap({
-        critical: "info",
-        debug: "trace",
-        error: "silly",
-        fatal: "info",
-        info: "trace",
-        trace: "silly",
-        warn: "info",
-      });
-
-      expect(() => {
-        lumberjackFactory({ logger, mapTo: map });
-      }).not.toThrow();
-    });
-
-    it("should return an expected, standard interface", () => {
-      const logger = makeLoggerWithCustomKeys(getValidLoggerKeys(), ["info", "trace", "silly"]);
-      const map = makeLoggerMap({
-        critical: "info",
-        debug: "trace",
-        error: "silly",
-        fatal: "info",
-        info: "trace",
-        trace: "silly",
-        warn: "info",
-      });
-      const mappedLogger = lumberjackFactory({ logger, mapTo: map });
-      const mappedLoggerKeys = new Set(Object.keys(mappedLogger));
-
-      getValidLoggerKeys().forEach((validKey) => {
-        expect(mappedLoggerKeys.has(validKey)).toBe(true);
-      });
-    });
-
-    it("should return a usable logger", () => {
-      const spyLog = jest.fn();
-      const logger = makeLoggerWithCustomKeys(
-        getValidLoggerKeys(),
-        ["info", "trace", "silly"],
-        spyLog
-      );
-      const map = makeLoggerMap({
-        critical: "info",
-        debug: "trace",
-        error: "silly",
-        fatal: "info",
-        info: "trace",
-        trace: "silly",
-        warn: "info",
-      });
-      const mappedLogger = lumberjackFactory({ logger, mapTo: map });
-
-      Object.keys(mappedLogger).forEach((loggerKey, index) => {
-        mappedLogger[loggerKey](`test ${index}`);
-        expect(mappedLogger[loggerKey]).toHaveBeenCalledWith(`test ${index}`);
       });
     });
   });

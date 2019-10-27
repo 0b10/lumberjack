@@ -12,13 +12,4 @@ module.exports = {
     trace: (message) => console.trace(message),
     warn: (message) => console.warn(message),
   },
-  map: {
-    critical: "critical",
-    debug: "debug",
-    error: "error",
-    fatal: "fatal",
-    info: "info",
-    trace: "trace",
-    warn: "warn",
-  },
 };

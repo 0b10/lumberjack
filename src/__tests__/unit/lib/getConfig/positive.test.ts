@@ -23,7 +23,6 @@ describe("getConfig()", () => {
     if (result !== false) {
       // Keeps ts happy
       expect(result.logger).toBeDefined();
-      expect(result.map).toBeDefined();
     } else {
       expect(false).toBe({}); // will fail when result isn't an object, which it should be
     }

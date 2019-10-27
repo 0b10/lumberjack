@@ -1,17 +1,6 @@
 import { LumberjackError } from "./error";
 import { LogLevelEnv, MessageLevel, ErrorLevel } from "./types";
 
-export const EXTENDED_LOG_LEVELS = Object.freeze([
-  "critical",
-  "debug",
-  "error",
-  "fatal",
-  "info",
-  "silly",
-  "trace",
-  "warn",
-]);
-
 // FIXME: types
 export const LOG_LEVELS = Object.freeze(
   new Set(["critical", "debug", "error", "fatal", "info", "trace", "warn"])
