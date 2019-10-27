@@ -1,6 +1,6 @@
 import { ForTesting, Logger, LoggerKeys } from "../types";
 
-import { shouldLog } from "./should-log";
+import { shouldLog } from "./shouldLog";
 
 export const getConditionalLogger = (validLogger: Logger, forTesting?: ForTesting): Logger => {
   let conditionalLogger = {};

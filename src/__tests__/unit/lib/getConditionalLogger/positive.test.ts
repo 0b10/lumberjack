@@ -6,7 +6,7 @@ import {
 } from "../../../../constants";
 
 import { makeLoggerWithMocks } from "./../../../helpers";
-import { getConditionalLogger } from "./../../../../lib/get-conditional-logger";
+import { getConditionalLogger } from "./../../../../lib/getConditionalLogger";
 import { LogLevel } from "./../../../../types";
 
 describe("getConditional()", () => {
