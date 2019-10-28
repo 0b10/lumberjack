@@ -41,11 +41,21 @@ const _isValidConsoleMode = (consoleMode: unknown): true => {
   });
 };
 
+const _isValidLogger = (logger: unknown): logger is object => {
+  // Don't validate the logger interface here, just that an object exists, because getLogger() should
+  //  validate this. This potentially allows a logger to be initialised elsewhere, if it's necessary
+  //  in the future
+  if (_.isPlainObject(logger)) {
+    return true;
+  }
+  throw new LumberjackError("You must define a logger in the config file", { logger });
+};
+
 export const isValidConfig = (configFile: unknown): configFile is Config => {
-  // TODO: validate existing keys
   if (_.isPlainObject(configFile)) {
     const conf = configFile as Config;
     _isValidConsoleMode(conf.consoleMode); // throws if invalid
+    _isValidLogger(conf.logger);
     return true; // Config is Partial, so it could be empty object
   }
   throw new LumberjackError("The config file is invalid");
