@@ -16,9 +16,21 @@ import { validateLoggerInterface } from "./preconditions";
 
 import { parseError, getConditionalLogger, getCachedConfig } from ".";
 
-const _stringify = (obj: object): string => {
-  // TODO: check config for consoleMode = true, and conditionally stringify, when a cached config has been implemented
-  return JSON.stringify(obj, undefined, 2);
+/**
+ * Stringify an object if consoleMode is active. This allows complex object structures to be visible
+ *  via the console.
+ *
+ * @param {object} obj - the object to stringify
+ * @param {ForTesting} forTesting - mocks, fakes, spies etc
+ * @returns {string | object} - Either a stringified version of the passed in object, or the exact
+ *  same object (is consoleMode) is inactive
+ */
+export const conditionalStringify = (obj: object, forTesting?: ForTesting): string | object => {
+  const consoleMode = getCachedConfig(forTesting).consoleMode;
+  if (consoleMode) {
+    return JSON.stringify(obj, undefined, 2);
+  }
+  return obj;
 };
 
 export const getLogger = (forTesting?: ForTesting): Logger => {
@@ -78,14 +90,14 @@ const _getErrorLogger = (args: GetErrorLoggerArgs): LoggerFunc | never => {
   }
 };
 
-export const logError = (args: LogErrorArgs): void => {
+export const logError = (args: LogErrorArgs, forTesting?: ForTesting): void => {
   if (args.messages.error) {
     const parsedError = parseError(args.messages.error);
     let assignedLogger = _getErrorLogger(args);
 
     _setErrorPrefix(args.template, parsedError);
     assignedLogger(parsedError.error);
-    args.trace(_stringify(parsedError.trace)); // TODO: run only when NODE_ENV is set (it will _stringify)
+    args.trace(conditionalStringify(parsedError.trace, forTesting));
   }
 };
 
@@ -140,20 +152,24 @@ export const logMessage = (
 };
 
 // >>> RESULT >>>
-export const logResult = (messages: Messages, logger: LoggerFunc): void => {
-  // TODO: use _stringify somehow, but this may interfere with logging the object.
+export const logResult = (
+  messages: Messages,
+  logger: LoggerFunc,
+  forTesting?: ForTesting
+): void => {
   // perhaps a console friendly logger
-  logger({ result: messages.result });
+  const formattedMessage = conditionalStringify({ result: messages.result }, forTesting);
+  logger(formattedMessage);
 };
 
 // >>> ARGS >>>
-export const logArgs = (messages: Messages, logger: LoggerFunc): void => {
+export const logArgs = (messages: Messages, logger: LoggerFunc, forTesting?: ForTesting): void => {
   // undefined is allowed - no args, not unusual. just don't log
   if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
     throw new LumberjackError(`Args must be an object`, { args: messages.args });
   } else {
-    // TODO: use _stringify somehow, but this may interfere with logging the object.
     // perhaps a console friendly logger
-    logger({ args: messages.args });
+    const formattedMessage = conditionalStringify({ args: messages.args }, forTesting);
+    logger(formattedMessage);
   }
 };

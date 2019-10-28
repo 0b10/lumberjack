@@ -1,6 +1,11 @@
-import { templateFactory } from "../../../index";
+import {
+  getFakeConfig,
+  makeLoggerWithMocks,
+  validMessageValues,
+  validTemplateValues,
+} from "../../helpers";
 import { LoggerKey, TemplateKey, MessageKey, Messages, Template } from "../../../types";
-import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../helpers";
+import { templateFactory } from "../../../index";
 
 describe("templateFactory()", () => {
   it("should exist", () => {
@@ -133,7 +138,10 @@ describe("templateFactory()", () => {
               const mockTarget = mockLogger[targetFunc];
               const template = validTemplateValues(templateOverrides);
 
-              const log = templateFactory(template, { logger: mockLogger });
+              const log = templateFactory(template, {
+                logger: mockLogger,
+                fakeConfig: getFakeConfig({ consoleMode: false }),
+              });
               log(validMessageValues({ ...{ [messageKey]: messageValue }, ...extraArgs }));
 
               expect(mockTarget).toHaveBeenCalledWith(result);
@@ -167,7 +175,11 @@ describe("templateFactory()", () => {
           const mockLogger = makeLoggerWithMocks();
           const template = validTemplateValues();
 
-          const log = templateFactory(template, { logger: mockLogger });
+          const log = templateFactory(template, {
+            logger: mockLogger,
+            // results must be stringified, so they can be matched with RegExp
+            fakeConfig: getFakeConfig({ consoleMode: true }),
+          });
           log(validMessageValues({ error: messageValue, args: undefined }));
           expect(anyCallMatches(mockLogger.trace.mock.calls, result)).toBe(true);
         });
@@ -274,7 +286,7 @@ describe("templateFactory()", () => {
               // use template instead
               const log = templateFactory(
                 validTemplateValues({ [templateKey]: templateValue, ...templateOverrides }),
-                { logger: mockLogger }
+                { logger: mockLogger, fakeConfig: getFakeConfig({ consoleMode: false }) }
               );
               log(validMessageValues({ [messageKey]: messageValue })); // remove default value from the helper
               expect(mockTarget).toHaveBeenCalledWith(result);
@@ -287,14 +299,20 @@ describe("templateFactory()", () => {
     describe("args", () => {
       it("should accept undefined (no object) as a template", () => {
         expect(() => {
-          templateFactory(undefined, { logger: makeLoggerWithMocks() });
+          templateFactory(undefined, {
+            logger: makeLoggerWithMocks(),
+            fakeConfig: getFakeConfig({ consoleMode: false }),
+          });
         }).not.toThrow();
       });
 
       it("should use a default messageLevel - when it's undefined in the template, and messages", () => {
         const mockLogger = makeLoggerWithMocks();
 
-        const log = templateFactory(undefined, { logger: mockLogger });
+        const log = templateFactory(undefined, {
+          logger: mockLogger,
+          fakeConfig: getFakeConfig({ consoleMode: false }),
+        });
         log({ message: "test message askjduye" });
 
         expect(mockLogger.info).toHaveBeenCalledWith("test message askjduye");
@@ -303,7 +321,10 @@ describe("templateFactory()", () => {
       it("should use a default errorLevel - when it's undefined in the template, and messages", () => {
         const mockLogger = makeLoggerWithMocks();
 
-        const log = templateFactory(undefined, { logger: mockLogger });
+        const log = templateFactory(undefined, {
+          logger: mockLogger,
+          fakeConfig: getFakeConfig({ consoleMode: false }),
+        });
         log(validMessageValues({ error: new Error("test error message yydhajsgd") }));
 
         expect(mockLogger.error).toHaveBeenCalledWith({

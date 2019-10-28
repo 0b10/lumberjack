@@ -1,9 +1,14 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { stringify , makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../../helpers";
+import { getFakeConfig } from "../../../../helpers";
+import {
+  stringify,
+  makeLoggerWithMocks,
+  validMessageValues,
+  validTemplateValues,
+} from "../../../../helpers";
 import { logArgs } from "../../../../../lib";
-
 
 describe("logArgs()", () => {
   it("should exist", () => {
@@ -16,7 +21,7 @@ describe("logArgs()", () => {
     const messages = validMessageValues({ args });
     const mockedLogger = makeLoggerWithMocks();
 
-    logArgs(messages, mockedLogger.trace);
+    logArgs(messages, mockedLogger.trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
 
     expect(mockedLogger.trace).toHaveBeenCalledTimes(1);
     expect(mockedLogger.trace).toHaveBeenCalledWith(expected);
@@ -27,7 +32,7 @@ describe("logArgs()", () => {
     const { trace } = makeLoggerWithMocks();
 
     expect(() => {
-      logArgs(messages, trace);
+      logArgs(messages, trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
     }, stringify(messages)).not.toThrow();
 
     expect(trace, stringify(messages)).toHaveBeenCalledTimes(1);
@@ -40,7 +45,7 @@ describe("logArgs()", () => {
         const messages = validMessageValues({ args });
 
         try {
-          logArgs(messages, trace);
+          logArgs(messages, trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
         } catch (error) {
           return false;
         }

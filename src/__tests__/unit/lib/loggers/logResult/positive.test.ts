@@ -2,7 +2,7 @@ import fc from "fast-check";
 import _ from "lodash";
 
 import { logResult } from "../../../../../lib";
-import { makeLoggerWithMocks, validMessageValues } from "../../../../helpers";
+import { makeLoggerWithMocks, validMessageValues, getFakeConfig } from "../../../../helpers";
 
 describe("logResult()", () => {
   it("should exist", () => {
@@ -15,7 +15,7 @@ describe("logResult()", () => {
     const messages = validMessageValues({ result });
     const mockedLogger = makeLoggerWithMocks();
 
-    logResult(messages, mockedLogger.trace);
+    logResult(messages, mockedLogger.trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
 
     expect(mockedLogger.trace).toHaveBeenCalledTimes(1);
     expect(mockedLogger.trace).toHaveBeenCalledWith(expected);
@@ -26,7 +26,7 @@ describe("logResult()", () => {
     const expected = Object.freeze({ result: undefined });
     const messages = validMessageValues({ result: undefined });
 
-    logResult(messages, trace);
+    logResult(messages, trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
 
     expect(trace).toHaveBeenCalledWith(expected);
   });
@@ -39,7 +39,7 @@ describe("logResult()", () => {
         const messages = validMessageValues({ result });
         const expected = { result };
 
-        logResult(messages, trace);
+        logResult(messages, trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
 
         return _.isEqual(trace.mock.calls[0][0], expected);
       })
@@ -54,7 +54,7 @@ describe("logResult()", () => {
         const messages = validMessageValues({ result });
         const expected = { result };
 
-        logResult(messages, trace);
+        logResult(messages, trace, { fakeConfig: getFakeConfig({ consoleMode: false }) });
 
         return _.isEqual(trace.mock.calls[0][0], expected);
       })

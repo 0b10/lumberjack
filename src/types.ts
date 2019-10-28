@@ -17,6 +17,7 @@ export type Logger<T = LoggerFunc> = LogLevels<T>;
 
 export type Config = Partial<{
   logger: unknown;
+  consoleMode?: boolean;
 }>;
 
 // >>> TEMPLATE|MESSAGES >>>
@@ -67,4 +68,5 @@ export type ForTesting = Readonly<{
   logger?: Logger; // A logger object, with all the typical logger behaviours
   configDir?: string; // a directory that contains the config file
   logLevelEnv?: LogLevelEnv; // directly injects the LOG_LEVEL into relevant functions
+  fakeConfig?: Config; // goes through all the proper validation, it's just not loaded from disk
 }>;

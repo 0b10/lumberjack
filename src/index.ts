@@ -27,8 +27,11 @@ export const templateFactory = <Context>(
 
   return (messages: Messages): void => {
     logMessage(messages, usableTemplate, info, debug);
-    logArgs(messages, trace);
-    logResult(messages, trace);
-    logError({ messages, template: usableTemplate, error, warn, critical, fatal, trace });
+    logArgs(messages, trace, forTesting);
+    logResult(messages, trace, forTesting);
+    logError(
+      { messages, template: usableTemplate, error, warn, critical, fatal, trace },
+      forTesting
+    );
   };
 };

@@ -1,12 +1,13 @@
 import faker from "faker";
 
 import { ErrorLevel, LoggerKey } from "../../../../../types";
-import { logError } from "../../../../../lib";
+import { logError } from "../../../../../lib/loggers";
 
 import {
   makeLoggerWithMocks,
   validMessageValues,
   validTemplateValues,
+  getFakeConfig,
 } from "./../../../../helpers";
 
 describe("logError()", () => {
@@ -44,15 +45,18 @@ describe("logError()", () => {
         it(`should log to the "${errorLevel}" logger`, () => {
           const mockedLogger = makeLoggerWithMocks();
 
-          logError({
-            messages,
-            template,
-            critical: mockedLogger.critical,
-            error: mockedLogger.error,
-            fatal: mockedLogger.fatal,
-            trace: mockedLogger.trace,
-            warn: mockedLogger.warn,
-          });
+          logError(
+            {
+              messages,
+              template,
+              critical: mockedLogger.critical,
+              error: mockedLogger.error,
+              fatal: mockedLogger.fatal,
+              trace: mockedLogger.trace,
+              warn: mockedLogger.warn,
+            },
+            { fakeConfig: getFakeConfig({ consoleMode: false }) }
+          );
 
           expect(mockedLogger[targetLogger]).toHaveBeenCalledTimes(1);
           expect(mockedLogger[targetLogger]).toHaveBeenCalledWith(expected);
@@ -61,15 +65,18 @@ describe("logError()", () => {
         it(`should not duplicate messages to other loggers`, () => {
           const mockedLogger = makeLoggerWithMocks();
 
-          logError({
-            messages,
-            template,
-            critical: mockedLogger.critical,
-            error: mockedLogger.error,
-            fatal: mockedLogger.fatal,
-            trace: mockedLogger.trace,
-            warn: mockedLogger.warn,
-          });
+          logError(
+            {
+              messages,
+              template,
+              critical: mockedLogger.critical,
+              error: mockedLogger.error,
+              fatal: mockedLogger.fatal,
+              trace: mockedLogger.trace,
+              warn: mockedLogger.warn,
+            },
+            { fakeConfig: getFakeConfig({ consoleMode: false }) }
+          );
 
           loggersNotCalled.forEach((logger) => {
             expect(mockedLogger[logger]).not.toHaveBeenCalled();

@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { LOG_LEVELS } from "../constants";
-import { Logger, LoggerKey, Messages, Template, TemplateKey } from "../types";
+import { Logger, LoggerKey, Messages, Template, TemplateKey, Config } from "../types";
 
 export const validStubLogger: Readonly<Logger> = Object.freeze({
   critical: () => null,
@@ -102,3 +102,20 @@ export const isValidLogLevel = (logLevel: any): boolean => LOG_LEVELS.has(logLev
 export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);
 
 export const stringify = (anything: unknown): string => JSON.stringify(anything, undefined, 2);
+
+const _defaultConfigOptions = Object.freeze({
+  consoleMode: false,
+  logger: {
+    critical: (message): null => null,
+    debug: (message): null => null,
+    error: (message): null => null,
+    fatal: (message): null => null,
+    info: (message): null => null,
+    trace: (message): null => null,
+    warn: (message): null => null,
+  },
+});
+
+export const getFakeConfig = (overrides?: Config): Config => {
+  return Object.freeze({ ..._defaultConfigOptions, ...overrides });
+};

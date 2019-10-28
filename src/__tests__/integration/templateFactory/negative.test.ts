@@ -4,6 +4,7 @@ import {
   validTemplateValues,
   validMessageValues,
   stringify,
+  getFakeConfig,
 } from "../../helpers";
 import { MessageLevel } from "../../../types";
 import { templateFactory } from "../../../index";
@@ -16,6 +17,7 @@ describe("templateFactory()", () => {
 
     const log = templateFactory(validTemplateValues({ message: undefined }), {
       logger: mockLogger,
+      fakeConfig: getFakeConfig({ consoleMode: false }),
     });
 
     expect(() => {
@@ -33,6 +35,7 @@ describe("templateFactory()", () => {
 
     const log = templateFactory(validTemplateValues(), {
       logger: mockLogger,
+      fakeConfig: getFakeConfig({ consoleMode: false }),
     });
 
     expect(() => {
@@ -48,6 +51,7 @@ describe("templateFactory()", () => {
     expect(() => {
       templateFactory(validTemplateValues({ messageLevel: "invalidLevel" as MessageLevel }), {
         logger: mockLogger,
+        fakeConfig: getFakeConfig({ consoleMode: false }),
       });
     }).toThrow(TheExpectedError);
   });
@@ -58,6 +62,7 @@ describe("templateFactory()", () => {
 
     const log = templateFactory(validTemplateValues(), {
       logger: mockLogger,
+      fakeConfig: getFakeConfig({ consoleMode: false }),
     });
 
     expect(() => {
