@@ -1,8 +1,7 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { getFakeConfig } from "../../../../helpers";
-import {
+import { getFakeConfig ,
   stringify,
   makeLoggerWithMocks,
   validMessageValues,

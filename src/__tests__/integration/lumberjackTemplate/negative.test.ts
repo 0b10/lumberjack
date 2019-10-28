@@ -7,15 +7,15 @@ import {
   getFakeConfig,
 } from "../../helpers";
 import { MessageLevel } from "../../../types";
-import { templateFactory } from "../../../index";
+import { lumberjackTemplate } from "../../../index";
 
-describe("templateFactory()", () => {
+describe("lumberjackTemplate()", () => {
   it(`should throw when neither a message nor a template message is provided`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
     const messages = validMessageValues({ message: undefined });
 
-    const log = templateFactory(validTemplateValues({ message: undefined }), {
+    const log = lumberjackTemplate(validTemplateValues({ message: undefined }), {
       logger: mockLogger,
       fakeConfig: getFakeConfig({ consoleMode: false }),
     });
@@ -33,7 +33,7 @@ describe("templateFactory()", () => {
       messageLevel: "invalidLevel" as MessageLevel,
     });
 
-    const log = templateFactory(validTemplateValues(), {
+    const log = lumberjackTemplate(validTemplateValues(), {
       logger: mockLogger,
       fakeConfig: getFakeConfig({ consoleMode: false }),
     });
@@ -43,13 +43,12 @@ describe("templateFactory()", () => {
     }, stringify({ messages, mockLogger })).toThrow(TheExpectedError);
   });
 
-  // TODO: template validation first
-  it.skip(`should throw when an invalid messageLevel template is passed in`, () => {
+  it(`should throw when an invalid messageLevel template is passed in`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
 
     expect(() => {
-      templateFactory(validTemplateValues({ messageLevel: "invalidLevel" as MessageLevel }), {
+      lumberjackTemplate(validTemplateValues({ messageLevel: "invalidLevel" as MessageLevel }), {
         logger: mockLogger,
         fakeConfig: getFakeConfig({ consoleMode: false }),
       });
@@ -60,7 +59,7 @@ describe("templateFactory()", () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
 
-    const log = templateFactory(validTemplateValues(), {
+    const log = lumberjackTemplate(validTemplateValues(), {
       logger: mockLogger,
       fakeConfig: getFakeConfig({ consoleMode: false }),
     });

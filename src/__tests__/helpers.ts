@@ -96,8 +96,6 @@ export const undefinedTemplateValues = (
   return { ...undefinedTemplate, ...except } as Template<undefined>;
 };
 
-export const getValidLoggerKeys = (): LoggerKey[] => [...(LOG_LEVELS as Set<LoggerKey>)]; // FIXME: fix RO Set interface
-
 export const isValidLogLevel = (logLevel: any): boolean => LOG_LEVELS.has(logLevel);
 export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(logLevel);
 

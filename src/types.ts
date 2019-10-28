@@ -42,7 +42,7 @@ export type MessageLevel = keyof Pick<LogLevels, "info" | "debug">;
 export type ErrorLevel = keyof Pick<LogLevels, "error" | "warn" | "critical" | "fatal">;
 
 export interface Messages<Context = string> {
-  args?: any;
+  args?: object;
   message?: string;
   error?: Error;
   errorLevel?: ErrorLevel;
