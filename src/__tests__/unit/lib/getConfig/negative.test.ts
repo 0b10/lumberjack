@@ -1,14 +1,14 @@
 import path from "path";
 
-import { getConfig } from "../../../../lib";
+import { getCachedConfig } from "../../../../lib";
 
 import { getFakeConfigPath } from "./helpers";
 
-describe("getConfig()", () => {
+describe("getCachedConfig()", () => {
   describe("when not found", () => {
     it.skip("should return false", () => {
       // TODO: This is finding the default config in src/ - use mock
-      const result = getConfig(getFakeConfigPath("non-existant"));
+      const result = getCachedConfig(getFakeConfigPath("non-existant"));
       expect(result).toBe(false);
     });
   });

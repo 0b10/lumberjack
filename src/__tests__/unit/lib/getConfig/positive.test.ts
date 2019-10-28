@@ -1,25 +1,25 @@
 import { LOG_LEVELS as VALID_LOG_LEVELS } from "../../../../constants";
-import { getConfig } from "../../../../lib";
+import { getCachedConfig } from "../../../../lib";
 
 import { getFakeConfigPath } from "./helpers";
 
-describe("getConfig()", () => {
+describe("getCachedConfig()", () => {
   it("should exist", () => {
-    expect(getConfig).toBeDefined();
+    expect(getCachedConfig).toBeDefined();
   });
 
   it("should not throw when a config is found", () => {
     expect(() => {
-      getConfig(getFakeConfigPath("default-config"));
+      getCachedConfig({ configDir: getFakeConfigPath("default-config") });
     }).not.toThrow();
   });
 
   it("should return a defined object", () => {
-    expect(getConfig(getFakeConfigPath("default-config"))).toBeDefined();
+    expect(getCachedConfig({ configDir: getFakeConfigPath("default-config") })).toBeDefined();
   });
 
   it("should return an expected object interface", () => {
-    const result = getConfig(getFakeConfigPath("default-config"));
+    const result = getCachedConfig({ configDir: getFakeConfigPath("default-config") });
     // eslint-disable-next-line jest/no-if
     if (result !== false) {
       // Keeps ts happy

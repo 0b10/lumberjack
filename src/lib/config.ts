@@ -4,10 +4,10 @@ import path from "path";
 import _ from "lodash";
 
 import { CONFIG_FILE_NAME } from "../constants";
-import { Config } from "../types";
+import { Config, ForTesting } from "../types";
+import { LumberjackError } from "../error";
 
 import { isTestEnv } from "./helpers";
-import { LumberjackError } from "./../error";
 
 const _isFile = (filePath: string): boolean => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -37,11 +37,12 @@ export const isValidConfig = (configFile: unknown): configFile is Config => {
   return _.isPlainObject(configFile); // Config is Partial, so could be empty object
 };
 
-// TODO: make cached config, instead of cached logger
-export const getConfig = (dirPath?: string): Config | never => {
+const _getConfigFromDisk = (dirPath?: string): Config | never => {
   if (dirPath && !isTestEnv()) {
     // because non-literal require
-    throw new LumberjackError("You cannot set the dirPath for getConfig outside of a testing env");
+    throw new LumberjackError(
+      "You cannot set the dirPath for getCachedConfig outside of a testing env"
+    );
   }
 
   const configPath = findConfig(dirPath);
@@ -55,3 +56,32 @@ export const getConfig = (dirPath?: string): Config | never => {
     "Unable to find a config file, make a config at the root of your project"
   );
 };
+
+type ClosedOverConfig = () => Readonly<Config>;
+type ForTestingConfig = Pick<ForTesting, "configDir">;
+
+const _cacheConfig = (forTesting?: ForTestingConfig): ClosedOverConfig => {
+  let config: Config;
+
+  let dirPath: string | undefined;
+  if (forTesting && forTesting.configDir) {
+    dirPath = forTesting.configDir;
+  }
+
+  config = _getConfigFromDisk(dirPath);
+
+  return (): Readonly<Config> => Object.freeze(config);
+};
+
+let _getCachedConfig: ClosedOverConfig | undefined;
+
+export const getCachedConfig = (forTesting?: ForTestingConfig): Config => {
+  if (_.isUndefined(_getCachedConfig)) {
+    // This should come after checking for a test config - tests don't need a config from the config
+    _getCachedConfig = _cacheConfig(forTesting);
+  }
+
+  return _getCachedConfig();
+};
+
+// TODO: make cached config, instead of cached logger

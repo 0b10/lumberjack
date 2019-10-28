@@ -14,49 +14,27 @@ import {
 import { isValidMessageLevel } from "./helpers";
 import { validateLoggerInterface } from "./preconditions";
 
-import { parseError, getConditionalLogger, getConfig } from ".";
+import { parseError, getConditionalLogger, getCachedConfig } from ".";
 
 const _stringify = (obj: object): string => {
   // TODO: check config for consoleMode = true, and conditionally stringify, when a cached config has been implemented
   return JSON.stringify(obj, undefined, 2);
 };
 
-// >>> GET >>>
-type ClosedOverLogger = () => Readonly<Logger>;
-const _getCachedLoggerClosure = (forTesting?: ForTesting): ClosedOverLogger => {
-  let logger: Logger;
-
-  let dirPath: string | undefined;
-  if (forTesting && forTesting.configDir) {
-    dirPath = forTesting.configDir;
-  }
-
-  const config = getConfig(dirPath); // throws if not found
-
-  if (config) {
-    if (validateLoggerInterface(config.logger)) {
-      // throws when invalid
-      logger = config.logger;
-    }
-  }
-
-  return (): Readonly<Logger> => Object.freeze(logger);
-};
-
-// TODO: use cached config, and not cached logger
-let _getCachedLogger: ClosedOverLogger | undefined;
-
 export const getLogger = (forTesting?: ForTesting): Logger => {
   if (forTesting && forTesting.logger) {
     return getConditionalLogger(forTesting.logger, forTesting);
   }
 
-  if (_.isUndefined(_getCachedLogger)) {
-    // This should come after checking for a test logger - tests don't need a logger from the config
-    _getCachedLogger = _getCachedLoggerClosure(forTesting);
+  const config = getCachedConfig(forTesting);
+  if (validateLoggerInterface(config.logger)) {
+    // throws when invalid
+    return getConditionalLogger(config.logger);
   }
-
-  return getConditionalLogger(_getCachedLogger(), forTesting);
+  // Keeps ts happy, because the return type cannot be undefined
+  throw new LumberjackError(
+    "validateLoggerInterface() did not throw for an invalid logger interface"
+  );
 };
 
 // >>> ERROR >>>
