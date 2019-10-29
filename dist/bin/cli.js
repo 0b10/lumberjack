@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 /* eslint-disable no-console, import/no-commonjs, security/detect-non-literal-fs-filename */
 const fs = require("fs");

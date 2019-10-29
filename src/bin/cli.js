@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* eslint-disable no-console, import/no-commonjs, security/detect-non-literal-fs-filename */
 const fs = require("fs");
 const path = require("path");
