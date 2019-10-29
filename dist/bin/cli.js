@@ -77,7 +77,7 @@ const _cloneConfig = (src, dst, loggerType) => {
         process.exit(1);
     });
     writeStream.on("close", () => {
-        console.log(`Created a ${loggerType} config at: ${dst}`);
+        console.log(`Created a ${loggerType} config at: ${dst}.`);
         process.exit(1);
     });
     const readStream = fs.createReadStream(src, { autoClose: true }).pipe(writeStream);
