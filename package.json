@@ -19,10 +19,12 @@
   "license": "MIT",
   "author": "0b10 <0b10@pm.me>",
   "files": [
-    "dist/",
-    "bin/"
+    "dist/"
   ],
   "main": "dist/index.js",
+  "bin": {
+    "lumberjack": "dist/bin/cli.js"
+  },
   "scripts": {
     "build": "npm run build:clean && tsc -p tsconfig.json && tsc -p tsconfig-for-declarations.json && tree dist",
     "build:clean": "rm -rfv dist/*",
@@ -35,8 +37,7 @@
     "test:changed": "LOG_LEVEL=trace jest --onlyChanged"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
-    "pkg-dir": "^4.2.0"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
