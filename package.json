@@ -19,7 +19,8 @@
   "license": "MIT",
   "author": "0b10 <0b10@pm.me>",
   "files": [
-    "dist/"
+    "dist/",
+    "bin/"
   ],
   "main": "dist/index.js",
   "scripts": {
@@ -34,7 +35,8 @@
     "test:changed": "LOG_LEVEL=trace jest --onlyChanged"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "pkg-dir": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
