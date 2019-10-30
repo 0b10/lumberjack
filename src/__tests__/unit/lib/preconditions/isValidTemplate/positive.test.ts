@@ -14,6 +14,7 @@ import {
   messageLevelPredicate,
   errorMessagePrefixPredicate,
   contextPredicate,
+  modulePathPredicate,
 } from "./predicates";
 
 const TheExpectedError = LumberjackError;
@@ -36,30 +37,13 @@ describe("isValidTemplate()", () => {
     fixtures.forEach((key) => {
       describe(`${key}`, () => {
         it("should accept undefined", () => {
-          const template = validTemplateValues({ [key]: undefined });
+          const template = validTemplateValues({ [key]: undefined, modulePath: __filename });
           expect(() => {
             isValidTemplate(template);
           }).not.toThrow(TheExpectedError);
         });
       });
     });
-  });
-
-  it("should reject all non-objects (except undefined)", () => {
-    fc.assert(
-      fc.property(fc.anything(), (input) => {
-        fc.pre(!_.isPlainObject(input) && !_.isUndefined(input));
-        try {
-          isValidTemplate(input);
-        } catch (error) {
-          if (error instanceof TheExpectedError) {
-            return true;
-          }
-        }
-        return false;
-      })
-    ),
-      { verbose: true };
   });
 
   describe("constrained template values", () => {
@@ -85,7 +69,7 @@ describe("isValidTemplate()", () => {
         describe(`${key}`, () => {
           values.forEach((value) => {
             it(`should accept "${value}" as an arg`, () => {
-              const template = validTemplateValues({ [key]: value });
+              const template = validTemplateValues({ [key]: value, modulePath: __filename });
               expect(() => {
                 isValidTemplate(template);
               }).not.toThrow();
@@ -99,7 +83,7 @@ describe("isValidTemplate()", () => {
   describe("unconstrained template values", () => {
     type Fixture = {
       key: TemplateKey;
-      predicate?: Predicate;
+      predicate: Predicate;
     };
 
     const fixtures: Fixture[] = [
@@ -123,32 +107,12 @@ describe("isValidTemplate()", () => {
         key: "context",
         predicate: contextPredicate,
       },
+      {
+        key: "modulePath",
+        predicate: modulePathPredicate,
+      },
     ];
 
-    // >>> VALID VALUES >>>
-    fixtures.forEach(({ key, predicate }) => {
-      describe(`${key}`, () => {
-        it("should reject all invalid values", () => {
-          fc.assert(
-            fc.property(fc.anything(), (input) => {
-              fc.pre(predicate(input));
-              const template = validTemplateValues({ [key]: input });
-              try {
-                isValidTemplate(template);
-              } catch (error) {
-                if (error instanceof TheExpectedError) {
-                  return true;
-                }
-              }
-              return false;
-            })
-          ),
-            { verbose: true };
-        });
-      });
-    });
-
-    // >>> INVALID VALUES >>>
     fixtures.forEach(({ key, predicate }) => {
       describe(`${key}`, () => {
         it("should accept all valid values", () => {
@@ -158,11 +122,11 @@ describe("isValidTemplate()", () => {
               //  constrained. Any constrained key should be tested in the constrained desc block
               fc.pre(!predicate(input));
 
-              const template = validTemplateValues({ [key]: input });
+              const template = validTemplateValues({ [key]: input, modulePath: __filename });
               return isValidTemplate(template);
-            })
-          ),
-            { verbose: true };
+            }),
+            { verbose: true }
+          );
         });
       });
     });

@@ -1,7 +1,10 @@
+import path from "path";
+
 import _ from "lodash";
 
+import { Config, Logger, LoggerKey, Messages, Template, TemplateKey } from "../types";
 import { LOG_LEVELS } from "../constants";
-import { Logger, LoggerKey, Messages, Template, TemplateKey, Config } from "../types";
+import { ROOT_PATH_SUBSTITUTE } from "../lib/transformModulePath";
 
 export const validStubLogger: Readonly<Logger> = Object.freeze({
   critical: () => null,
@@ -58,7 +61,7 @@ export const makeLoggerWithMocks = (): Readonly<Logger<jest.Mock>> => {
   });
 };
 
-const _defaultTemplateValues: Required<Template> = {
+const _defaultTemplateValues: Required<Omit<Template, "modulePath">> = {
   context: "A-TEST-HELPER-CONTEXT",
   message: "a test helper message",
   errorMessagePrefix: "a test helper errror message prefix",
@@ -67,7 +70,7 @@ const _defaultTemplateValues: Required<Template> = {
 };
 
 export const validTemplateValues = (
-  overrides?: Partial<Template>
+  overrides: Partial<Omit<Template, "modulePath">> & Pick<Template, "modulePath">
 ): Readonly<Required<Template>> => {
   return Object.freeze({ ..._defaultTemplateValues, ...overrides });
 };
@@ -104,16 +107,20 @@ export const stringify = (anything: unknown): string => JSON.stringify(anything,
 const _defaultConfigOptions = Object.freeze({
   consoleMode: false,
   logger: {
-    critical: (message): null => null,
-    debug: (message): null => null,
-    error: (message): null => null,
-    fatal: (message): null => null,
-    info: (message): null => null,
-    trace: (message): null => null,
-    warn: (message): null => null,
+    critical: (message: any): null => null,
+    debug: (message: any): null => null,
+    error: (message: any): null => null,
+    fatal: (message: any): null => null,
+    info: (message: any): null => null,
+    trace: (message: any): null => null,
+    warn: (message: any): null => null,
   },
 });
 
 export const getFakeConfig = (overrides?: Config): Config => {
   return Object.freeze({ ..._defaultConfigOptions, ...overrides });
+};
+
+export const getTransformedTestModulePath = (filename: string) => {
+  return ROOT_PATH_SUBSTITUTE + path.sep + path.basename(filename);
 };

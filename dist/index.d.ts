@@ -106,9 +106,9 @@ import { Messages } from "./types";
  * fakeConfig: provide a fake configuration file, without the need for loading it from disk. This goes
  *  through the exact same validation process as a real configuration file.
  */
-export declare const lumberjackTemplate: <Context>(template?: Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+export declare const lumberjackTemplate: <Context>(template: Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}> | undefined, forTesting?: Readonly<{
+}> & import("./types").RequiredTemplateArgs, forTesting?: Readonly<{
     logger?: import("./types").LogLevels<import("./types").LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;

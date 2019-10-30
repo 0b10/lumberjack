@@ -1,8 +1,10 @@
 import {
+  getTransformedTestModulePath,
   getFakeConfig,
   makeLoggerWithMocks,
   validMessageValues,
   validTemplateValues,
+  stringify,
 } from "../../helpers";
 import { LoggerKey, TemplateKey, MessageKey, Messages, Template } from "../../../types";
 import { lumberjackTemplate } from "../../../index";
@@ -18,10 +20,10 @@ describe("lumberjackTemplate()", () => {
       targetFunc: LoggerKey; // The logger function to be called - is a spy
       messageKey: MessageKey; // The corresponding message key to be populated - the input
       messageValue: object | string | Error; // The actual input value
-      result: object | string | RegExp; // The expected result that's logged
+      expected: object | string | RegExp; // The expected result that's logged
       extraArgs?: Messages; // you can use this to pass extra args. set a value to undefined to disable an arg
       description?: string; // replace the default test message
-      templateOverrides?: Template; // remove, or override specific template keys
+      templateOverrides?: Partial<Template>; // remove, or override specific template keys
     }
 
     const normalMessageFixtures: NormalMessageFixture[] = [
@@ -29,7 +31,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "message",
         messageValue: "info message",
-        result: "info message",
+        expected: "info message",
         templateOverrides: {
           // context will be prefixed to logs - you don't want that
           context: undefined,
@@ -39,7 +41,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "error",
         messageKey: "error",
         messageValue: new Error("fake error message yevswf"),
-        result: { message: "fake error message yevswf", name: "Error" },
+        expected: { message: "fake error message yevswf", name: "Error" },
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
           errorMessagePrefix: undefined,
@@ -49,19 +51,22 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "trace",
         messageKey: "args",
         messageValue: { testArgA: "a", testArgB: "b" },
-        result: { args: { testArgA: "a", testArgB: "b" } },
+        expected: {
+          args: { testArgA: "a", testArgB: "b" },
+          modulePath: getTransformedTestModulePath(__filename),
+        },
       },
       {
         targetFunc: "trace",
         messageKey: "result",
         messageValue: "a test result",
-        result: { result: "a test result" },
+        expected: { result: "a test result" },
       },
       {
         targetFunc: "debug",
         messageKey: "message",
         messageValue: "a debug message",
-        result: "a debug message",
+        expected: "a debug message",
         extraArgs: {
           messageLevel: "debug",
         },
@@ -76,7 +81,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "message",
         messageValue: "an info message",
-        result: "an info message",
+        expected: "an info message",
         extraArgs: {
           messageLevel: "info",
         },
@@ -92,7 +97,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "context",
         messageValue: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH",
-        result: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH: a default message",
+        expected: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH: a default message",
         extraArgs: {
           messageLevel: "info",
         },
@@ -107,7 +112,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "debug",
         messageKey: "context",
         messageValue: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO",
-        result: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO: a default message",
+        expected: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO: a default message",
         extraArgs: {
           messageLevel: "debug",
         },
@@ -124,7 +129,7 @@ describe("lumberjackTemplate()", () => {
         targetFunc,
         messageKey,
         messageValue,
-        result,
+        expected,
         extraArgs,
         description,
         templateOverrides,
@@ -136,15 +141,25 @@ describe("lumberjackTemplate()", () => {
             () => {
               const mockLogger = makeLoggerWithMocks();
               const mockTarget = mockLogger[targetFunc];
-              const template = validTemplateValues(templateOverrides);
+              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const template = validTemplateValues({
+                modulePath: __filename, // ! order matters, let templateOverrides override
+                ...templateOverrides,
+              });
+              const messages = validMessageValues({
+                ...{ [messageKey]: messageValue },
+                ...extraArgs,
+              });
+              const failureMessage = stringify({ mockLogger, fakeConfig, template, messages });
 
               const log = lumberjackTemplate(template, {
                 logger: mockLogger,
-                fakeConfig: getFakeConfig({ consoleMode: false }),
+                fakeConfig,
               });
-              log(validMessageValues({ ...{ [messageKey]: messageValue }, ...extraArgs }));
 
-              expect(mockTarget).toHaveBeenCalledWith(result);
+              log(messages);
+
+              expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
             }
           );
         });
@@ -173,15 +188,19 @@ describe("lumberjackTemplate()", () => {
       describe(`stack trace`, () => {
         it(`should be provided to the trace log after an error is passed in`, () => {
           const mockLogger = makeLoggerWithMocks();
-          const template = validTemplateValues();
-
+          const template = validTemplateValues({ modulePath: __filename });
+          const fakeConfig = getFakeConfig({ consoleMode: true });
+          const messages = validMessageValues({ error: messageValue, args: undefined });
           const log = lumberjackTemplate(template, {
             logger: mockLogger,
             // results must be stringified, so they can be matched with RegExp
-            fakeConfig: getFakeConfig({ consoleMode: true }),
+            fakeConfig,
           });
-          log(validMessageValues({ error: messageValue, args: undefined }));
-          expect(anyCallMatches(mockLogger.trace.mock.calls, result)).toBe(true);
+          const failureMessage = stringify({ mockLogger, template, fakeConfig, messages });
+
+          log(messages);
+
+          expect(anyCallMatches(mockLogger.trace.mock.calls, result), failureMessage).toBe(true);
         });
       });
     });
@@ -195,19 +214,19 @@ describe("lumberjackTemplate()", () => {
       templateValue: string; // The template value - which will be in the result
       messageKey: MessageKey; // The corresponding message key to be populated
       messageValue?: object | string; // the input message. leave undefined unless special circumstance
-      result: object | string; // The expected result that's logged
+      expected: object | string; // The expected result that's logged
       description?: string; // replace the default test message
-      templateOverrides?: Template;
+      templateOverrides?: Partial<Template>;
     }
 
     const fixtures: Fixture[] = [
       {
-        // test that a general message is logged as via info
+        // test that a general message is logged as via info, when message isn't isn't directly logged
         targetFunc: "info",
         templateKey: "message",
         templateValue: "info message template",
         messageKey: "message",
-        result: "info message template",
+        expected: "info message template",
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
           context: undefined,
@@ -220,7 +239,7 @@ describe("lumberjackTemplate()", () => {
         templateValue: "error message template dyahdw",
         messageKey: "error",
         messageValue: new Error("fake error message wjsu3ys"),
-        result: {
+        expected: {
           message: "error message template dyahdw: fake error message wjsu3ys",
           name: "Error",
         },
@@ -232,7 +251,7 @@ describe("lumberjackTemplate()", () => {
         templateValue: "debug",
         messageKey: "message",
         messageValue: "a test message alziw36",
-        result: "a test message alziw36",
+        expected: "a test message alziw36",
         description: "should subsequently log an expected message when messageLevel=debug",
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
@@ -246,7 +265,7 @@ describe("lumberjackTemplate()", () => {
         templateValue: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW",
         messageKey: "context",
         messageValue: undefined, // fall back to template
-        result: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW: a default message",
+        expected: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW: a default message",
         description: "should use the template context when a message context is not provided",
       },
       {
@@ -256,12 +275,59 @@ describe("lumberjackTemplate()", () => {
         templateValue: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO",
         messageKey: "context",
         messageValue: undefined, // fall back to template
-        result: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO: a default message",
+        expected: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO: a default message",
         description: "should use the template context when a message context is not provided",
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
           messageLevel: "debug",
         },
+      },
+      {
+        // test a default messageLevel is used when it's not defined in the template or messages
+        targetFunc: "info", // default
+        templateKey: "context",
+        templateValue: "CONTEXT DOESN'T MATTER",
+        messageKey: "message",
+        messageValue: "a test message ouydksjdh",
+        expected: "CONTEXT DOESN'T MATTER: a test message ouydksjdh",
+        description: "should use the default messageLevel when one isn't provided",
+      },
+      {
+        // test a default errorLevel is used when it's not defined in the template or messages
+        targetFunc: "error", // default
+        templateKey: "errorMessagePrefix",
+        templateValue: "ERROR MESSAGE PREFIX DOESN'T MATTER",
+        messageKey: "error",
+        messageValue: new Error("a test error message djuyytdghs"),
+        expected: {
+          message: "ERROR MESSAGE PREFIX DOESN'T MATTER: a test error message djuyytdghs",
+          name: "Error",
+        },
+        description: "should use the default errorLevel when one isn't provided",
+      },
+      {
+        // test that module path is logged via the template
+        targetFunc: "trace", // default
+        templateKey: "modulePath",
+        templateValue: __filename,
+        messageKey: "message",
+        messageValue: "this message doesn't matter",
+        expected: {
+          modulePath: getTransformedTestModulePath(__filename),
+        },
+        description: "should log the module path via the template",
+      },
+      {
+        // test that module path is logged via the template
+        targetFunc: "trace", // default
+        templateKey: "modulePath",
+        templateValue: __filename,
+        messageKey: "modulePath",
+        messageValue: "an overridden module path value",
+        expected: {
+          modulePath: "an overridden module path value",
+        },
+        description: "should accept an overridden modulePath value",
       },
     ];
 
@@ -270,7 +336,7 @@ describe("lumberjackTemplate()", () => {
         description,
         messageKey,
         messageValue,
-        result,
+        expected,
         targetFunc,
         templateKey,
         templateValue,
@@ -283,55 +349,23 @@ describe("lumberjackTemplate()", () => {
             () => {
               const mockLogger = makeLoggerWithMocks();
               const mockTarget = mockLogger[targetFunc];
-              // use template instead
-              const log = lumberjackTemplate(
-                validTemplateValues({ [templateKey]: templateValue, ...templateOverrides }),
-                { logger: mockLogger, fakeConfig: getFakeConfig({ consoleMode: false }) }
-              );
-              log(validMessageValues({ [messageKey]: messageValue })); // remove default value from the helper
-              expect(mockTarget).toHaveBeenCalledWith(result);
+              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const template = validTemplateValues({
+                [templateKey]: templateValue,
+                modulePath: __filename, // ! order matters here, let templateOverrides override this
+                ...templateOverrides,
+              });
+              const messages = validMessageValues({ [messageKey]: messageValue });
+              const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+              const failureMessage = stringify({ mockLogger, fakeConfig, template, messages });
+
+              log(messages);
+
+              expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
             }
           );
         });
       }
     );
-
-    describe("args", () => {
-      it("should accept undefined (no object) as a template", () => {
-        expect(() => {
-          lumberjackTemplate(undefined, {
-            logger: makeLoggerWithMocks(),
-            fakeConfig: getFakeConfig({ consoleMode: false }),
-          });
-        }).not.toThrow();
-      });
-
-      it("should use a default messageLevel - when it's undefined in the template, and messages", () => {
-        const mockLogger = makeLoggerWithMocks();
-
-        const log = lumberjackTemplate(undefined, {
-          logger: mockLogger,
-          fakeConfig: getFakeConfig({ consoleMode: false }),
-        });
-        log({ message: "test message askjduye" });
-
-        expect(mockLogger.info).toHaveBeenCalledWith("test message askjduye");
-      });
-
-      it("should use a default errorLevel - when it's undefined in the template, and messages", () => {
-        const mockLogger = makeLoggerWithMocks();
-
-        const log = lumberjackTemplate(undefined, {
-          logger: mockLogger,
-          fakeConfig: getFakeConfig({ consoleMode: false }),
-        });
-        log(validMessageValues({ error: new Error("test error message yydhajsgd") }));
-
-        expect(mockLogger.error).toHaveBeenCalledWith({
-          message: "test error message yydhajsgd",
-          name: "Error",
-        });
-      });
-    });
   });
 });

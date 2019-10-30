@@ -32,6 +32,7 @@ describe("logError()", () => {
         const template = validTemplateValues({
           errorLevel,
           errorMessagePrefix: undefined,
+          modulePath: __filename,
         });
         const message = `a test error message: ${faker.random.words(5)}`; // random message to make it distinct
         const messages = validMessageValues({ error: new Error(message) });

@@ -56,7 +56,7 @@ export declare const logResult: (messages: Messages<string>, logger: LoggerFunc,
         consoleMode?: boolean | undefined;
     }> | undefined;
 }> | undefined) => void;
-export declare const logArgs: (messages: Messages<string>, logger: LoggerFunc, forTesting?: Readonly<{
+export declare const logArgs: (messages: Messages<string>, template: MergedTemplate, logger: LoggerFunc, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;

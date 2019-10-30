@@ -165,13 +165,18 @@ export const logResult = (
 };
 
 // >>> ARGS >>>
-export const logArgs = (messages: Messages, logger: LoggerFunc, forTesting?: ForTesting): void => {
+export const logArgs = (
+  messages: Messages,
+  template: MergedTemplate,
+  logger: LoggerFunc,
+  forTesting?: ForTesting
+): void => {
   // undefined is allowed - no args, not unusual. just don't log
   if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
     throw new LumberjackError(`Args must be an object`, { args: messages.args });
   } else {
-    // perhaps a console friendly logger
-    const formattedMessage = conditionalStringify({ args: messages.args }, forTesting);
+    const modulePath = messages.modulePath || template.modulePath;
+    const formattedMessage = conditionalStringify({ args: messages.args, modulePath }, forTesting);
     logger(formattedMessage);
   }
 };

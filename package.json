@@ -26,12 +26,12 @@
     "lumberjack": "dist/bin/cli.js"
   },
   "scripts": {
-    "build": "npm run build:clean && tsc -p tsconfig.json && tsc -p tsconfig-for-declarations.json && tree dist",
+    "build": "npm run build:clean && tsc -p tsconfig-for-building.json && tsc -p tsconfig-for-declarations.json && tree dist",
     "build:clean": "rm -rfv dist/*",
     "build:publish": "yarn run lint && yarn run test && yarn run build && yarn publish",
     "build:types": "tsc -p tsconfig-for-declarations.json",
     "lint": "eslint '**/*.{js,json,ts}'",
-    "lint:compile": "tsc --noEmit && eslint '**/*.{js,json,ts}'",
+    "lint:compile": "tsc -p ./tsconfig.json && eslint '**/*.{js,json,ts}'",
     "lint:fix": "eslint --fix '**/*.{js,json,ts}'",
     "test": "LOG_LEVEL=trace jest",
     "test:changed": "LOG_LEVEL=trace jest --onlyChanged"

@@ -32,6 +32,7 @@ describe("logMessage()", () => {
           context: undefined,
           messageLevel,
           message: undefined,
+          modulePath: __filename,
         });
         const message = `a test message: ${faker.random.words(5)}`; // random message to make it distinct
         const messages = validMessageValues({ message });
@@ -73,6 +74,7 @@ describe("logMessage()", () => {
           messageLevel: "info",
           message: undefined,
           context,
+          modulePath: __filename,
         });
         const messages = validMessageValues({ message });
         const failureMessage = stringify({ expected });
@@ -92,6 +94,7 @@ describe("logMessage()", () => {
             messageLevel: "info",
             message: undefined,
             context: "THIS-CONTEXT-SHOULD-NOT-BE-USED",
+            modulePath: __filename,
           });
           const messages = validMessageValues({ message, context });
           const failureMessage = stringify({ expected });

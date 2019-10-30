@@ -1,5 +1,4 @@
 import { shouldLog } from "../../../../lib";
-import { ALLOWED_ACTIVE_LOG_LEVEL_ENVS, LOG_LEVELS } from "../../../../constants";
 
 import { LogLevel, LogLevelEnv } from "./../../../../types";
 

@@ -31,3 +31,8 @@ export const errorMessagePrefixPredicate: Predicate = (input) => {
 export const contextPredicate: Predicate = (input: any) => {
   return !_.isUndefined(input) && (!_.isString(input) || isBlankString(input));
 };
+
+export const modulePathPredicate: Predicate = (input: any) => {
+  // It's doubtful that the fast-check generator will guess a valid path.
+  return !_.isUndefined(input); // undefined has its own test
+};

@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import { logArgs } from "../../../../../lib";
 import { LumberjackError } from "../../../../../error";
-import { makeLoggerWithMocks, validTemplateValues, validMessageValues } from "../../../../helpers";
+import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "../../../../helpers";
 
 const TheExpectedError = LumberjackError;
 
@@ -14,17 +14,18 @@ describe("logArgs()", () => {
         fc.pre(!_.isPlainObject(args) && args !== undefined);
         const { trace } = makeLoggerWithMocks();
         const messages = validMessageValues({ args });
+        const template = validTemplateValues({ modulePath: __filename });
 
         try {
-          logArgs(messages, trace);
+          logArgs(messages, template, trace);
         } catch (error) {
           if (error instanceof TheExpectedError) {
             return true;
           }
         }
         return false;
-      })
-    ),
-      { verbose: true };
+      }),
+      { verbose: true }
+    );
   });
 });

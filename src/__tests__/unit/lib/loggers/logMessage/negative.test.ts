@@ -18,6 +18,7 @@ describe("logMessage()", () => {
           const messages = validMessageValues({ message });
           const template = validTemplateValues({
             message: undefined, // this isolates messages.message - keep undefined
+            modulePath: __filename,
           });
 
           try {
@@ -42,6 +43,7 @@ describe("logMessage()", () => {
           const messages = validMessageValues({ messageLevel });
           const template = validTemplateValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
+            modulePath: __filename,
           });
 
           try {
@@ -68,7 +70,7 @@ describe("logMessage()", () => {
           const messages = validMessageValues({
             message: undefined, // this isolates template.errorLevel - keep undefined
           });
-          const template = validTemplateValues({ message });
+          const template = validTemplateValues({ message, modulePath: __filename });
 
           try {
             logMessage(messages, template, info, debug, warn);
@@ -89,7 +91,7 @@ describe("logMessage()", () => {
           fc.pre(!isValidMessageLevel(messageLevel));
 
           const { info, debug, warn } = makeLoggerWithMocks();
-          const template = validTemplateValues({ messageLevel });
+          const template = validTemplateValues({ messageLevel, modulePath: __filename });
           const messages = validMessageValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
           });
@@ -124,6 +126,7 @@ describe("logMessage()", () => {
               messageLevel: "info",
               message: undefined,
               context,
+              modulePath: __filename,
             });
             const messages = validMessageValues({ message, context: input });
 

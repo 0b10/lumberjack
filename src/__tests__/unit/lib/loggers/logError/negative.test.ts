@@ -19,6 +19,7 @@ describe("logError()", () => {
           });
           const validTemplate = validTemplateValues({
             errorLevel: undefined, // this isolates messages.errorLevel - keep undefined
+            modulePath: __filename,
           });
 
           try {
@@ -50,6 +51,7 @@ describe("logError()", () => {
           });
           const invalidTemplate = validTemplateValues({
             errorLevel: invalidErrorLevel as ErrorLevel,
+            modulePath: __filename,
           });
 
           try {

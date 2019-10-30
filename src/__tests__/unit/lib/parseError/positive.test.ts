@@ -8,9 +8,17 @@ describe("parseError()", () => {
     expect(parseError).toBeDefined();
   });
 
-  const fixtures = [Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError];
+  const fixtures: EvalErrorConstructor[] = [
+    Error,
+    EvalError,
+    RangeError,
+    ReferenceError,
+    SyntaxError,
+    TypeError,
+    URIError,
+  ];
 
-  fixtures.forEach((ErrorType: typeof Error) => {
+  fixtures.forEach((ErrorType) => {
     describe(`for ${ErrorType.name}`, () => {
       it("should return an error object", () => {
         let result: ParsedError;
@@ -39,7 +47,7 @@ describe("parseError()", () => {
         } catch (e) {
           result = parseError(e);
         }
-        expect(result.trace.stack.length > 0).toBe(true);
+        expect(result.trace.stack && result.trace.stack.length > 0).toBe(true);
       });
 
       it("should return an error.name value", () => {

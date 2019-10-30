@@ -31,7 +31,12 @@ type StandardTemplate<Context> = Partial<
   Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
   }
->;
+> &
+  RequiredTemplateArgs;
+
+export interface RequiredTemplateArgs {
+  modulePath: string;
+}
 
 export type MergedTemplate = Template & DefaultTemplate;
 
@@ -49,6 +54,7 @@ export interface Messages<Context = string> {
   result?: any;
   messageLevel?: MessageLevel;
   context?: Context;
+  modulePath?: string;
 }
 export type MessageKey = keyof Messages;
 

@@ -1,6 +1,7 @@
 {
-  "extends": "./tsconfig",
+  "extends": "./tsconfig-for-building",
   "compilerOptions": {
+    "noEmit": false,
     "allowJs": false,
     "declaration": true,
     "emitDeclarationOnly": true,

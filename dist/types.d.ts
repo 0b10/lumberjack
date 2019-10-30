@@ -20,7 +20,10 @@ export declare type DefaultTemplate = Required<Pick<Template, "messageLevel" | "
 export declare type Template<Context = string, T = StandardTemplate<Context>> = T extends undefined ? Record<keyof StandardTemplate<Context>, T> : StandardTemplate<Context>;
 declare type StandardTemplate<Context> = Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}>;
+}> & RequiredTemplateArgs;
+export interface RequiredTemplateArgs {
+    modulePath: string;
+}
 export declare type MergedTemplate = Template & DefaultTemplate;
 export declare type TemplateKey = keyof Template;
 export declare type MessageLevel = keyof Pick<LogLevels, "info" | "debug" | "warn">;
@@ -33,6 +36,7 @@ export interface Messages<Context = string> {
     result?: any;
     messageLevel?: MessageLevel;
     context?: Context;
+    modulePath?: string;
 }
 export declare type MessageKey = keyof Messages;
 export interface ParsedError {
