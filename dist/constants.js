@@ -5,7 +5,7 @@ exports.CACHED_NODE_ENV = process.env.NODE_ENV;
 exports.TEST_ENVS = new Set(["test", "testing", "debug"]);
 exports.LOG_LEVELS = Object.freeze(new Set(["critical", "debug", "error", "fatal", "info", "trace", "warn"]));
 exports.CONFIG_FILE_NAME = "lumberjack.config.js";
-exports.VALID_MESSAGE_LEVELS = new Set(["info", "debug"]);
+exports.VALID_MESSAGE_LEVELS = new Set(["info", "debug", "warn"]);
 exports.VALID_ERROR_LEVELS = new Set(["error", "warn", "critical", "fatal"]);
 // >>> LOG_LEVEL >>>
 const tempLogLevelEnv = process.env.LOG_LEVEL || "SILENT"; // undefined means no logs

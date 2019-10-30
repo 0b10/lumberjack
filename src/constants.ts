@@ -11,7 +11,7 @@ export const LOG_LEVELS: Readonly<Set<LogLevel>> = Object.freeze(
 
 export const CONFIG_FILE_NAME = "lumberjack.config.js";
 
-export const VALID_MESSAGE_LEVELS: Set<MessageLevel> = new Set(["info", "debug"]);
+export const VALID_MESSAGE_LEVELS: Set<MessageLevel> = new Set(["info", "debug", "warn"]);
 export const VALID_ERROR_LEVELS: Set<ErrorLevel> = new Set(["error", "warn", "critical", "fatal"]);
 
 // >>> LOG_LEVEL >>>

@@ -23,7 +23,7 @@ declare type StandardTemplate<Context> = Partial<Pick<Messages<Context>, "messag
 }>;
 export declare type MergedTemplate = Template & DefaultTemplate;
 export declare type TemplateKey = keyof Template;
-export declare type MessageLevel = keyof Pick<LogLevels, "info" | "debug">;
+export declare type MessageLevel = keyof Pick<LogLevels, "info" | "debug" | "warn">;
 export declare type ErrorLevel = keyof Pick<LogLevels, "error" | "warn" | "critical" | "fatal">;
 export interface Messages<Context = string> {
     args?: object;

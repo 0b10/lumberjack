@@ -37,7 +37,7 @@ export type MergedTemplate = Template & DefaultTemplate;
 
 export type TemplateKey = keyof Template;
 
-export type MessageLevel = keyof Pick<LogLevels, "info" | "debug">;
+export type MessageLevel = keyof Pick<LogLevels, "info" | "debug" | "warn">;
 
 export type ErrorLevel = keyof Pick<LogLevels, "error" | "warn" | "critical" | "fatal">;
 

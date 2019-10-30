@@ -14,14 +14,14 @@ describe("logMessage()", () => {
         fc.property(fc.anything(), (message) => {
           fc.pre(!message);
 
-          const { info, debug } = makeLoggerWithMocks();
+          const { info, debug, warn } = makeLoggerWithMocks();
           const messages = validMessageValues({ message });
           const template = validTemplateValues({
             message: undefined, // this isolates messages.message - keep undefined
           });
 
           try {
-            logMessage(messages, template, info, debug);
+            logMessage(messages, template, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -38,14 +38,14 @@ describe("logMessage()", () => {
         fc.property(fc.anything(), (messageLevel) => {
           fc.pre(!isValidMessageLevel(messageLevel));
 
-          const { info, debug } = makeLoggerWithMocks();
+          const { info, debug, warn } = makeLoggerWithMocks();
           const messages = validMessageValues({ messageLevel });
           const template = validTemplateValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
           });
 
           try {
-            logMessage(messages, template, info, debug);
+            logMessage(messages, template, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -64,14 +64,14 @@ describe("logMessage()", () => {
         fc.property(fc.anything(), (message) => {
           fc.pre(!message);
 
-          const { info, debug } = makeLoggerWithMocks();
+          const { info, debug, warn } = makeLoggerWithMocks();
           const messages = validMessageValues({
             message: undefined, // this isolates template.errorLevel - keep undefined
           });
           const template = validTemplateValues({ message });
 
           try {
-            logMessage(messages, template, info, debug);
+            logMessage(messages, template, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -88,14 +88,14 @@ describe("logMessage()", () => {
         fc.property(fc.anything(), (messageLevel) => {
           fc.pre(!isValidMessageLevel(messageLevel));
 
-          const { info, debug } = makeLoggerWithMocks();
+          const { info, debug, warn } = makeLoggerWithMocks();
           const template = validTemplateValues({ messageLevel });
           const messages = validMessageValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
           });
 
           try {
-            logMessage(messages, template, info, debug);
+            logMessage(messages, template, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -128,7 +128,13 @@ describe("logMessage()", () => {
             const messages = validMessageValues({ message, context: input });
 
             try {
-              logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+              logMessage(
+                messages,
+                template,
+                mockedLogger.info,
+                mockedLogger.debug,
+                mockedLogger.warn
+              );
             } catch (error) {
               if (error instanceof TheExpectedError) {
                 return true;

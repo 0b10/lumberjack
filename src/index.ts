@@ -132,7 +132,7 @@ export const lumberjackTemplate = <Context>(
   const { info, error, trace, debug, warn, critical, fatal } = getLogger(forTesting);
 
   return (messages: Messages): void => {
-    logMessage(messages, usableTemplate, info, debug);
+    logMessage(messages, usableTemplate, info, debug, warn);
     logArgs(messages, trace, forTesting);
     logResult(messages, trace, forTesting);
     logError(

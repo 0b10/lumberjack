@@ -7,6 +7,7 @@ import {
   makeLoggerWithMocks,
   validMessageValues,
   validTemplateValues,
+  stringify,
 } from "./../../../../helpers";
 
 describe("logMessage()", () => {
@@ -22,6 +23,7 @@ describe("logMessage()", () => {
     const fixtures: Fixture[] = [
       { messageLevel: "info", targetLogger: "info" },
       { messageLevel: "debug", targetLogger: "debug" },
+      { messageLevel: "warn", targetLogger: "warn" },
     ];
 
     fixtures.forEach(({ messageLevel, targetLogger }) => {
@@ -39,17 +41,18 @@ describe("logMessage()", () => {
 
         it(`should log to the "${targetLogger}" logger`, () => {
           const mockedLogger = makeLoggerWithMocks();
+          const failureMessage = stringify({ expected });
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
 
           expect(mockedLogger[targetLogger]).toHaveBeenCalledTimes(1);
-          expect(mockedLogger[targetLogger]).toHaveBeenCalledWith(expected);
+          expect(mockedLogger[targetLogger], failureMessage).toHaveBeenCalledWith(expected);
         });
 
         it(`should not duplicate messages to other loggers`, () => {
           const mockedLogger = makeLoggerWithMocks();
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
 
           loggersNotCalled.forEach((otherLogger) => {
             expect(mockedLogger[otherLogger]).not.toHaveBeenCalled();
@@ -72,13 +75,14 @@ describe("logMessage()", () => {
           context,
         });
         const messages = validMessageValues({ message });
+        const failureMessage = stringify({ expected });
 
-        logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+        logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
 
-        expect(mockedLogger.info).toHaveBeenCalledWith(expected);
+        expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
       });
 
-      describe('when a context via messages', () => {
+      describe("when a context via messages", () => {
         it("should use the message context", () => {
           const message = "a random log message ehamdi";
           const context = "A-TEST-TEMPLATE-CONTEXT-CKSUSO";
@@ -90,10 +94,11 @@ describe("logMessage()", () => {
             context: "THIS-CONTEXT-SHOULD-NOT-BE-USED",
           });
           const messages = validMessageValues({ message, context });
+          const failureMessage = stringify({ expected });
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug);
+          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
 
-          expect(mockedLogger.info).toHaveBeenCalledWith(expected);
+          expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
         });
       });
     });

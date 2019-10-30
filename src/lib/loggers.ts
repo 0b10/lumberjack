@@ -106,7 +106,8 @@ const _getMessageLogger = (
   messages: Messages,
   template: MergedTemplate,
   infoLogger: LoggerFunc,
-  debugLogger: LoggerFunc
+  debugLogger: LoggerFunc,
+  warnLogger: LoggerFunc
 ): LoggerFunc => {
   const messageLevel = messages.messageLevel || template.messageLevel;
 
@@ -116,7 +117,7 @@ const _getMessageLogger = (
     );
   }
 
-  return messageLevel === "info" ? infoLogger : debugLogger;
+  return messageLevel === "info" ? infoLogger : messageLevel === "warn" ? warnLogger : debugLogger;
 };
 
 const _getValidContext = (
@@ -136,11 +137,12 @@ export const logMessage = (
   messages: Messages,
   template: MergedTemplate,
   infoLogger: LoggerFunc,
-  debugLogger: LoggerFunc
+  debugLogger: LoggerFunc,
+  warnLogger: LoggerFunc
 ): void => {
   const message: unknown = messages.message || template.message;
   if (_.isString(message) && message.length > 0) {
-    const logger = _getMessageLogger(messages, template, infoLogger, debugLogger);
+    const logger = _getMessageLogger(messages, template, infoLogger, debugLogger, warnLogger);
     const validContext = _getValidContext(messages, template);
     logger(validContext ? `${validContext}: ${message}` : `${message}`); // prevent undefined appearing as string
   } else {

@@ -10,6 +10,7 @@ const TheExpectedError = LumberjackError;
 describe("getCachedConfig()", () => {
   it("should throw when a config is not found", () => {
     // This will start in src/ and work its way to / - it will fail if a config exists in any of those directories
+    // TODO: allow configs to have different names, specifically for testing.
     expect(() => {
       getCachedConfig();
     }).toThrow(TheExpectedError);

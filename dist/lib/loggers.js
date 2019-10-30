@@ -69,12 +69,12 @@ exports.logError = (args, forTesting) => {
     }
 };
 // >>> MESSAGE >>>
-const _getMessageLogger = (messages, template, infoLogger, debugLogger) => {
+const _getMessageLogger = (messages, template, infoLogger, debugLogger, warnLogger) => {
     const messageLevel = messages.messageLevel || template.messageLevel;
     if (!helpers_1.isValidMessageLevel(messageLevel)) {
         throw new error_1.LumberjackError(`Invalid messageLevel: ${messages.messageLevel}, must be "info", or "debug`);
     }
-    return messageLevel === "info" ? infoLogger : debugLogger;
+    return messageLevel === "info" ? infoLogger : messageLevel === "warn" ? warnLogger : debugLogger;
 };
 const _getValidContext = (messages, template) => {
     const usableContext = messages.context || template.context;
@@ -85,10 +85,10 @@ const _getValidContext = (messages, template) => {
         context: usableContext,
     });
 };
-exports.logMessage = (messages, template, infoLogger, debugLogger) => {
+exports.logMessage = (messages, template, infoLogger, debugLogger, warnLogger) => {
     const message = messages.message || template.message;
     if (lodash_1.default.isString(message) && message.length > 0) {
-        const logger = _getMessageLogger(messages, template, infoLogger, debugLogger);
+        const logger = _getMessageLogger(messages, template, infoLogger, debugLogger, warnLogger);
         const validContext = _getValidContext(messages, template);
         logger(validContext ? `${validContext}: ${message}` : `${message}`); // prevent undefined appearing as string
     }
