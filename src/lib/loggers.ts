@@ -57,8 +57,8 @@ const _setErrorPrefix = (template: Template, parsedError: ParsedError): void => 
   }
 };
 
-interface GetErrorLoggerArgs {
-  messages: Messages;
+interface GetErrorLoggerArgs<Context> {
+  messages: Messages<Context>;
   template: MergedTemplate;
   error: LoggerFunc;
   warn: LoggerFunc;
@@ -66,13 +66,13 @@ interface GetErrorLoggerArgs {
   fatal: LoggerFunc;
 }
 
-interface LogErrorArgs extends GetErrorLoggerArgs {
+interface LogErrorArgs<Context> extends GetErrorLoggerArgs<Context> {
   id: string;
   trace: LoggerFunc;
 }
 
 // eslint-disable-next-line complexity
-const _getErrorLogger = (args: GetErrorLoggerArgs): LoggerFunc | never => {
+const _getErrorLogger = <Context>(args: GetErrorLoggerArgs<Context>): LoggerFunc | never => {
   // A complexity of 6 > 5 is necessary here
   const untrustedErrorLevel: unknown = args.messages.errorLevel || args.template.errorLevel;
 
@@ -92,7 +92,7 @@ const _getErrorLogger = (args: GetErrorLoggerArgs): LoggerFunc | never => {
   }
 };
 
-export const logError = (args: LogErrorArgs, forTesting?: ForTesting): void => {
+export const logError = <Context>(args: LogErrorArgs<Context>, forTesting?: ForTesting): void => {
   if (args.messages.error) {
     const parsedError = parseError(args.messages.error);
     let assignedLogger = _getErrorLogger(args);
@@ -106,8 +106,8 @@ export const logError = (args: LogErrorArgs, forTesting?: ForTesting): void => {
 };
 
 // >>> MESSAGE >>>
-const _getMessageLogger = (
-  messages: Messages,
+const _getMessageLogger = <Context>(
+  messages: Messages<Context>,
   template: MergedTemplate,
   infoLogger: LoggerFunc,
   debugLogger: LoggerFunc,
@@ -124,8 +124,8 @@ const _getMessageLogger = (
   return messageLevel === "info" ? infoLogger : messageLevel === "warn" ? warnLogger : debugLogger;
 };
 
-const _getValidContext = (
-  messages: Messages,
+const _getValidContext = <Context>(
+  messages: Messages<Context>,
   template: Readonly<MergedTemplate>
 ): string | undefined => {
   const usableContext = messages.context || template.context;
@@ -137,8 +137,8 @@ const _getValidContext = (
   });
 };
 
-export const logMessage = (
-  messages: Messages,
+export const logMessage = <Context>(
+  messages: Messages<Context>,
   template: MergedTemplate,
   id: string,
   infoLogger: LoggerFunc,
@@ -148,7 +148,7 @@ export const logMessage = (
   const message: unknown = messages.message || template.message;
   if (_.isString(message) && message.length > 0) {
     const logger = _getMessageLogger(messages, template, infoLogger, debugLogger, warnLogger);
-    const validContext = _getValidContext(messages, template);
+    const validContext = _getValidContext<Context>(messages, template);
     logger({ id, message: validContext ? `${validContext}: ${message}` : `${message}` }); // prevent undefined appearing as string
   } else {
     throw new LumberjackError(
@@ -158,8 +158,8 @@ export const logMessage = (
   }
 };
 
-export const logTrace = (
-  messages: Messages,
+export const logTrace = <Context>(
+  messages: Messages<Context>,
   template: MergedTemplate,
   id: string,
   traceLogger: LoggerFunc,
