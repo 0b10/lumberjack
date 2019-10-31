@@ -116,4 +116,4 @@ export declare const lumberjackTemplate: <Context>(template: Partial<Pick<Messag
         logger: unknown;
         consoleMode?: boolean | undefined;
     }> | undefined;
-}> | undefined) => (messages: Messages<string>) => void;
+}> | undefined) => (messages: Messages<Context>) => void;

@@ -26,19 +26,19 @@ export declare const getLogger: (forTesting?: Readonly<{
         consoleMode?: boolean | undefined;
     }> | undefined;
 }> | undefined) => import("../types").LogLevels<LoggerFunc>;
-interface GetErrorLoggerArgs {
-    messages: Messages;
+interface GetErrorLoggerArgs<Context> {
+    messages: Messages<Context>;
     template: MergedTemplate;
     error: LoggerFunc;
     warn: LoggerFunc;
     critical: LoggerFunc;
     fatal: LoggerFunc;
 }
-interface LogErrorArgs extends GetErrorLoggerArgs {
+interface LogErrorArgs<Context> extends GetErrorLoggerArgs<Context> {
     id: string;
     trace: LoggerFunc;
 }
-export declare const logError: (args: LogErrorArgs, forTesting?: Readonly<{
+export declare const logError: <Context>(args: LogErrorArgs<Context>, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
@@ -47,8 +47,8 @@ export declare const logError: (args: LogErrorArgs, forTesting?: Readonly<{
         consoleMode?: boolean | undefined;
     }> | undefined;
 }> | undefined) => void;
-export declare const logMessage: (messages: Messages<string>, template: MergedTemplate, id: string, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc) => void;
-export declare const logTrace: (messages: Messages<string>, template: MergedTemplate, id: string, traceLogger: LoggerFunc, forTesting?: Readonly<{
+export declare const logMessage: <Context>(messages: Messages<Context>, template: MergedTemplate, id: string, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc) => void;
+export declare const logTrace: <Context>(messages: Messages<Context>, template: MergedTemplate, id: string, traceLogger: LoggerFunc, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
