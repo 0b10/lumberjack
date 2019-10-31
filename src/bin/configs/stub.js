@@ -14,3 +14,7 @@ module.exports = {
     warn: (message) => console.warn(message),
   },
 };
+
+// Logging is silent if LOG_LEVEL is undefined, so this is just a reminder
+const LOG_LEVEL = process.env.LOG_LEVEL;
+console.info(`Stub logger initialised @ level: ${LOG_LEVEL === undefined ? "silent" : LOG_LEVEL}`);

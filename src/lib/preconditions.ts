@@ -151,12 +151,12 @@ export const isValidModulePathArg: TemplatePrecondition = (template: {
       return true;
     }
     throw new LumberjackError(
-      `modulePath is invalid - it must be a path (use __pathname) that points to a js|ts module within the src tree:\n${modulePath}`,
+      `modulePath is invalid - it must be a path (use __filename) that points to a js|ts module within the src tree:\n${modulePath}`,
       { modulePath }
     );
   }
   throw new LumberjackError(
-    `modulePath is undefined - you must pass "modulePath: __pathname" into the template`,
+    `modulePath is undefined - you must pass "modulePath: __filename" into the template`,
     { modulePath }
   );
 };

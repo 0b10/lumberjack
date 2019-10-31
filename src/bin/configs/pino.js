@@ -32,3 +32,7 @@ module.exports = {
     warn: (message) => logger.warn(message),
   },
 };
+
+// Logging is silent if LOG_LEVEL is undefined, so this is just a reminder
+const LOG_LEVEL = process.env.LOG_LEVEL;
+logger.info(`Pino logger initialised @ level: ${LOG_LEVEL === undefined ? "silent" : LOG_LEVEL}`);
