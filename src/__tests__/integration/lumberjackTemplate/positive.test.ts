@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import {
   getTransformedTestModulePath,
   getFakeConfig,
@@ -27,6 +29,7 @@ describe("lumberjackTemplate()", () => {
     }
 
     const normalMessageFixtures: NormalMessageFixture[] = [
+      // test that info is used by default, for messages
       {
         targetFunc: "info",
         messageKey: "message",
@@ -37,6 +40,7 @@ describe("lumberjackTemplate()", () => {
           context: undefined,
         },
       },
+      // Test that an error is logged correctly - via the error level
       {
         targetFunc: "error",
         messageKey: "error",
@@ -47,21 +51,23 @@ describe("lumberjackTemplate()", () => {
           errorMessagePrefix: undefined,
         },
       },
+      // Test that args is logged to trace
       {
         targetFunc: "trace",
         messageKey: "args",
         messageValue: { testArgA: "a", testArgB: "b" },
         expected: {
           args: { testArgA: "a", testArgB: "b" },
-          modulePath: getTransformedTestModulePath(__filename),
         },
       },
+      // Test that result is logged to trace
       {
         targetFunc: "trace",
         messageKey: "result",
         messageValue: "a test result",
         expected: { result: "a test result" },
       },
+      // test that a debug messageLevel works as expected
       {
         targetFunc: "debug",
         messageKey: "message",
@@ -77,6 +83,7 @@ describe("lumberjackTemplate()", () => {
           context: undefined,
         },
       },
+      // test that am infor messageLevel works as expected
       {
         targetFunc: "info",
         messageKey: "message",
@@ -150,7 +157,13 @@ describe("lumberjackTemplate()", () => {
                 ...{ [messageKey]: messageValue },
                 ...extraArgs,
               });
-              const failureMessage = stringify({ mockLogger, fakeConfig, template, messages });
+              const failureMessage = stringify({
+                mockLogger,
+                fakeConfig,
+                template,
+                messages,
+                expected,
+              });
 
               const log = lumberjackTemplate(template, {
                 logger: mockLogger,
@@ -159,7 +172,17 @@ describe("lumberjackTemplate()", () => {
 
               log(messages);
 
-              expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
+              expect(mockTarget, failureMessage).toHaveBeenCalledTimes(1); // all loggers shoud be called only once
+              expect(mockTarget.mock.calls[0], failureMessage).toHaveLength(1); // a single arg
+              // Using an if statement is better than refactoring, for now.
+              // These tests need refactored though.
+              // eslint-disable-next-line jest/no-if
+              if (_.isPlainObject(expected)) {
+                // just do partial match
+                expect(mockTarget.mock.calls[0][0], failureMessage).toMatchObject(expected);
+              } else {
+                expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
+              }
             }
           );
         });

@@ -13,6 +13,7 @@ import {
 
 import { isValidMessageLevel } from "./helpers";
 import { validateLoggerInterface } from "./preconditions";
+import { transformModulePath } from "./transformModulePath";
 
 import { parseError, getConditionalLogger, getCachedConfig } from ".";
 
@@ -153,30 +154,24 @@ export const logMessage = (
   }
 };
 
-// >>> RESULT >>>
-export const logResult = (
-  messages: Messages,
-  logger: LoggerFunc,
-  forTesting?: ForTesting
-): void => {
-  // perhaps a console friendly logger
-  const formattedMessage = conditionalStringify({ result: messages.result }, forTesting);
-  logger(formattedMessage);
-};
-
-// >>> ARGS >>>
-export const logArgs = (
+export const logTrace = (
   messages: Messages,
   template: MergedTemplate,
-  logger: LoggerFunc,
+  traceLogger: LoggerFunc,
   forTesting?: ForTesting
 ): void => {
-  // undefined is allowed - no args, not unusual. just don't log
   if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
     throw new LumberjackError(`Args must be an object`, { args: messages.args });
   } else {
-    const modulePath = messages.modulePath || template.modulePath;
-    const formattedMessage = conditionalStringify({ args: messages.args, modulePath }, forTesting);
-    logger(formattedMessage);
+    const transformedModulePath = messages.modulePath
+      ? transformModulePath(messages.modulePath)
+      : undefined;
+
+    const modulePath = transformedModulePath || template.modulePath;
+    const formattedMessage = conditionalStringify(
+      { args: messages.args, modulePath, result: messages.result },
+      forTesting
+    );
+    traceLogger(formattedMessage);
   }
 };

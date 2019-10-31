@@ -7,6 +7,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const error_1 = require("../error");
 const helpers_1 = require("./helpers");
 const preconditions_1 = require("./preconditions");
+const transformModulePath_1 = require("./transformModulePath");
 const _1 = require(".");
 /**
  * Stringify an object if consoleMode is active. This allows complex object structures to be visible
@@ -96,21 +97,16 @@ exports.logMessage = (messages, template, infoLogger, debugLogger, warnLogger) =
         throw new error_1.LumberjackError("A message is invalid. You must pass a truthy string messsage either directly, or to the template", { message });
     }
 };
-// >>> RESULT >>>
-exports.logResult = (messages, logger, forTesting) => {
-    // perhaps a console friendly logger
-    const formattedMessage = exports.conditionalStringify({ result: messages.result }, forTesting);
-    logger(formattedMessage);
-};
-// >>> ARGS >>>
-exports.logArgs = (messages, template, logger, forTesting) => {
-    // undefined is allowed - no args, not unusual. just don't log
+exports.logTrace = (messages, template, traceLogger, forTesting) => {
     if (!lodash_1.default.isPlainObject(messages.args) && messages.args !== undefined) {
         throw new error_1.LumberjackError(`Args must be an object`, { args: messages.args });
     }
     else {
-        const modulePath = messages.modulePath || template.modulePath;
-        const formattedMessage = exports.conditionalStringify({ args: messages.args, modulePath }, forTesting);
-        logger(formattedMessage);
+        const transformedModulePath = messages.modulePath
+            ? transformModulePath_1.transformModulePath(messages.modulePath)
+            : undefined;
+        const modulePath = transformedModulePath || template.modulePath;
+        const formattedMessage = exports.conditionalStringify({ args: messages.args, modulePath, result: messages.result }, forTesting);
+        traceLogger(formattedMessage);
     }
 };

@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { DefaultTemplate, ForTesting, MergedTemplate, Messages, Template } from "./types";
-import { getLogger, logArgs, logError, logMessage, logResult } from "./lib";
+import { getLogger, logTrace, logError, logMessage } from "./lib";
 import { isValidTemplate, canTest } from "./lib/preconditions";
 import { transformTemplate } from "./lib/transformTemplate";
 
@@ -135,8 +135,7 @@ export const lumberjackTemplate = <Context>(
 
   return (messages: Messages): void => {
     logMessage(messages, usableTemplate, info, debug, warn);
-    logArgs(messages, usableTemplate, trace, forTesting);
-    logResult(messages, trace, forTesting);
+    logTrace(messages, usableTemplate, trace, forTesting);
     logError(
       { messages, template: usableTemplate, error, warn, critical, fatal, trace },
       forTesting

@@ -125,8 +125,7 @@ exports.lumberjackTemplate = (template, forTesting) => {
     const { info, error, trace, debug, warn, critical, fatal } = lib_1.getLogger(forTesting);
     return (messages) => {
         lib_1.logMessage(messages, usableTemplate, info, debug, warn);
-        lib_1.logArgs(messages, usableTemplate, trace, forTesting);
-        lib_1.logResult(messages, trace, forTesting);
+        lib_1.logTrace(messages, usableTemplate, trace, forTesting);
         lib_1.logError({ messages, template: usableTemplate, error, warn, critical, fatal, trace }, forTesting);
     };
 };
