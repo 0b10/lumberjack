@@ -16,13 +16,14 @@ describe("logMessage()", () => {
 
           const { info, debug, warn } = makeLoggerWithMocks();
           const messages = validMessageValues({ message });
+          const id = "36217869";
           const template = validTemplateValues({
             message: undefined, // this isolates messages.message - keep undefined
             modulePath: __filename,
           });
 
           try {
-            logMessage(messages, template, info, debug, warn);
+            logMessage(messages, template, id, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -41,13 +42,14 @@ describe("logMessage()", () => {
 
           const { info, debug, warn } = makeLoggerWithMocks();
           const messages = validMessageValues({ messageLevel });
+          const id = "87376275";
           const template = validTemplateValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
             modulePath: __filename,
           });
 
           try {
-            logMessage(messages, template, info, debug, warn);
+            logMessage(messages, template, id, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -71,9 +73,10 @@ describe("logMessage()", () => {
             message: undefined, // this isolates template.errorLevel - keep undefined
           });
           const template = validTemplateValues({ message, modulePath: __filename });
+          const id = "83762318765";
 
           try {
-            logMessage(messages, template, info, debug, warn);
+            logMessage(messages, template, id, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -95,9 +98,10 @@ describe("logMessage()", () => {
           const messages = validMessageValues({
             messageLevel: undefined, // this isolates messages.message - keep undefined
           });
+          const id = "873156362";
 
           try {
-            logMessage(messages, template, info, debug, warn);
+            logMessage(messages, template, id, info, debug, warn);
           } catch (error) {
             if (error instanceof TheExpectedError) {
               return true;
@@ -129,11 +133,13 @@ describe("logMessage()", () => {
               modulePath: __filename,
             });
             const messages = validMessageValues({ message, context: input });
+            const id = "873762735626";
 
             try {
               logMessage(
                 messages,
                 template,
+                id,
                 mockedLogger.info,
                 mockedLogger.debug,
                 mockedLogger.warn

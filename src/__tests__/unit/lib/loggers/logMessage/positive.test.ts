@@ -19,14 +19,15 @@ describe("logMessage()", () => {
     interface Fixture {
       messageLevel: MessageLevel;
       targetLogger: LoggerKey;
+      id: string;
     }
     const fixtures: Fixture[] = [
-      { messageLevel: "info", targetLogger: "info" },
-      { messageLevel: "debug", targetLogger: "debug" },
-      { messageLevel: "warn", targetLogger: "warn" },
+      { messageLevel: "info", targetLogger: "info", id: "1" },
+      { messageLevel: "debug", targetLogger: "debug", id: "2" },
+      { messageLevel: "warn", targetLogger: "warn", id: "3" },
     ];
 
-    fixtures.forEach(({ messageLevel, targetLogger }) => {
+    fixtures.forEach(({ messageLevel, targetLogger, id }) => {
       describe(`when given messageLevel="${messageLevel}"`, () => {
         const template = validTemplateValues({
           context: undefined,
@@ -36,7 +37,7 @@ describe("logMessage()", () => {
         });
         const message = `a test message: ${faker.random.words(5)}`; // random message to make it distinct
         const messages = validMessageValues({ message });
-        const expected = Object.freeze(message);
+        const expected = Object.freeze({ id, message });
         const targetLoggers: MessageLevel[] = ["info", "debug"];
         const loggersNotCalled = targetLoggers.filter((logger) => logger !== targetLogger);
 
@@ -44,7 +45,14 @@ describe("logMessage()", () => {
           const mockedLogger = makeLoggerWithMocks();
           const failureMessage = stringify({ expected });
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+          logMessage(
+            messages,
+            template,
+            id,
+            mockedLogger.info,
+            mockedLogger.debug,
+            mockedLogger.warn
+          );
 
           expect(mockedLogger[targetLogger]).toHaveBeenCalledTimes(1);
           expect(mockedLogger[targetLogger], failureMessage).toHaveBeenCalledWith(expected);
@@ -53,7 +61,14 @@ describe("logMessage()", () => {
         it(`should not duplicate messages to other loggers`, () => {
           const mockedLogger = makeLoggerWithMocks();
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+          logMessage(
+            messages,
+            template,
+            id,
+            mockedLogger.info,
+            mockedLogger.debug,
+            mockedLogger.warn
+          );
 
           loggersNotCalled.forEach((otherLogger) => {
             expect(mockedLogger[otherLogger]).not.toHaveBeenCalled();
@@ -68,7 +83,8 @@ describe("logMessage()", () => {
       it("should use the template context", () => {
         const message = "a random log message usjdywt";
         const context = "A-TEST-TEMPLATE-CONTEXT-YSIWS";
-        const expected = `${context}: ${message}`;
+        const id = "3587625";
+        const expected = Object.freeze({ id, message: `${context}: ${message}` });
         const mockedLogger = makeLoggerWithMocks();
         const template = validTemplateValues({
           messageLevel: "info",
@@ -79,7 +95,14 @@ describe("logMessage()", () => {
         const messages = validMessageValues({ message });
         const failureMessage = stringify({ expected });
 
-        logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+        logMessage(
+          messages,
+          template,
+          id,
+          mockedLogger.info,
+          mockedLogger.debug,
+          mockedLogger.warn
+        );
 
         expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
       });
@@ -88,7 +111,8 @@ describe("logMessage()", () => {
         it("should use the message context", () => {
           const message = "a random log message ehamdi";
           const context = "A-TEST-TEMPLATE-CONTEXT-CKSUSO";
-          const expected = `${context}: ${message}`;
+          const id = "76428789";
+          const expected = Object.freeze({ id, message: `${context}: ${message}` });
           const mockedLogger = makeLoggerWithMocks();
           const template = validTemplateValues({
             messageLevel: "info",
@@ -99,11 +123,35 @@ describe("logMessage()", () => {
           const messages = validMessageValues({ message, context });
           const failureMessage = stringify({ expected });
 
-          logMessage(messages, template, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+          logMessage(
+            messages,
+            template,
+            id,
+            mockedLogger.info,
+            mockedLogger.debug,
+            mockedLogger.warn
+          );
 
           expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
         });
       });
+    });
+  });
+
+  describe("id", () => {
+    it("should log an id", () => {
+      const id = "432934876";
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({
+        messageLevel: "info",
+        modulePath: __filename,
+      });
+      const messages = validMessageValues();
+      const failureMessage = stringify({ id });
+
+      logMessage(messages, template, id, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+
+      expect(mockedLogger.info.mock.calls[0][0], failureMessage).toMatchObject({ id });
     });
   });
 });

@@ -15,9 +15,10 @@ describe("logTrace()", () => {
         const { trace } = makeLoggerWithMocks();
         const messages = validMessageValues({ args });
         const template = validTemplateValues({ modulePath: __filename });
+        const id = "27636715265";
 
         try {
-          logTrace(messages, template, trace);
+          logTrace(messages, template, id, trace);
         } catch (error) {
           if (error instanceof TheExpectedError) {
             return true;

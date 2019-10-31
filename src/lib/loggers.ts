@@ -67,6 +67,7 @@ interface GetErrorLoggerArgs {
 }
 
 interface LogErrorArgs extends GetErrorLoggerArgs {
+  id: string;
   trace: LoggerFunc;
 }
 
@@ -97,8 +98,10 @@ export const logError = (args: LogErrorArgs, forTesting?: ForTesting): void => {
     let assignedLogger = _getErrorLogger(args);
 
     _setErrorPrefix(args.template, parsedError);
-    assignedLogger(parsedError.error);
-    args.trace(conditionalStringify(parsedError.trace, forTesting));
+    assignedLogger({ id: args.id, ...parsedError.error });
+    // TODO: include this into the existing trace log, instead of a separate one
+    // You will need to return this value, then log it into the same trace log in the main logger function
+    args.trace(conditionalStringify({ id: args.id, ...parsedError.trace }, forTesting));
   }
 };
 
@@ -137,6 +140,7 @@ const _getValidContext = (
 export const logMessage = (
   messages: Messages,
   template: MergedTemplate,
+  id: string,
   infoLogger: LoggerFunc,
   debugLogger: LoggerFunc,
   warnLogger: LoggerFunc
@@ -145,7 +149,7 @@ export const logMessage = (
   if (_.isString(message) && message.length > 0) {
     const logger = _getMessageLogger(messages, template, infoLogger, debugLogger, warnLogger);
     const validContext = _getValidContext(messages, template);
-    logger(validContext ? `${validContext}: ${message}` : `${message}`); // prevent undefined appearing as string
+    logger({ id, message: validContext ? `${validContext}: ${message}` : `${message}` }); // prevent undefined appearing as string
   } else {
     throw new LumberjackError(
       "A message is invalid. You must pass a truthy string messsage either directly, or to the template",
@@ -157,6 +161,7 @@ export const logMessage = (
 export const logTrace = (
   messages: Messages,
   template: MergedTemplate,
+  id: string,
   traceLogger: LoggerFunc,
   forTesting?: ForTesting
 ): void => {
@@ -169,7 +174,7 @@ export const logTrace = (
 
     const modulePath = transformedModulePath || template.modulePath;
     const formattedMessage = conditionalStringify(
-      { args: messages.args, modulePath, result: messages.result },
+      { id, args: messages.args, modulePath, result: messages.result },
       forTesting
     );
     traceLogger(formattedMessage);

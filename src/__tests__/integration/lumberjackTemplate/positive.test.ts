@@ -34,7 +34,9 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "message",
         messageValue: "info message",
-        expected: "info message",
+        expected: {
+          message: "info message",
+        },
         templateOverrides: {
           // context will be prefixed to logs - you don't want that
           context: undefined,
@@ -72,7 +74,9 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "debug",
         messageKey: "message",
         messageValue: "a debug message",
-        expected: "a debug message",
+        expected: {
+          message: "a debug message",
+        },
         extraArgs: {
           messageLevel: "debug",
         },
@@ -88,7 +92,9 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "message",
         messageValue: "an info message",
-        expected: "an info message",
+        expected: {
+          message: "an info message",
+        },
         extraArgs: {
           messageLevel: "info",
         },
@@ -104,7 +110,9 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "info",
         messageKey: "context",
         messageValue: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH",
-        expected: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH: a default message",
+        expected: {
+          message: "A-NEW-MESSAGE-CONTEXT-YDOIUSADUH: a default message",
+        },
         extraArgs: {
           messageLevel: "info",
         },
@@ -119,7 +127,9 @@ describe("lumberjackTemplate()", () => {
         targetFunc: "debug",
         messageKey: "context",
         messageValue: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO",
-        expected: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO: a default message",
+        expected: {
+          message: "A-NEW-MESSAGE-CONTEXT-ISUDAIYIUO: a default message",
+        },
         extraArgs: {
           messageLevel: "debug",
         },
@@ -174,15 +184,7 @@ describe("lumberjackTemplate()", () => {
 
               expect(mockTarget, failureMessage).toHaveBeenCalledTimes(1); // all loggers shoud be called only once
               expect(mockTarget.mock.calls[0], failureMessage).toHaveLength(1); // a single arg
-              // Using an if statement is better than refactoring, for now.
-              // These tests need refactored though.
-              // eslint-disable-next-line jest/no-if
-              if (_.isPlainObject(expected)) {
-                // just do partial match
-                expect(mockTarget.mock.calls[0][0], failureMessage).toMatchObject(expected);
-              } else {
-                expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
-              }
+              expect(mockTarget.mock.calls[0][0], failureMessage).toMatchObject(expected);
             }
           );
         });
@@ -249,7 +251,9 @@ describe("lumberjackTemplate()", () => {
         templateKey: "message",
         templateValue: "info message template",
         messageKey: "message",
-        expected: "info message template",
+        expected: {
+          message: "info message template",
+        },
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
           context: undefined,
@@ -274,7 +278,9 @@ describe("lumberjackTemplate()", () => {
         templateValue: "debug",
         messageKey: "message",
         messageValue: "a test message alziw36",
-        expected: "a test message alziw36",
+        expected: {
+          message: "a test message alziw36",
+        },
         description: "should subsequently log an expected message when messageLevel=debug",
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
@@ -288,7 +294,9 @@ describe("lumberjackTemplate()", () => {
         templateValue: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW",
         messageKey: "context",
         messageValue: undefined, // fall back to template
-        expected: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW: a default message",
+        expected: {
+          message: "A-TEST-TEMPLATE-CONTEXT-DHASDJGYW: a default message",
+        },
         description: "should use the template context when a message context is not provided",
       },
       {
@@ -298,7 +306,9 @@ describe("lumberjackTemplate()", () => {
         templateValue: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO",
         messageKey: "context",
         messageValue: undefined, // fall back to template
-        expected: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO: a default message",
+        expected: {
+          message: "A-TEST-TEMPLATE-CONTEXT-UYJDWUO: a default message",
+        },
         description: "should use the template context when a message context is not provided",
         templateOverrides: {
           // The helper (validTemplateValues()) provides a default, just disable it
@@ -312,7 +322,9 @@ describe("lumberjackTemplate()", () => {
         templateValue: "CONTEXT DOESN'T MATTER",
         messageKey: "message",
         messageValue: "a test message ouydksjdh",
-        expected: "CONTEXT DOESN'T MATTER: a test message ouydksjdh",
+        expected: {
+          message: "CONTEXT DOESN'T MATTER: a test message ouydksjdh",
+        },
         description: "should use the default messageLevel when one isn't provided",
       },
       {
@@ -384,11 +396,45 @@ describe("lumberjackTemplate()", () => {
 
               log(messages);
 
-              expect(mockTarget, failureMessage).toHaveBeenCalledWith(expected);
+              expect(mockTarget, failureMessage).toHaveBeenCalledTimes(1);
+              expect(mockTarget.mock.calls[0], failureMessage).toHaveLength(1); // a single arg passed to logger
+              expect(mockTarget.mock.calls[0][0], failureMessage).toMatchObject(expected);
             }
           );
         });
       }
     );
+  });
+
+  describe("id", () => {
+    it(`should pass the same id to all loggers`, () => {
+      const mockLogger = makeLoggerWithMocks();
+      const fakeConfig = getFakeConfig({ consoleMode: false });
+      const template = validTemplateValues({ modulePath: __filename });
+      const messages = validMessageValues({
+        message: "arbitrary message",
+        error: new Error("arbitrary error message"),
+      });
+      const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+
+      log(messages);
+      const retrievedId = mockLogger.info.mock.calls[0][0].id;
+      const failureMessage = stringify({
+        id: retrievedId,
+        mockLogger,
+        fakeConfig,
+        template,
+        messages,
+      });
+
+      // be defensive
+      expect(typeof retrievedId, failureMessage).toBe("string");
+      expect(retrievedId, failureMessage).toMatch(/^\d+$/);
+      // test the loggers - exluding info, because it's the source
+      for (let targetFunc of ["trace", "error"]) {
+        expect(mockLogger[targetFunc].mock.calls[0], failureMessage).toHaveLength(1); // defensive
+        expect(mockLogger[targetFunc].mock.calls[0][0].id, failureMessage).toBe(retrievedId);
+      }
+    });
   });
 });

@@ -35,6 +35,7 @@ interface GetErrorLoggerArgs {
     fatal: LoggerFunc;
 }
 interface LogErrorArgs extends GetErrorLoggerArgs {
+    id: string;
     trace: LoggerFunc;
 }
 export declare const logError: (args: LogErrorArgs, forTesting?: Readonly<{
@@ -46,8 +47,8 @@ export declare const logError: (args: LogErrorArgs, forTesting?: Readonly<{
         consoleMode?: boolean | undefined;
     }> | undefined;
 }> | undefined) => void;
-export declare const logMessage: (messages: Messages<string>, template: MergedTemplate, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc) => void;
-export declare const logTrace: (messages: Messages<string>, template: MergedTemplate, traceLogger: LoggerFunc, forTesting?: Readonly<{
+export declare const logMessage: (messages: Messages<string>, template: MergedTemplate, id: string, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc) => void;
+export declare const logTrace: (messages: Messages<string>, template: MergedTemplate, id: string, traceLogger: LoggerFunc, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;

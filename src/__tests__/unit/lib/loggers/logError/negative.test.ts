@@ -21,11 +21,13 @@ describe("logError()", () => {
             errorLevel: undefined, // this isolates messages.errorLevel - keep undefined
             modulePath: __filename,
           });
+          const id = "901927376";
 
           try {
             logError({
               messages: invalidMessages,
               template: validTemplate,
+              id,
               ...mockedLogger,
             });
           } catch (error) {
@@ -53,11 +55,13 @@ describe("logError()", () => {
             errorLevel: invalidErrorLevel as ErrorLevel,
             modulePath: __filename,
           });
+          const id = "2653891876";
 
           try {
             logError({
               messages: validMessages,
               template: invalidTemplate,
+              id,
               ...mockedLogger,
             });
           } catch (error) {

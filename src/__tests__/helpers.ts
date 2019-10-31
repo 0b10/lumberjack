@@ -121,6 +121,6 @@ export const getFakeConfig = (overrides?: Config): Config => {
   return Object.freeze({ ..._defaultConfigOptions, ...overrides });
 };
 
-export const getTransformedTestModulePath = (filename: string) => {
+export const getTransformedTestModulePath = (filename: string): string => {
   return ROOT_PATH_SUBSTITUTE + path.sep + path.basename(filename);
 };

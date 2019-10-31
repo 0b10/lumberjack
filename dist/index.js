@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const lodash_1 = __importDefault(require("lodash"));
 const lib_1 = require("./lib");
 const preconditions_1 = require("./lib/preconditions");
 const transformTemplate_1 = require("./lib/transformTemplate");
@@ -7,6 +11,7 @@ const defaultTemplate = Object.freeze({
     messageLevel: "info",
     errorLevel: "error",
 });
+const _randomId = () => lodash_1.default.random(0, Number.MAX_SAFE_INTEGER, false).toString();
 /**
  *
  * @param {Template<Context>} template - a number of default values to use, these are then included
@@ -124,8 +129,9 @@ exports.lumberjackTemplate = (template, forTesting) => {
     }
     const { info, error, trace, debug, warn, critical, fatal } = lib_1.getLogger(forTesting);
     return (messages) => {
-        lib_1.logMessage(messages, usableTemplate, info, debug, warn);
-        lib_1.logTrace(messages, usableTemplate, trace, forTesting);
-        lib_1.logError({ messages, template: usableTemplate, error, warn, critical, fatal, trace }, forTesting);
+        const id = _randomId();
+        lib_1.logMessage(messages, usableTemplate, id, info, debug, warn);
+        lib_1.logTrace(messages, usableTemplate, id, trace, forTesting);
+        lib_1.logError({ messages, template: usableTemplate, id, error, warn, critical, fatal, trace }, forTesting);
     };
 };

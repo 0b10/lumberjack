@@ -10,6 +10,8 @@ const defaultTemplate: DefaultTemplate = Object.freeze({
   errorLevel: "error",
 });
 
+const _randomId = (): string => _.random(0, Number.MAX_SAFE_INTEGER, false).toString();
+
 /**
  *
  * @param {Template<Context>} template - a number of default values to use, these are then included
@@ -134,10 +136,12 @@ export const lumberjackTemplate = <Context>(
   const { info, error, trace, debug, warn, critical, fatal } = getLogger(forTesting);
 
   return (messages: Messages): void => {
-    logMessage(messages, usableTemplate, info, debug, warn);
-    logTrace(messages, usableTemplate, trace, forTesting);
+    const id: string = _randomId();
+
+    logMessage(messages, usableTemplate, id, info, debug, warn);
+    logTrace(messages, usableTemplate, id, trace, forTesting);
     logError(
-      { messages, template: usableTemplate, error, warn, critical, fatal, trace },
+      { messages, template: usableTemplate, id, error, warn, critical, fatal, trace },
       forTesting
     );
   };
