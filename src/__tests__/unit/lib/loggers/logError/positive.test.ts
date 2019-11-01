@@ -164,5 +164,29 @@ describe("logError()", () => {
 
       expect(result, failureMessage).toBeUndefined();
     });
+
+    it(`should return undefined when messages is undefined`, () => {
+      // messages contains the error object, so no point in logging if it's undefined
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({
+        errorLevel: "error",
+        modulePath: __filename,
+      });
+      const id = "35623984787";
+      const failureMessage = stringify({ id, template, mockedLogger });
+
+      const result = logError({
+        messages: undefined,
+        template,
+        id,
+        critical: mockedLogger.critical,
+        error: mockedLogger.error,
+        fatal: mockedLogger.fatal,
+        trace: mockedLogger.trace,
+        warn: mockedLogger.warn,
+      }) as string;
+
+      expect(result, failureMessage).toBeUndefined();
+    });
   });
 });

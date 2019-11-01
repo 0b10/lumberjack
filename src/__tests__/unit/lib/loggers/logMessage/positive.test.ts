@@ -27,6 +27,48 @@ describe("logMessage()", () => {
       { messageLevel: "warn", targetLogger: "warn", id: "3" },
     ];
 
+    it("should accept undefined", () => {
+      const message = "a test template message udhaskjdhgtfw";
+      const template = validTemplateValues({
+        context: undefined,
+        message,
+        messageLevel: "info",
+        modulePath: __filename,
+      });
+      const id = "726318377457";
+      const mockedLogger = makeLoggerWithMocks();
+      const expected = Object.freeze({ message });
+      const failureMessage = stringify({ expected, template, id, mockedLogger });
+
+      expect(() => {
+        logMessage(
+          template,
+          id,
+          mockedLogger.info,
+          mockedLogger.debug,
+          mockedLogger.warn,
+          undefined
+        );
+      }, failureMessage).not.toThrow();
+    });
+
+    it("should fallback to default values when undefined", () => {
+      const message = "a test template message udhaskjdhgtfw";
+      const template = validTemplateValues({
+        context: undefined,
+        message,
+        messageLevel: "info",
+        modulePath: __filename,
+      });
+      const id = "328647892645";
+      const mockedLogger = makeLoggerWithMocks();
+      const expected = Object.freeze({ message });
+      const failureMessage = stringify({ expected, template, id, mockedLogger });
+
+      logMessage(template, id, mockedLogger.info, mockedLogger.debug, mockedLogger.warn, undefined);
+      expect(mockedLogger.info.mock.calls[0][0], failureMessage).toMatchObject(expected);
+    });
+
     fixtures.forEach(({ messageLevel, targetLogger, id }) => {
       describe(`when given messageLevel="${messageLevel}"`, () => {
         const template = validTemplateValues({
@@ -46,12 +88,12 @@ describe("logMessage()", () => {
           const failureMessage = stringify({ expected });
 
           logMessage(
-            messages,
             template,
             id,
             mockedLogger.info,
             mockedLogger.debug,
-            mockedLogger.warn
+            mockedLogger.warn,
+            messages
           );
 
           expect(mockedLogger[targetLogger]).toHaveBeenCalledTimes(1);
@@ -62,12 +104,12 @@ describe("logMessage()", () => {
           const mockedLogger = makeLoggerWithMocks();
 
           logMessage(
-            messages,
             template,
             id,
             mockedLogger.info,
             mockedLogger.debug,
-            mockedLogger.warn
+            mockedLogger.warn,
+            messages
           );
 
           loggersNotCalled.forEach((otherLogger) => {
@@ -96,12 +138,12 @@ describe("logMessage()", () => {
         const failureMessage = stringify({ expected });
 
         logMessage(
-          messages,
           template,
           id,
           mockedLogger.info,
           mockedLogger.debug,
-          mockedLogger.warn
+          mockedLogger.warn,
+          messages
         );
 
         expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
@@ -124,12 +166,12 @@ describe("logMessage()", () => {
           const failureMessage = stringify({ expected });
 
           logMessage(
-            messages,
             template,
             id,
             mockedLogger.info,
             mockedLogger.debug,
-            mockedLogger.warn
+            mockedLogger.warn,
+            messages
           );
 
           expect(mockedLogger.info, failureMessage).toHaveBeenCalledWith(expected);
@@ -149,7 +191,7 @@ describe("logMessage()", () => {
       const messages = validMessageValues();
       const failureMessage = stringify({ id });
 
-      logMessage(messages, template, id, mockedLogger.info, mockedLogger.debug, mockedLogger.warn);
+      logMessage(template, id, mockedLogger.info, mockedLogger.debug, mockedLogger.warn, messages);
 
       expect(mockedLogger.info.mock.calls[0][0], failureMessage).toMatchObject({ id });
     });

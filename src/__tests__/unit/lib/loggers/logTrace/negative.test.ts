@@ -8,7 +8,7 @@ import { makeLoggerWithMocks, validMessageValues, validTemplateValues } from "..
 const TheExpectedError = LumberjackError;
 
 describe("logTrace()", () => {
-  it(`should throw when args is not an object (but undefined allowed)`, () => {
+  it(`should throw when args is not an object (undefined allowed)`, () => {
     fc.assert(
       fc.property(fc.anything(), (args) => {
         fc.pre(!_.isPlainObject(args) && args !== undefined);
@@ -18,7 +18,7 @@ describe("logTrace()", () => {
         const id = "27636715265";
 
         try {
-          logTrace(messages, template, id, trace);
+          logTrace(template, id, trace, undefined, messages);
         } catch (error) {
           if (error instanceof TheExpectedError) {
             return true;

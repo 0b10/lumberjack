@@ -11,7 +11,7 @@ export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
         logger: unknown;
         consoleMode?: boolean | undefined;
     }> | undefined;
-}>, "configDir" | "fakeConfig" | "logger"> | undefined) => Partial<{
+}>, "logger" | "configDir" | "fakeConfig"> | undefined) => Partial<{
     logger: unknown;
     consoleMode?: boolean | undefined;
 }>;

@@ -122,7 +122,7 @@ const _randomId = (): string => _.random(0, Number.MAX_SAFE_INTEGER, false).toSt
 export const lumberjackTemplate = <Context>(
   template: Template<Context>,
   forTesting?: ForTesting
-): ((messages: Messages<Context>) => void) => {
+): ((messages?: Messages<Context>) => void) => {
   const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args
 
   canTest(forTesting);
@@ -135,10 +135,10 @@ export const lumberjackTemplate = <Context>(
 
   const { info, error, trace, debug, warn, critical, fatal } = getLogger(forTesting);
 
-  return (messages: Messages<Context>): void => {
+  return (messages?: Messages<Context>): void => {
     const id: string = _randomId();
 
-    logMessage(messages, usableTemplate, id, info, debug, warn);
+    logMessage<Context>(usableTemplate, id, info, debug, warn, messages);
     const stackTrace = logError({
       messages,
       template: usableTemplate,
@@ -149,6 +149,6 @@ export const lumberjackTemplate = <Context>(
       fatal,
       trace,
     });
-    logTrace(messages, usableTemplate, id, trace, stackTrace, forTesting);
+    logTrace(usableTemplate, id, trace, stackTrace, messages, forTesting);
   };
 };

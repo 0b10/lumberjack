@@ -28,7 +28,7 @@ describe("logTrace()", () => {
       const fakeConfig = getFakeConfig({ consoleMode: false });
       const failureMessage = stringify({ id, messages, template, mockedLogger, fakeConfig });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledWith(expected);
@@ -43,7 +43,7 @@ describe("logTrace()", () => {
       const failureMessage = stringify({ messages, template, mockedLogger, fakeConfig });
 
       expect(() => {
-        logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+        logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
       }, failureMessage).not.toThrow();
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
@@ -60,7 +60,7 @@ describe("logTrace()", () => {
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
           try {
-            logTrace(messages, template, id, trace, undefined, { fakeConfig });
+            logTrace(template, id, trace, undefined, messages, { fakeConfig });
           } catch (error) {
             return false;
           }
@@ -89,7 +89,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -112,7 +112,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -130,7 +130,7 @@ describe("logTrace()", () => {
           const template = validTemplateValues({ modulePath: __filename });
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
-          logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+          logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
           return _.isMatch(mockedLogger.trace.mock.calls[0][0], expected);
         }),
@@ -148,7 +148,7 @@ describe("logTrace()", () => {
           const template = validTemplateValues({ modulePath: __filename });
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
-          logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+          logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
           return _.isMatch(mockedLogger.trace.mock.calls[0][0], expected);
         }),
@@ -174,7 +174,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -197,7 +197,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -222,7 +222,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, undefined, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -247,7 +247,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, stackTrace, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, stackTrace, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -270,7 +270,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, stackTrace, { fakeConfig });
+      logTrace(template, id, mockedLogger.trace, stackTrace, messages, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg

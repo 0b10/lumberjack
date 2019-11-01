@@ -17,7 +17,53 @@ describe("lumberjackTemplate()", () => {
   });
 
   // >>> MESSAGES >>>
-  describe("direct messages", () => {
+  describe("messages", () => {
+    describe("when undefined", () => {
+      it(`should accept undefined messages if template.message is set`, () => {
+        const mockLogger = makeLoggerWithMocks();
+        const fakeConfig = getFakeConfig({ consoleMode: false });
+        const template = validTemplateValues({
+          message: "a test template message yqywtetf",
+          modulePath: __filename,
+        });
+        const failureMessage = stringify({
+          mockLogger,
+          fakeConfig,
+          template,
+          messages: undefined,
+        });
+
+        const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+
+        expect(() => {
+          log(undefined);
+        }, failureMessage).not.toThrow();
+      });
+
+      it(`should log the template message if messages is undefined`, () => {
+        const message = "a test template message yqywtetf";
+        const mockLogger = makeLoggerWithMocks();
+        const fakeConfig = getFakeConfig({ consoleMode: false });
+        const template = validTemplateValues({
+          context: undefined, // avoid including it in message output
+          message,
+          modulePath: __filename,
+        });
+        const expected = { message };
+        const failureMessage = stringify({
+          mockLogger,
+          fakeConfig,
+          template,
+          messages: undefined,
+        });
+
+        const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+        log(); // undefined messages
+
+        expect(mockLogger.info.mock.calls[0][0], failureMessage).toMatchObject(expected);
+      });
+    });
+
     interface NormalMessageFixture {
       targetFunc: LoggerKey; // The logger function to be called - is a spy
       messageKey: MessageKey; // The corresponding message key to be populated - the input

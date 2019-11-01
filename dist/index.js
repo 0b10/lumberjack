@@ -130,7 +130,7 @@ exports.lumberjackTemplate = (template, forTesting) => {
     const { info, error, trace, debug, warn, critical, fatal } = lib_1.getLogger(forTesting);
     return (messages) => {
         const id = _randomId();
-        lib_1.logMessage(messages, usableTemplate, id, info, debug, warn);
+        lib_1.logMessage(usableTemplate, id, info, debug, warn, messages);
         const stackTrace = lib_1.logError({
             messages,
             template: usableTemplate,
@@ -141,6 +141,6 @@ exports.lumberjackTemplate = (template, forTesting) => {
             fatal,
             trace,
         });
-        lib_1.logTrace(messages, usableTemplate, id, trace, stackTrace, forTesting);
+        lib_1.logTrace(usableTemplate, id, trace, stackTrace, messages, forTesting);
     };
 };

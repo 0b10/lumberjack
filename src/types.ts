@@ -38,7 +38,7 @@ export interface RequiredTemplateArgs {
   modulePath: string;
 }
 
-export type MergedTemplate = Template & DefaultTemplate;
+export type MergedTemplate<Context = string> = Template<Context> & DefaultTemplate;
 
 export type TemplateKey = keyof Template;
 

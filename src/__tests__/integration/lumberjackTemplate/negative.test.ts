@@ -28,6 +28,23 @@ describe("lumberjackTemplate()", () => {
     }, failureMessage).toThrow(TheExpectedError);
   });
 
+  it(`should throw when messages and template.message is undefined`, () => {
+    const TheExpectedError = LumberjackError;
+    const mockLogger = makeLoggerWithMocks();
+    const fakeConfig = getFakeConfig({ consoleMode: false });
+    const template = validTemplateValues({ message: undefined, modulePath: __filename });
+    const failureMessage = stringify({ mockLogger, template, fakeConfig });
+
+    const log = lumberjackTemplate(template, {
+      logger: mockLogger,
+      fakeConfig,
+    });
+
+    expect(() => {
+      log();
+    }, failureMessage).toThrow(TheExpectedError);
+  });
+
   it(`should throw when an invalid modulePath template value is passed in`, () => {
     const TheExpectedError = LumberjackError;
     const mockLogger = makeLoggerWithMocks();
