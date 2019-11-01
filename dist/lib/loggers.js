@@ -60,16 +60,15 @@ const _getErrorLogger = (args) => {
             throw new error_1.LumberjackError(`Unknown logger errorLevel: "${untrustedErrorLevel}", must be one of "fatal", "error", "warn", or "critical"`);
     }
 };
-exports.logError = (args, forTesting) => {
-    if (args.messages.error) {
+exports.logError = (args) => {
+    if (!lodash_1.default.isUndefined(args.messages.error)) {
         const parsedError = _1.parseError(args.messages.error);
         let assignedLogger = _getErrorLogger(args);
         _setErrorPrefix(args.template, parsedError);
         assignedLogger({ id: args.id, ...parsedError.error });
-        // TODO: include this into the existing trace log, instead of a separate one
-        // You will need to return this value, then log it into the same trace log in the main logger function
-        args.trace(exports.conditionalStringify({ id: args.id, ...parsedError.trace }, forTesting));
+        return parsedError.trace.stack;
     }
+    return undefined;
 };
 // >>> MESSAGE >>>
 const _getMessageLogger = (messages, template, infoLogger, debugLogger, warnLogger) => {
@@ -99,7 +98,7 @@ exports.logMessage = (messages, template, id, infoLogger, debugLogger, warnLogge
         throw new error_1.LumberjackError("A message is invalid. You must pass a truthy string messsage either directly, or to the template", { message });
     }
 };
-exports.logTrace = (messages, template, id, traceLogger, forTesting) => {
+exports.logTrace = (messages, template, id, traceLogger, stackTrace, forTesting) => {
     if (!lodash_1.default.isPlainObject(messages.args) && messages.args !== undefined) {
         throw new error_1.LumberjackError(`Args must be an object`, { args: messages.args });
     }
@@ -108,7 +107,7 @@ exports.logTrace = (messages, template, id, traceLogger, forTesting) => {
             ? transformModulePath_1.transformModulePath(messages.modulePath)
             : undefined;
         const modulePath = transformedModulePath || template.modulePath;
-        const formattedMessage = exports.conditionalStringify({ id, args: messages.args, modulePath, result: messages.result }, forTesting);
+        const formattedMessage = exports.conditionalStringify({ id, args: messages.args, modulePath, result: messages.result, stackTrace }, forTesting);
         traceLogger(formattedMessage);
     }
 };

@@ -38,17 +38,9 @@ interface LogErrorArgs<Context> extends GetErrorLoggerArgs<Context> {
     id: string;
     trace: LoggerFunc;
 }
-export declare const logError: <Context>(args: LogErrorArgs<Context>, forTesting?: Readonly<{
-    logger?: import("../types").LogLevels<LoggerFunc> | undefined;
-    configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
-    fakeConfig?: Partial<{
-        logger: unknown;
-        consoleMode?: boolean | undefined;
-    }> | undefined;
-}> | undefined) => void;
+export declare const logError: <Context>(args: LogErrorArgs<Context>) => string | undefined;
 export declare const logMessage: <Context>(messages: Messages<Context>, template: MergedTemplate, id: string, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc) => void;
-export declare const logTrace: <Context>(messages: Messages<Context>, template: MergedTemplate, id: string, traceLogger: LoggerFunc, forTesting?: Readonly<{
+export declare const logTrace: <Context>(messages: Messages<Context>, template: MergedTemplate, id: string, traceLogger: LoggerFunc, stackTrace?: string | undefined, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
