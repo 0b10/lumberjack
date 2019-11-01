@@ -139,10 +139,16 @@ export const lumberjackTemplate = <Context>(
     const id: string = _randomId();
 
     logMessage(messages, usableTemplate, id, info, debug, warn);
-    logTrace(messages, usableTemplate, id, trace, forTesting);
-    logError(
-      { messages, template: usableTemplate, id, error, warn, critical, fatal, trace },
-      forTesting
-    );
+    const stackTrace = logError({
+      messages,
+      template: usableTemplate,
+      id,
+      error,
+      warn,
+      critical,
+      fatal,
+      trace,
+    });
+    logTrace(messages, usableTemplate, id, trace, stackTrace, forTesting);
   };
 };

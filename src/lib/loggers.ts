@@ -92,17 +92,16 @@ const _getErrorLogger = <Context>(args: GetErrorLoggerArgs<Context>): LoggerFunc
   }
 };
 
-export const logError = <Context>(args: LogErrorArgs<Context>, forTesting?: ForTesting): void => {
-  if (args.messages.error) {
+export const logError = <Context>(args: LogErrorArgs<Context>): string | undefined => {
+  if (!_.isUndefined(args.messages.error)) {
     const parsedError = parseError(args.messages.error);
     let assignedLogger = _getErrorLogger(args);
 
     _setErrorPrefix(args.template, parsedError);
     assignedLogger({ id: args.id, ...parsedError.error });
-    // TODO: include this into the existing trace log, instead of a separate one
-    // You will need to return this value, then log it into the same trace log in the main logger function
-    args.trace(conditionalStringify({ id: args.id, ...parsedError.trace }, forTesting));
+    return parsedError.trace.stack;
   }
+  return undefined;
 };
 
 // >>> MESSAGE >>>
@@ -163,6 +162,7 @@ export const logTrace = <Context>(
   template: MergedTemplate,
   id: string,
   traceLogger: LoggerFunc,
+  stackTrace?: string,
   forTesting?: ForTesting
 ): void => {
   if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
@@ -174,7 +174,7 @@ export const logTrace = <Context>(
 
     const modulePath = transformedModulePath || template.modulePath;
     const formattedMessage = conditionalStringify(
-      { id, args: messages.args, modulePath, result: messages.result },
+      { id, args: messages.args, modulePath, result: messages.result, stackTrace },
       forTesting
     );
     traceLogger(formattedMessage);

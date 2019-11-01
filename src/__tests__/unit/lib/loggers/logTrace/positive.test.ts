@@ -28,7 +28,7 @@ describe("logTrace()", () => {
       const fakeConfig = getFakeConfig({ consoleMode: false });
       const failureMessage = stringify({ id, messages, template, mockedLogger, fakeConfig });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledWith(expected);
@@ -43,7 +43,7 @@ describe("logTrace()", () => {
       const failureMessage = stringify({ messages, template, mockedLogger, fakeConfig });
 
       expect(() => {
-        logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+        logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
       }, failureMessage).not.toThrow();
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
@@ -60,7 +60,7 @@ describe("logTrace()", () => {
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
           try {
-            logTrace(messages, template, id, trace, { fakeConfig });
+            logTrace(messages, template, id, trace, undefined, { fakeConfig });
           } catch (error) {
             return false;
           }
@@ -89,7 +89,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -112,7 +112,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -130,7 +130,7 @@ describe("logTrace()", () => {
           const template = validTemplateValues({ modulePath: __filename });
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
-          logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+          logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
           return _.isMatch(mockedLogger.trace.mock.calls[0][0], expected);
         }),
@@ -148,7 +148,7 @@ describe("logTrace()", () => {
           const template = validTemplateValues({ modulePath: __filename });
           const fakeConfig = getFakeConfig({ consoleMode: false });
 
-          logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+          logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
           return _.isMatch(mockedLogger.trace.mock.calls[0][0], expected);
         }),
@@ -174,7 +174,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -197,7 +197,7 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
@@ -212,7 +212,7 @@ describe("logTrace()", () => {
       const template = validTemplateValues({ modulePath: __filename }); // path isn't transformed
       const messages = validMessageValues();
       const fakeConfig = getFakeConfig({ consoleMode: false });
-      const expected = Object.freeze({ id }); // only lumberjackTemplate transforms template modulePath
+      const expected = Object.freeze({ id });
       const failureMessage = stringify({
         id,
         expected,
@@ -222,11 +222,59 @@ describe("logTrace()", () => {
         mockedLogger,
       });
 
-      logTrace(messages, template, id, mockedLogger.trace, { fakeConfig });
+      logTrace(messages, template, id, mockedLogger.trace, undefined, { fakeConfig });
 
       expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
       expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
       expect(mockedLogger.trace.mock.calls[0][0], failureMessage).toMatchObject(expected);
+    });
+  });
+
+  describe("stackTrace", () => {
+    it(`should log a stackTrace when it's defined`, () => {
+      const id = "38346872345";
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({ modulePath: __filename }); // path isn't transformed
+      const messages = validMessageValues();
+      const fakeConfig = getFakeConfig({ consoleMode: false });
+      const stackTrace = "a fake strack trace message";
+      const failureMessage = stringify({
+        id,
+        stackTrace,
+        messages,
+        template,
+        fakeConfig,
+        mockedLogger,
+      });
+
+      logTrace(messages, template, id, mockedLogger.trace, stackTrace, { fakeConfig });
+
+      expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
+      expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
+      expect(mockedLogger.trace.mock.calls[0][0], failureMessage).toMatchObject({ stackTrace });
+    });
+
+    it(`should log an undefined stackTrace when it's undefined`, () => {
+      const id = "238742967345";
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({ modulePath: __filename }); // path isn't transformed
+      const messages = validMessageValues();
+      const fakeConfig = getFakeConfig({ consoleMode: false });
+      const stackTrace = undefined;
+      const failureMessage = stringify({
+        id,
+        stackTrace,
+        messages,
+        template,
+        fakeConfig,
+        mockedLogger,
+      });
+
+      logTrace(messages, template, id, mockedLogger.trace, stackTrace, { fakeConfig });
+
+      expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
+      expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
+      expect(mockedLogger.trace.mock.calls[0][0], failureMessage).toMatchObject({ stackTrace });
     });
   });
 });

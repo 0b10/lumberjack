@@ -8,11 +8,11 @@ import { makeLoggerWithMocks, validTemplateValues, validMessageValues } from "..
 const TheExpectedError = LumberjackError;
 
 describe("logError()", () => {
-  describe("messages, when template.errorLevel=undefined", () => {
-    it(`should throw when given an invalid errorLevel,`, () => {
-      const mockedLogger = makeLoggerWithMocks();
+  describe("messages", () => {
+    it(`should throw when given an invalid errorLevel, and template errorLevel is undefined,`, () => {
       fc.assert(
         fc.property(fc.anything(), (invalidErrorLevel) => {
+          const mockedLogger = makeLoggerWithMocks();
           const invalidMessages = validMessageValues({
             error: new Error("this message doesn't matter"),
             errorLevel: invalidErrorLevel as ErrorLevel,
@@ -36,17 +36,50 @@ describe("logError()", () => {
             }
           }
           return false;
-        })
-      ),
-        { verbose: true };
+        }),
+        { verbose: true }
+      );
+    });
+
+    it(`should throw when given an invalid error object (except undefined)`, () => {
+      fc.assert(
+        fc.property(fc.anything(), (invalidError) => {
+          fc.pre(invalidError !== undefined && !(invalidError instanceof Error));
+          const mockedLogger = makeLoggerWithMocks();
+          const messages = validMessageValues({
+            error: invalidError,
+            errorLevel: "error",
+          });
+          const template = validTemplateValues({
+            errorLevel: "error",
+            modulePath: __filename,
+          });
+          const id = "73461423562";
+
+          try {
+            logError({
+              messages,
+              template,
+              id,
+              ...mockedLogger,
+            });
+          } catch (error) {
+            if (error instanceof TheExpectedError) {
+              return true;
+            }
+          }
+          return false;
+        }),
+        { verbose: true }
+      );
     });
   });
 
-  describe("template, when messages.errorLevel=undefined", () => {
-    it(`should throw when given an invalid errorLevel`, () => {
-      const mockedLogger = makeLoggerWithMocks();
+  describe("template", () => {
+    it(`should throw when given an invalid errorLevel, and messages.errorLevel is undefined`, () => {
       fc.assert(
         fc.property(fc.anything(), (invalidErrorLevel) => {
+          const mockedLogger = makeLoggerWithMocks();
           const validMessages = validMessageValues({
             error: new Error("this message doesn't matter"),
             errorLevel: undefined, // this isolates template.errorLevel - keep undefined
@@ -70,9 +103,9 @@ describe("logError()", () => {
             }
           }
           return false;
-        })
-      ),
-        { verbose: true };
+        }),
+        { verbose: true }
+      );
     });
   });
 });

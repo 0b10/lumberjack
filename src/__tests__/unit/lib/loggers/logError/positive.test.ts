@@ -7,7 +7,6 @@ import {
   makeLoggerWithMocks,
   validMessageValues,
   validTemplateValues,
-  getFakeConfig,
   stringify,
 } from "./../../../../helpers";
 
@@ -48,44 +47,40 @@ describe("logError()", () => {
 
         it(`should log to the "${errorLevel}" logger`, () => {
           const mockedLogger = makeLoggerWithMocks();
+          const failureMessage = stringify({ id, messages, template, mockedLogger });
 
-          logError(
-            {
-              messages,
-              template,
-              id,
-              critical: mockedLogger.critical,
-              error: mockedLogger.error,
-              fatal: mockedLogger.fatal,
-              trace: mockedLogger.trace,
-              warn: mockedLogger.warn,
-            },
-            { fakeConfig: getFakeConfig({ consoleMode: false }) }
-          );
+          logError({
+            messages,
+            template,
+            id,
+            critical: mockedLogger.critical,
+            error: mockedLogger.error,
+            fatal: mockedLogger.fatal,
+            trace: mockedLogger.trace,
+            warn: mockedLogger.warn,
+          });
 
-          expect(mockedLogger[targetLogger]).toHaveBeenCalledTimes(1);
-          expect(mockedLogger[targetLogger]).toHaveBeenCalledWith(expected);
+          expect(mockedLogger[targetLogger], failureMessage).toHaveBeenCalledTimes(1);
+          expect(mockedLogger[targetLogger], failureMessage).toHaveBeenCalledWith(expected);
         });
 
         it(`should not duplicate messages to other loggers`, () => {
           const mockedLogger = makeLoggerWithMocks();
+          const failureMessage = stringify({ id, messages, template, mockedLogger });
 
-          logError(
-            {
-              messages,
-              template,
-              id,
-              critical: mockedLogger.critical,
-              error: mockedLogger.error,
-              fatal: mockedLogger.fatal,
-              trace: mockedLogger.trace,
-              warn: mockedLogger.warn,
-            },
-            { fakeConfig: getFakeConfig({ consoleMode: false }) }
-          );
+          logError({
+            messages,
+            template,
+            id,
+            critical: mockedLogger.critical,
+            error: mockedLogger.error,
+            fatal: mockedLogger.fatal,
+            trace: mockedLogger.trace,
+            warn: mockedLogger.warn,
+          });
 
           loggersNotCalled.forEach((logger) => {
-            expect(mockedLogger[logger]).not.toHaveBeenCalled();
+            expect(mockedLogger[logger], failureMessage).not.toHaveBeenCalled();
           });
         });
       });
@@ -105,23 +100,69 @@ describe("logError()", () => {
       const expected = Object.freeze({ id });
       const failureMessage = stringify({ id, messages, template, mockedLogger });
 
-      logError(
-        {
-          messages,
-          template,
-          id,
-          critical: mockedLogger.critical,
-          error: mockedLogger.error,
-          fatal: mockedLogger.fatal,
-          trace: mockedLogger.trace,
-          warn: mockedLogger.warn,
-        },
-        { fakeConfig: getFakeConfig({ consoleMode: false }) }
-      );
+      logError({
+        messages,
+        template,
+        id,
+        critical: mockedLogger.critical,
+        error: mockedLogger.error,
+        fatal: mockedLogger.fatal,
+        trace: mockedLogger.trace,
+        warn: mockedLogger.warn,
+      });
 
-      expect(mockedLogger.trace, failureMessage).toHaveBeenCalledTimes(1);
-      expect(mockedLogger.trace.mock.calls[0], failureMessage).toHaveLength(1); // one arg
-      expect(mockedLogger.error.mock.calls[0][0]).toMatchObject(expected);
+      expect(mockedLogger.error.mock.calls[0][0], failureMessage).toMatchObject(expected);
+    });
+  });
+
+  describe("return value", () => {
+    it(`should return a string (stack trace) when an error object is passed in`, () => {
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({
+        errorLevel: "error",
+        modulePath: __filename,
+      });
+      const id = "36718237475";
+      const messages = validMessageValues({ error: new Error("arbitrary message") });
+      const failureMessage = stringify({ id, messages, template, mockedLogger });
+
+      const result = logError({
+        messages,
+        template,
+        id,
+        critical: mockedLogger.critical,
+        error: mockedLogger.error,
+        fatal: mockedLogger.fatal,
+        trace: mockedLogger.trace,
+        warn: mockedLogger.warn,
+      }) as string;
+
+      expect(typeof result, failureMessage).toBe("string");
+      expect(result.length > 0, failureMessage).toBe(true);
+    });
+
+    it(`should return undefined when an error object does not exist`, () => {
+      const mockedLogger = makeLoggerWithMocks();
+      const template = validTemplateValues({
+        errorLevel: "error",
+        modulePath: __filename,
+      });
+      const id = "2388465756243";
+      const messages = validMessageValues({ error: undefined });
+      const failureMessage = stringify({ id, messages, template, mockedLogger });
+
+      const result = logError({
+        messages,
+        template,
+        id,
+        critical: mockedLogger.critical,
+        error: mockedLogger.error,
+        fatal: mockedLogger.fatal,
+        trace: mockedLogger.trace,
+        warn: mockedLogger.warn,
+      }) as string;
+
+      expect(result, failureMessage).toBeUndefined();
     });
   });
 });
