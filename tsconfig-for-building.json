@@ -3,12 +3,5 @@
   "compilerOptions": {
     "noEmit": false
   },
-  "exclude": [
-    "node_modules",
-    "**/__tests__/*",
-    "**/*.test",
-    "**/__mocks__/*",
-    "**/types",
-    "**/interfaces"
-  ]
+  "exclude": ["node_modules", "**/__tests__", "**/__mocks__/*"]
 }

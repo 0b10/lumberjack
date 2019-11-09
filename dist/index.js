@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const lib_1 = require("./lib");
 const preconditions_1 = require("./lib/preconditions");
-const transformTemplate_1 = require("./lib/transformTemplate");
+const transformObjectModulePath_1 = require("./lib/transformObjectModulePath");
 const defaultTemplate = Object.freeze({
     messageLevel: "info",
     errorLevel: "error",
@@ -121,26 +121,26 @@ const _randomId = () => lodash_1.default.random(0, Number.MAX_SAFE_INTEGER, fals
  */
 exports.lumberjackTemplate = (template, forTesting) => {
     const templateArg = template; // Because it's actually uknown, but it's good to have types on args
-    preconditions_1.canTest(forTesting);
-    let usableTemplate;
-    if (preconditions_1.isValidTemplate(templateArg)) {
-        const transformedTemplate = transformTemplate_1.transformTemplate(templateArg);
-        usableTemplate = { ...defaultTemplate, ...transformedTemplate };
+    preconditions_1.isTestingAllowed(forTesting);
+    const mergedTemplate = { ...defaultTemplate, ...templateArg };
+    let validMergedTemplate; // TODO: rename type to validated template
+    if (preconditions_1.validateMergedTemplate(mergedTemplate)) {
+        validMergedTemplate = transformObjectModulePath_1.transformObjectModulePath(mergedTemplate);
     }
-    const { info, error, trace, debug, warn, critical, fatal } = lib_1.getLogger(forTesting);
+    const usableLogger = lib_1.getLogger(forTesting);
     return (messages) => {
+        // TODO: conditionally validate messages - trace
+        // TODO: conditionally validate usableMessages - trace
+        // TODO: conditionally log exceptions
         const id = _randomId();
-        lib_1.logMessage(usableTemplate, id, info, debug, warn, messages);
-        const stackTrace = lib_1.logError({
-            messages,
-            template: usableTemplate,
-            id,
-            error,
-            warn,
-            critical,
-            fatal,
-            trace,
-        });
-        lib_1.logTrace(usableTemplate, id, trace, stackTrace, messages, forTesting);
+        const mergedMessages = {
+            ...validMergedTemplate,
+            ...messages,
+        };
+        if (preconditions_1.validateMergedMessages(mergedMessages)) {
+            lib_1.logMessage(mergedMessages, id, usableLogger);
+            const { stack } = lib_1.logError(mergedMessages, id, usableLogger);
+            lib_1.logTrace(mergedMessages, id, usableLogger, stack, forTesting);
+        }
     };
 };

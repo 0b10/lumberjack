@@ -25,6 +25,7 @@ exports.parseError = (error) => {
     }
     else {
         // TODO: use a switch statement here for third party errors. throw for default case
+        // TODO: remove errors, because error objects go through validation
         if (_objectHasName(error)) {
             throw new error_1.LumberjackError(`Invalid error type: ${error.name}. Unable to parse error object`);
         }

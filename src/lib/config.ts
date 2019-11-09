@@ -7,7 +7,7 @@ import { CONFIG_FILE_NAME } from "../constants";
 import { Config, ForTesting } from "../types";
 import { LumberjackError } from "../error";
 
-import { canTest } from "./preconditions";
+import { isTestingAllowed } from "./preconditions";
 
 const _isFile = (filePath: string): boolean => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -70,7 +70,7 @@ export const isValidConfig = (configFile: unknown): configFile is Config => {
  * @returns {unknown} - anything, any object. It must be validated.
  */
 const _getRealOrFakeConfig = (configPath: string, forTesting?: ForTestingConfig): unknown => {
-  canTest(forTesting); // because non-literal require
+  isTestingAllowed(forTesting); // because non-literal require
   return forTesting && forTesting.fakeConfig ? forTesting.fakeConfig : require(configPath); //eslint-disable-line security/detect-non-literal-require
 };
 

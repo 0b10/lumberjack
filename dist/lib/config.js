@@ -65,7 +65,7 @@ exports.isValidConfig = (configFile) => {
  * @returns {unknown} - anything, any object. It must be validated.
  */
 const _getRealOrFakeConfig = (configPath, forTesting) => {
-    preconditions_1.canTest(forTesting); // because non-literal require
+    preconditions_1.isTestingAllowed(forTesting); // because non-literal require
     return forTesting && forTesting.fakeConfig ? forTesting.fakeConfig : require(configPath); //eslint-disable-line security/detect-non-literal-require
 };
 const _getRealOrFakePath = (forTesting) => {

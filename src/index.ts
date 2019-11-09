@@ -1,9 +1,20 @@
 import _ from "lodash";
 
-import { DefaultTemplate, ForTesting, MergedTemplate, Messages, Template } from "./types";
+import {
+  DefaultTemplate,
+  ForTesting,
+  MergedTemplate,
+  Messages,
+  Template,
+  MergedMessages,
+} from "./types";
 import { getLogger, logTrace, logError, logMessage } from "./lib";
-import { isValidTemplate, canTest } from "./lib/preconditions";
-import { transformTemplate } from "./lib/transformTemplate";
+import {
+  validateMergedTemplate,
+  isTestingAllowed,
+  validateMergedMessages,
+} from "./lib/preconditions";
+import { transformObjectModulePath } from "./lib/transformObjectModulePath";
 
 const defaultTemplate: DefaultTemplate = Object.freeze({
   messageLevel: "info",
@@ -125,30 +136,29 @@ export const lumberjackTemplate = <Context>(
 ): ((messages?: Messages<Context>) => void) => {
   const templateArg: unknown = template; // Because it's actually uknown, but it's good to have types on args
 
-  canTest(forTesting);
+  isTestingAllowed(forTesting);
 
-  let usableTemplate!: MergedTemplate;
-  if (isValidTemplate(templateArg)) {
-    const transformedTemplate = transformTemplate(templateArg);
-    usableTemplate = { ...defaultTemplate, ...transformedTemplate };
+  const mergedTemplate: unknown = { ...defaultTemplate, ...templateArg };
+  let validMergedTemplate: MergedTemplate<Context>; // TODO: rename type to validated template
+  if (validateMergedTemplate<Context>(mergedTemplate)) {
+    validMergedTemplate = transformObjectModulePath(mergedTemplate);
   }
-
-  const { info, error, trace, debug, warn, critical, fatal } = getLogger(forTesting);
+  const usableLogger = getLogger(forTesting);
 
   return (messages?: Messages<Context>): void => {
+    // TODO: conditionally validate messages - trace
+    // TODO: conditionally validate usableMessages - trace
+    // TODO: conditionally log exceptions
     const id: string = _randomId();
+    const mergedMessages: MergedMessages<Context> = {
+      ...validMergedTemplate,
+      ...messages,
+    };
 
-    logMessage<Context>(usableTemplate, id, info, debug, warn, messages);
-    const stackTrace = logError({
-      messages,
-      template: usableTemplate,
-      id,
-      error,
-      warn,
-      critical,
-      fatal,
-      trace,
-    });
-    logTrace(usableTemplate, id, trace, stackTrace, messages, forTesting);
+    if (validateMergedMessages(mergedMessages)) {
+      logMessage(mergedMessages, id, usableLogger);
+      const { stack } = logError(mergedMessages, id, usableLogger);
+      logTrace(mergedMessages, id, usableLogger, stack, forTesting);
+    }
   };
 };

@@ -11,6 +11,8 @@ if (!require.main) {
 }
 exports.RE_ROOT_PATH = RegExp(`^${path_1.default.dirname(require.main.filename)}`);
 exports.ROOT_PATH_SUBSTITUTE = "<srcRoot>";
+exports.RE_ROOT_PATH_SUBSTITUTE = RegExp(`^${exports.ROOT_PATH_SUBSTITUTE}`);
+const _isTransformedPath = (path) => exports.RE_ROOT_PATH_SUBSTITUTE.test(path);
 const getRelativePath = (path) => path.replace(exports.RE_ROOT_PATH, exports.ROOT_PATH_SUBSTITUTE);
 /**
  * Transform a path by removing the portion that lives outside of the src root, and replacing it with
@@ -32,6 +34,12 @@ const getRelativePath = (path) => path.replace(exports.RE_ROOT_PATH, exports.ROO
  */
 function transformModulePath(path) {
     if (!lodash_1.default.isUndefined(path)) {
+        // TODO: does this need to check undefined? now that merging takes place, shouldn't there always be a value?
+        if (_isTransformedPath(path)) {
+            // The template transforms the path on creation, if messages don't contain a path, a transformed
+            //  path will be passed here
+            return path;
+        }
         return getRelativePath(path);
     }
     return undefined;

@@ -1,18 +1,9 @@
 import _ from "lodash";
 
 import { LumberjackError } from "../error";
-import {
-  ForTesting,
-  Logger,
-  LoggerFunc,
-  MergedTemplate,
-  MessageLevel,
-  Messages,
-  ParsedError,
-  Template,
-} from "../types";
+import { ForTesting, Logger, Messages, ParsedError, ValidatedMessages } from "../types";
 
-import { isValidMessageLevel } from "./helpers";
+import { isValidLogLevel } from "./helpers";
 import { validateLoggerInterface } from "./preconditions";
 import { transformModulePath } from "./transformModulePath";
 
@@ -52,172 +43,72 @@ export const getLogger = (forTesting?: ForTesting): Logger => {
 };
 
 // >>> ERROR >>>
-const _setErrorPrefix = (template: Template, parsedError: ParsedError): void => {
-  if (template.errorMessagePrefix !== undefined) {
-    parsedError.error.message = `${template.errorMessagePrefix}: ${parsedError.error.message}`;
+const _setErrorPrefix = (parsedError: ParsedError, prefix?: string): void => {
+  if (prefix) {
+    parsedError.error.message = `${prefix}: ${parsedError.error.message}`;
   }
 };
 
-interface GetErrorLoggerArgs<Context> {
-  messages?: Messages<Context>;
-  template: MergedTemplate;
-  error: LoggerFunc;
-  warn: LoggerFunc;
-  critical: LoggerFunc;
-  fatal: LoggerFunc;
-}
+export const logError = <Context>(
+  {
+    error,
+    errorMessagePrefix,
+    errorLevel,
+  }: Pick<ValidatedMessages<Context>, "error" | "errorMessagePrefix" | "errorLevel">,
+  id: string,
+  logger: Pick<Logger, "error" | "warn" | "critical" | "fatal">
+): { stack?: string } => {
+  if (!_.isUndefined(error)) {
+    const parsedError = parseError(error);
+    // TODO: do silent validation here
+    let assignedLogger = logger[errorLevel]; // eslint-disable-line security/detect-object-injection
 
-interface LogErrorArgs<Context> extends GetErrorLoggerArgs<Context> {
-  id: string;
-  trace: LoggerFunc;
-}
-
-// eslint-disable-next-line complexity
-const _getErrorLogger = <Context>(args: GetErrorLoggerArgs<Context>): LoggerFunc | never => {
-  // A complexity of 6 > 5 is necessary here
-  const untrustedErrorLevel: unknown =
-    (args.messages ? args.messages.errorLevel : undefined) || args.template.errorLevel;
-
-  switch (untrustedErrorLevel) {
-    case "error":
-      return args.error;
-    case "warn":
-      return args.warn;
-    case "critical":
-      return args.critical;
-    case "fatal":
-      return args.fatal;
-    default:
-      throw new LumberjackError(
-        `Unknown logger errorLevel: "${untrustedErrorLevel}", must be one of "fatal", "error", "warn", or "critical"`
-      );
+    _setErrorPrefix(parsedError, errorMessagePrefix);
+    assignedLogger({ id, ...parsedError.error });
+    return parsedError.trace; // return all error trace messages for trace logs
   }
-};
-
-export const logError = <Context>(args: LogErrorArgs<Context>): string | undefined => {
-  if (!_.isUndefined(args.messages) && !_.isUndefined(args.messages.error)) {
-    // no messages, then there's no error, so no log.
-    const parsedError = parseError(args.messages.error);
-    let assignedLogger = _getErrorLogger<Context>(args);
-
-    _setErrorPrefix(args.template, parsedError);
-    assignedLogger({ id: args.id, ...parsedError.error });
-    return parsedError.trace.stack;
-  }
-  return undefined;
+  return {}; // makes object destructuring less error prone
 };
 
 // >>> MESSAGE >>>
-const _getMessageLevel = <Context>(
-  template: Pick<MergedTemplate, "messageLevel">,
-  messages?: Pick<Messages<Context>, "messageLevel">
-): MessageLevel => {
-  const messageLevel = (messages ? messages.messageLevel : undefined) || template.messageLevel;
-  if (!isValidMessageLevel(messageLevel)) {
-    throw new LumberjackError(`Invalid messageLevel: ${messageLevel}, must be "info", or "debug`);
-  }
-  return messageLevel;
-};
-
-const _getMessageLogger = <Context>(
-  template: MergedTemplate,
-  infoLogger: LoggerFunc,
-  debugLogger: LoggerFunc,
-  warnLogger: LoggerFunc,
-  messages?: Messages<Context>
-): LoggerFunc => {
-  const messageLevel = _getMessageLevel(template, messages);
-  return messageLevel === "info" ? infoLogger : messageLevel === "warn" ? warnLogger : debugLogger;
-};
-
-const _getContext = <Context>(
-  template: Readonly<Pick<MergedTemplate<Context>, "context">>,
-  messages?: Readonly<Pick<Messages<Context>, "context">>
-): Context | undefined => {
-  return (messages ? messages.context : undefined) || template.context;
-};
-
-const _getValidContext = <Context>(
-  template: Readonly<MergedTemplate<Context>>,
-  messages?: Messages<Context>
-): Context | undefined => {
-  const usableContext: Context | undefined = _getContext<Context>(template, messages);
-  if ((_.isString(usableContext) && usableContext.length > 0) || _.isUndefined(usableContext)) {
-    return usableContext;
-  }
-  throw new LumberjackError(`Invalid context - it must be a truthy string, or undefined`, {
-    context: usableContext,
-  });
-};
-
-const _getMessage = <Context>(
-  template: MergedTemplate,
-  messages?: Messages<Context>
-): string | never => {
-  if (!_.isUndefined(messages) && !_.isUndefined(messages.message)) {
-    return messages.message;
-  }
-  if (!_.isUndefined(template) && !_.isUndefined(template.message)) {
-    return template.message;
-  }
-  throw new LumberjackError("Neither a template message, or a logger message has been defined", {
-    messages,
-    template,
-  });
-};
-
 export const logMessage = <Context>(
-  template: MergedTemplate<Context>,
+  {
+    message,
+    context,
+    messageLevel,
+  }: Pick<ValidatedMessages<Context>, "message" | "context" | "messageLevel">,
   id: string,
-  infoLogger: LoggerFunc,
-  debugLogger: LoggerFunc,
-  warnLogger: LoggerFunc,
-  messages?: Messages<Context>
+  logger: Pick<Logger, "info" | "debug" | "warn">
 ): void => {
-  const message: string = _getMessage(template, messages);
-  if (_.isString(message) && message.length > 0) {
-    const logger = _getMessageLogger(template, infoLogger, debugLogger, warnLogger, messages);
-    const validContext = _getValidContext<Context>(template, messages);
-    logger({ id, message: validContext ? `${validContext}: ${message}` : `${message}` }); // prevent undefined appearing as string
-  } else {
-    throw new LumberjackError(
-      "A message is invalid. You must pass a truthy string messsage either directly, or to the template",
-      { message }
-    );
+  if (isValidLogLevel(messageLevel)) {
+    // TODO: conditionally validate
+    // This will silently fail if validation is turned off.
+    // eslint-disable-next-line security/detect-object-injection
+    logger[messageLevel]({ id, message: context ? `${context}: ${message}` : message }); // prevent undefined appearing as string
   }
 };
 
-const _getTransformedModulePath = <Context>(
-  template: Pick<MergedTemplate, "modulePath">,
-  messages: Pick<Messages<Context>, "modulePath">
-): string => {
-  const transformedModulePath = messages.modulePath
-    ? transformModulePath(messages.modulePath)
-    : undefined;
-
-  return transformedModulePath || template.modulePath;
+// >>> TRACE >>>
+const _getTransformedModulePath = (modulePath?: string): string | undefined => {
+  return modulePath ? transformModulePath(modulePath) : undefined;
 };
+
+const _shouldTraceLog = (args: any[]): boolean => args.some((arg) => !!arg);
 
 export const logTrace = <Context>(
-  template: Pick<MergedTemplate, "modulePath">,
+  { args, result, modulePath }: Pick<Messages<Context>, "modulePath" | "args" | "result">,
   id: string,
-  traceLogger: LoggerFunc,
+  logger: Pick<Logger, "trace">,
   stackTrace?: string,
-  messages?: Pick<Messages<Context>, "modulePath" | "args" | "result">,
   forTesting?: ForTesting
 ): void => {
-  if (_.isUndefined(messages)) {
-    return; // do nothing, no messages to log. template doesn't hold values to log to trace
-  }
-
-  if (!_.isPlainObject(messages.args) && messages.args !== undefined) {
-    throw new LumberjackError(`Args must be an object`, { args: messages.args });
-  } else {
-    const modulePath = _getTransformedModulePath(template, messages);
+  if (_shouldTraceLog([args, result, stackTrace, modulePath])) {
+    // only log if args, result, modulePath, or stackTrace is set
+    const transformedModulePath = _getTransformedModulePath(modulePath);
     const formattedMessage = conditionalStringify(
-      { id, args: messages.args, modulePath, result: messages.result, stackTrace },
+      { id, args, modulePath: transformedModulePath, result, stackTrace },
       forTesting
     );
-    traceLogger(formattedMessage);
+    logger.trace(formattedMessage);
   }
 };

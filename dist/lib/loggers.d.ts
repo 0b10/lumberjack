@@ -1,4 +1,4 @@
-import { LoggerFunc, MergedTemplate, Messages } from "../types";
+import { Messages } from "../types";
 /**
  * Stringify an object if consoleMode is active. This allows complex object structures to be visible
  *  via the console.
@@ -9,7 +9,7 @@ import { LoggerFunc, MergedTemplate, Messages } from "../types";
  *  same object (is consoleMode) is inactive
  */
 export declare const conditionalStringify: (obj: object, forTesting?: Readonly<{
-    logger?: import("../types").LogLevels<LoggerFunc> | undefined;
+    logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
@@ -18,30 +18,28 @@ export declare const conditionalStringify: (obj: object, forTesting?: Readonly<{
     }> | undefined;
 }> | undefined) => string | object;
 export declare const getLogger: (forTesting?: Readonly<{
-    logger?: import("../types").LogLevels<LoggerFunc> | undefined;
+    logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
     }> | undefined;
-}> | undefined) => import("../types").LogLevels<LoggerFunc>;
-interface GetErrorLoggerArgs<Context> {
-    messages?: Messages<Context>;
-    template: MergedTemplate;
-    error: LoggerFunc;
-    warn: LoggerFunc;
-    critical: LoggerFunc;
-    fatal: LoggerFunc;
-}
-interface LogErrorArgs<Context> extends GetErrorLoggerArgs<Context> {
-    id: string;
-    trace: LoggerFunc;
-}
-export declare const logError: <Context>(args: LogErrorArgs<Context>) => string | undefined;
-export declare const logMessage: <Context>(template: MergedTemplate<Context>, id: string, infoLogger: LoggerFunc, debugLogger: LoggerFunc, warnLogger: LoggerFunc, messages?: Messages<Context> | undefined) => void;
-export declare const logTrace: <Context>(template: Pick<MergedTemplate<string>, "modulePath">, id: string, traceLogger: LoggerFunc, stackTrace?: string | undefined, messages?: Pick<Messages<Context>, "modulePath" | "args" | "result"> | undefined, forTesting?: Readonly<{
-    logger?: import("../types").LogLevels<LoggerFunc> | undefined;
+}> | undefined) => import("../types").LogLevels<import("../types").LoggerFunc>;
+export declare const logError: <Context>({ error, errorMessagePrefix, errorLevel, }: Pick<import("../types").PartialRequired<import("../types").PartialRequired<Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+    errorMessagePrefix: string;
+}> & import("../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+    errorMessagePrefix: string;
+}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "error" | "message" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "error" | "errorLevel" | "errorMessagePrefix">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "critical" | "error" | "fatal" | "warn">) => {
+    stack?: string | undefined;
+};
+export declare const logMessage: <Context>({ message, context, messageLevel, }: Pick<import("../types").PartialRequired<import("../types").PartialRequired<Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+    errorMessagePrefix: string;
+}> & import("../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+    errorMessagePrefix: string;
+}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "error" | "message" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "message" | "messageLevel" | "context">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "debug" | "info" | "warn">) => void;
+export declare const logTrace: <Context>({ args, result, modulePath }: Pick<Messages<Context>, "modulePath" | "args" | "result">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "trace">, stackTrace?: string | undefined, forTesting?: Readonly<{
+    logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
     logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
@@ -49,4 +47,3 @@ export declare const logTrace: <Context>(template: Pick<MergedTemplate<string>, 
         consoleMode?: boolean | undefined;
     }> | undefined;
 }> | undefined) => void;
-export {};

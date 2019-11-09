@@ -26,8 +26,14 @@ export interface RequiredTemplateArgs {
 }
 export declare type MergedTemplate<Context = string> = Template<Context> & DefaultTemplate;
 export declare type TemplateKey = keyof Template;
+export declare type MergedMessagesKey = keyof MergedMessages;
 export declare type MessageLevel = keyof Pick<LogLevels, "info" | "debug" | "warn">;
 export declare type ErrorLevel = keyof Pick<LogLevels, "error" | "warn" | "critical" | "fatal">;
+export declare type RequireOnly<Type, Keys extends keyof Type> = Omit<Partial<Type>, Keys> & Required<Pick<Type, Keys>>;
+export declare type RequireThese<Type, Keys extends keyof Type> = Omit<Type, Keys> & Required<Pick<Type, Keys>>;
+export declare type PartialPick<Type, Keys extends keyof Type> = Partial<Pick<Type, Keys>>;
+export declare type RequiredPick<Type, Keys extends keyof Type> = Required<Pick<Type, Keys>>;
+export declare type PartialRequired<Type, PartialKeys extends keyof Type, RequiredKeys extends keyof Type> = PartialPick<Type, PartialKeys> & RequiredPick<Type, RequiredKeys>;
 export interface Messages<Context = string> {
     args?: object;
     message?: string;
@@ -39,6 +45,13 @@ export interface Messages<Context = string> {
     modulePath?: string;
 }
 export declare type MessageKey = keyof Messages;
+declare type MergedMessagesAlias<Context> = MergedTemplate<Context> & Messages<Context>;
+export declare type MergedMessages<Context = string> = PartialRequired<MergedMessagesAlias<Context>, "args" | "error" | "result" | "context" | "message" | "errorMessagePrefix", // partial
+// partial
+"errorLevel" | "messageLevel" | "modulePath">;
+export declare type ValidatedMessages<Context = string> = PartialRequired<MergedMessages<Context>, "args" | "error" | "result" | "context" | "errorMessagePrefix", // partial
+// partial
+"message" | "errorLevel" | "messageLevel" | "modulePath">;
 export interface ParsedError {
     error: {
         message: string;

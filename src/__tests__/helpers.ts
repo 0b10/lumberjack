@@ -1,8 +1,18 @@
 import path from "path";
 
 import _ from "lodash";
+import { fixture } from "sir-helpalot";
 
-import { Config, Logger, LoggerKey, Messages, Template, TemplateKey } from "../types";
+import {
+  Config,
+  Logger,
+  LoggerKey,
+  Messages,
+  Template,
+  TemplateKey,
+  MergedMessages,
+  RequireOnly,
+} from "../types";
 import { LOG_LEVELS } from "../constants";
 import { ROOT_PATH_SUBSTITUTE } from "../lib/transformModulePath";
 
@@ -69,10 +79,42 @@ const _defaultTemplateValues: Required<Omit<Template, "modulePath">> = {
   messageLevel: "info",
 };
 
+const _removeUndefined = <T>(obj: T): any => {
+  // defining values as explicitly undefined means removing them completely from merging, and falling back
+  //  to defaults. explicit undefined means overriding defaults, so remove them where necessary.
+  if (_.isPlainObject(obj)) {
+    for (let [k, v] of Object.entries(obj)) {
+      if (_.isUndefined(v)) {
+        delete obj[k];
+      }
+    }
+  }
+  return obj;
+};
+
+const _removeKeys = <T extends object, K extends keyof T>(
+  obj: T,
+  remove: K[],
+  useClone = true
+): Omit<T, K> => {
+  // KEEP: add this to helpers
+  const target = useClone ? _.cloneDeep(obj) : obj;
+  for (let k of remove) {
+    delete target[k];
+  }
+  return target;
+};
+
+interface ShapeOfValidValues<T> {
+  overrides?: T;
+  exclude?: Array<keyof T>;
+}
+
 export const validTemplateValues = (
   overrides: Partial<Omit<Template, "modulePath">> & Pick<Template, "modulePath">
 ): Readonly<Required<Template>> => {
-  return Object.freeze({ ..._defaultTemplateValues, ...overrides });
+  const template = { ..._defaultTemplateValues, ...overrides };
+  return Object.freeze(_removeUndefined(template));
 };
 
 const _defaultMessageValues: Messages = {
@@ -80,8 +122,43 @@ const _defaultMessageValues: Messages = {
   message: "a default message",
 };
 
-export const validMessageValues = (overrides?: Partial<Messages>): Readonly<Messages> => {
-  return Object.freeze({ ..._defaultMessageValues, ...overrides });
+export const minimalMessages = fixture<Messages>({ message: "a default message" });
+export const minimalTemplate = fixture<Template>({
+  errorLevel: "error", // because don't use default, more predictable
+  messageLevel: "info", // because don't use default, more predictable
+  modulePath: "You must set the module path in each test",
+});
+
+export const validMessageValues = (
+  args?: ShapeOfValidValues<Partial<Messages>>
+): Readonly<Messages> => {
+  if (args) {
+    const { overrides, exclude } = args;
+    const withDefaults = { ..._defaultMessageValues, ...overrides };
+    const excluded = _removeKeys(withDefaults, exclude ? exclude : []);
+    return Object.freeze(excluded);
+  }
+  return Object.freeze(_defaultMessageValues);
+};
+
+const _defaultValidMergedMessages: Omit<MergedMessages, "modulePath"> = {
+  message: "a default message",
+  errorLevel: "error",
+  messageLevel: "info",
+};
+
+// type ValidMergedMessagesArgs = Omit<Partial<typeof _defaultValidMergedMessages>, "modulePath"> &
+//   Required<Pick<MergedMessages, "modulePath">>;
+type ValidMergedMessagesArgs = RequireOnly<MergedMessages, "modulePath">;
+
+export const validMergedMessageValues = (overrides: ValidMergedMessagesArgs): MergedMessages => {
+  const result = { ..._defaultValidMergedMessages, ...overrides };
+  for (let [k, v] of Object.entries(result)) {
+    if (v === undefined) {
+      delete result[k];
+    }
+  }
+  return Object.freeze(result);
 };
 
 const _isExcluded = <T = any>(key: T, excluded: T[]): boolean => excluded.includes(key);
@@ -121,6 +198,21 @@ export const getFakeConfig = (overrides?: Config): Config => {
   return Object.freeze({ ..._defaultConfigOptions, ...overrides });
 };
 
-export const getTransformedTestModulePath = (filename: string): string => {
-  return ROOT_PATH_SUBSTITUTE + path.sep + path.basename(filename);
+const RE_EXT = /\.(js|ts)/;
+
+const _changeExtension = (filepath: string, ext?: "js" | "ts"): string => {
+  if (!RE_EXT.test(filepath)) {
+    throw new Error(
+      `A module path should probably end in js or ts - was this a mistake?:\n\tvalue: ${filepath}`
+    );
+  }
+  return ext ? filepath.replace(/\.(js|ts)$/, `.${ext}`) : filepath;
+};
+
+export const getValidModulePath = (filepath: string, ext?: "js" | "ts"): string => {
+  return _changeExtension(filepath, ext);
+};
+
+export const getTransformedTestModulePath = (filename: string, ext?: "js" | "ts"): string => {
+  return ROOT_PATH_SUBSTITUTE + path.sep + _changeExtension(path.basename(filename), ext);
 };

@@ -28,7 +28,8 @@
     {
       "files": ["**/__tests__/*", "**/*.test.*"],
       "rules": {
-        "security/detect-object-injection": "off"
+        "security/detect-object-injection": "off",
+        "complexity": "off"
       }
     },
     {
