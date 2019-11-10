@@ -6,12 +6,12 @@ export declare const isValidConfig: (configFile: unknown) => configFile is Parti
 export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
     }> | undefined;
-}>, "logger" | "configDir" | "fakeConfig"> | undefined) => Partial<{
+}>, "configDir" | "fakeConfig" | "logger"> | undefined) => Partial<{
     logger: unknown;
     consoleMode?: boolean | undefined;
 }>;

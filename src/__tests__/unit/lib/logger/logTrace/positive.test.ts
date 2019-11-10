@@ -16,6 +16,7 @@ interface FixtureArgs {
   modulePath?: string;
   result?: any;
   stackTrace?: string;
+  fakeConfigArgs?: Config;
 }
 
 type LogTraceMessages<Context = string> = Pick<
@@ -48,8 +49,12 @@ const _getFixture = (fixtureArgs?: FixtureArgs): FixtureReturn => {
   const defaults: DefaultFixutreArgs = {
     id: "837978349676",
     modulePath: __filename,
+    fakeConfigArgs: { consoleMode: false },
   };
-  const { args, id, modulePath, result, stackTrace } = { ...defaults, ...fixtureArgs };
+  const { args, id, modulePath, result, stackTrace, fakeConfigArgs } = {
+    ...defaults,
+    ...fixtureArgs,
+  };
 
   const messages: LogTraceMessages = {
     args,
@@ -57,8 +62,14 @@ const _getFixture = (fixtureArgs?: FixtureArgs): FixtureReturn => {
     result,
   };
   const mockedLogger = makeLoggerWithMocks();
-  const failureMessage = stringify({ args, id, modulePath, result, stackTrace });
-  const fakeConfig = getFakeConfig({ consoleMode: false });
+  const failureMessage = stringify({
+    args,
+    id,
+    modulePath,
+    result,
+    stackTrace,
+  });
+  const fakeConfig = getFakeConfig(fakeConfigArgs);
 
   return {
     args,
@@ -89,24 +100,15 @@ describe("logTrace()", () => {
     expect(logTrace).toBeDefined();
   });
 
-  it(`should log the args object when given`, () => {
-    const args = { fakeTestArg: "a fake test arg" };
-    const result = "a fake test result sfbxlnun";
-    const stackTrace = "a fake stacktrace iweyqtygdsasjd";
-    const id = "2387472641542354";
-    const { mockedLogger, messages, fakeConfig, failureMessage, modulePath } = _getFixture({
-      args,
-      id,
-      modulePath: __filename, // modulePath is transformed, so you need to test aginst the returned value
-      result,
-      stackTrace,
+  it(`should not stringify the entire logged object when stringifying`, () => {
+    const { id, mockedLogger, messages, fakeConfig, failureMessage } = _getFixture({
+      fakeConfigArgs: { consoleMode: true },
     });
 
-    const expected = { args, result, stackTrace, modulePath, id };
+    logTrace(messages, id, mockedLogger, undefined, { fakeConfig });
+    const loggedArg = mockedLogger.trace.mock.calls[0][0];
 
-    logTrace(messages, id, mockedLogger, stackTrace, { fakeConfig });
-
-    expect(mockedLogger.trace, failureMessage).toHaveBeenCalledWith(expected);
+    expect(typeof loggedArg, failureMessage).not.toBe("string");
   });
 
   describe("args", () => {
@@ -135,6 +137,24 @@ describe("logTrace()", () => {
       }, failureMessage).not.toThrow();
 
       _expectToMatchObject(mockedLogger, expected, failureMessage, "trace");
+    });
+
+    it(`should be stringified when instructed to do so`, () => {
+      const args = { fakeTestArg: "a fake test arg" };
+      const { id, mockedLogger, messages, fakeConfig, failureMessage } = _getFixture({
+        args,
+        fakeConfigArgs: { consoleMode: true },
+      });
+
+      logTrace(messages, id, mockedLogger, undefined, { fakeConfig });
+      const loggedArgs = mockedLogger.trace.mock.calls[0][0].args;
+
+      expect(typeof loggedArgs, failureMessage).toBe("string");
+      expect(loggedArgs, failureMessage).toMatchInlineSnapshot(`
+        "{
+          \\"fakeTestArg\\": \\"a fake test arg\\"
+        }"
+      `);
     });
   });
 
@@ -195,6 +215,24 @@ describe("logTrace()", () => {
         }),
         { verbose: true }
       );
+    });
+
+    it(`should be stringified when instructed to do so`, () => {
+      const result = { fakeResultKey: "a fake result value" };
+      const { id, mockedLogger, messages, fakeConfig, failureMessage } = _getFixture({
+        result,
+        fakeConfigArgs: { consoleMode: true },
+      });
+
+      logTrace(messages, id, mockedLogger, undefined, { fakeConfig });
+      const loggedResult = mockedLogger.trace.mock.calls[0][0].result;
+
+      expect(typeof loggedResult, failureMessage).toBe("string");
+      expect(loggedResult, failureMessage).toMatchInlineSnapshot(`
+        "{
+          \\"fakeResultKey\\": \\"a fake result value\\"
+        }"
+      `);
     });
   });
 

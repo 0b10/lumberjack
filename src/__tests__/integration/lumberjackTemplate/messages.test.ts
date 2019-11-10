@@ -27,6 +27,12 @@ interface ValidDirectValues extends DirectValues {
   expected: any; // The types can get complicated, no point in providing these for values that will be tested
 }
 
+interface StringifiedTest {
+  targetLogger: LoggerKey;
+  template: Template;
+  messages: Messages;
+}
+
 interface InvalidDirectValues extends DirectValues {
   TheExpectedError: typeof LumberjackError;
 }
@@ -47,6 +53,7 @@ interface ValidProperties extends PropertyValues {
 
 interface Fixture {
   key: MessageKey;
+  stringifiedTest?: StringifiedTest;
   undefinedTest: {
     TheExpctedError: typeof LumberjackError;
     valid?: DirectValues;
@@ -376,6 +383,13 @@ const argFixtures: Fixture = {
       targetLogger: "trace",
     },
   ],
+  stringifiedTest: {
+    template: minimalTemplate({ overrides: { modulePath: __filename } }),
+    messages: minimalMessages({
+      overrides: { args: { arg1: "an args string 1", args2: "an args string 2" } },
+    }),
+    targetLogger: "trace",
+  },
   undefinedTest: {
     TheExpctedError: LumberjackError,
     valid: {
@@ -412,6 +426,13 @@ const resultFixtures: Fixture = {
       template: minimalTemplate({ overrides: { modulePath: __filename } }),
       messages: minimalMessages({ exclude: ["result"] }),
     },
+  },
+  stringifiedTest: {
+    template: minimalTemplate({ overrides: { modulePath: __filename } }),
+    messages: minimalMessages({
+      overrides: { result: { result1: "a result string 1", result2: " a result string 2" } },
+    }),
+    targetLogger: "trace",
   },
   validProperties: {
     description: "should be accepted when it's any type",
@@ -483,6 +504,7 @@ describe("lumberjackTemplate, logger messages", () => {
       validProperties,
       invalidProperties,
       invalidDirectValues,
+      stringifiedTest,
       undefinedTest,
     }) => {
       describe(`${key}`, () => {
@@ -648,6 +670,32 @@ describe("lumberjackTemplate, logger messages", () => {
               }),
               { verbose: true }
             );
+          });
+        }
+
+        if (stringifiedTest) {
+          it("should be an expected string value when stringified (consoleMode=true)", () => {
+            const mockLogger = makeLoggerWithMocks();
+            const targetLogger = mockLogger[stringifiedTest.targetLogger];
+            const fakeConfig = getFakeConfig({ consoleMode: true }); // make stringified
+            const log = lumberjackTemplate(stringifiedTest.template, {
+              logger: mockLogger,
+              fakeConfig,
+            });
+            const failureMessage = stringify({
+              fakeConfig,
+              template: stringifiedTest.template,
+              messages: stringifiedTest.messages,
+            });
+
+            log(stringifiedTest.messages);
+
+            expect(targetLogger, failureMessage).toHaveBeenCalledTimes(1);
+            expect(targetLogger.mock.calls[0], failureMessage).toHaveLength(1); // a single arg passed to logger
+
+            const targetValue = targetLogger.mock.calls[0][0][key];
+            expect(typeof targetValue, failureMessage).toBe("string");
+            expect(targetValue, failureMessage).toMatchSnapshot();
           });
         }
       });

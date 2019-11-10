@@ -13,17 +13,17 @@ import { parseError, getConditionalLogger, getCachedConfig } from ".";
  * Stringify an object if consoleMode is active. This allows complex object structures to be visible
  *  via the console.
  *
- * @param {object} obj - the object to stringify
+ * @param {T} input - the object to stringify
  * @param {ForTesting} forTesting - mocks, fakes, spies etc
  * @returns {string | object} - Either a stringified version of the passed in object, or the exact
  *  same object (is consoleMode) is inactive
  */
-export const conditionalStringify = (obj: object, forTesting?: ForTesting): string | object => {
+export const conditionalStringify = <T>(input: T, forTesting?: ForTesting): string | T => {
   const consoleMode = getCachedConfig(forTesting).consoleMode;
   if (consoleMode) {
-    return JSON.stringify(obj, undefined, 2);
+    return JSON.stringify(input, undefined, 2);
   }
-  return obj;
+  return input;
 };
 
 export const getLogger = (forTesting?: ForTesting): Logger => {
@@ -105,10 +105,16 @@ export const logTrace = <Context>(
   if (_shouldTraceLog([args, result, stackTrace, modulePath])) {
     // only log if args, result, modulePath, or stackTrace is set
     const transformedModulePath = _getTransformedModulePath(modulePath);
-    const formattedMessage = conditionalStringify(
-      { id, args, modulePath: transformedModulePath, result, stackTrace },
-      forTesting
-    );
-    logger.trace(formattedMessage);
+
+    const formattedArgs = conditionalStringify(args, forTesting);
+    const formattedResult = conditionalStringify(result, forTesting);
+
+    logger.trace({
+      id,
+      modulePath: transformedModulePath,
+      args: formattedArgs,
+      result: formattedResult,
+      stackTrace,
+    });
   }
 };

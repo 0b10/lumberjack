@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lumberjackTemplate, logger messages args should be an expected string value when stringified (consoleMode=true) 1`] = `
+"{
+  \\"arg1\\": \\"an args string 1\\",
+  \\"args2\\": \\"an args string 2\\"
+}"
+`;
+
+exports[`lumberjackTemplate, logger messages result should be an expected string value when stringified (consoleMode=true) 1`] = `
+"{
+  \\"result1\\": \\"a result string 1\\",
+  \\"result2\\": \\" a result string 2\\"
+}"
+`;
