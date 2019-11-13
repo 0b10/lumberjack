@@ -13,39 +13,8 @@ import {
   getValidModulePath,
 } from "../../../../helpers";
 
-const TheExpectedError = LumberjackError;
-
-const propertyFixtures = {
-  meaningfulString: () => {
-    return {
-      validProperties: {
-        pre: (input: any) => fc.pre(!/^ *$/.test(input)), // only meaningful string, no spaces or empty
-        arbitrary: () => fc.string(),
-        description: "should be accepted if it's any meaningful string",
-      },
-      invalidProperties: {
-        // non-meaningful string, or any non-string
-        pre: (input: any) => {
-          fc.pre(/^ +$/.test(input) || (!_.isString(input) && !_.isUndefined(input)));
-        },
-        arbitrary: () => fc.anything(),
-        description: `should be rejected with ${TheExpectedError.name} if it's a non-meaningful string`,
-      },
-    };
-  },
-  anyValue: () => {
-    return {
-      validProperties: {
-        pre: (input: any) => fc.pre(true), // always pass
-        arbitrary: () => fc.anything(),
-        description: "should be accepted if it's any value",
-      },
-    };
-  },
-};
-
 interface PropertyTest {
-  pre: (input: any) => ReturnType<typeof fc.pre>;
+  pre?: (input: any) => ReturnType<typeof fc.pre>;
   arbitrary: () => fc.Arbitrary<any>;
   description: string;
 }
@@ -63,6 +32,56 @@ interface Fixture {
   canBeUndefined?: boolean;
 }
 
+interface PropertyFixtures {
+  [fixtureName: string]: () => {
+    validProperties?: PropertyTest;
+    invalidProperties?: PropertyTest;
+  };
+}
+
+const TheExpectedError = LumberjackError;
+
+const propertyFixtures: PropertyFixtures = {
+  meaningfulString: () => {
+    return {
+      validProperties: {
+        pre: (input: any) => fc.pre(!/^ *$/.test(input)), // only meaningful string, no spaces or empty
+        arbitrary: () => fc.string(),
+        description: "should be accepted if it's any meaningful string",
+      },
+      invalidProperties: {
+        // non-meaningful string, or any non-string
+        pre: (input: any) => {
+          fc.pre(/^ +$/.test(input) || (!_.isString(input) && !_.isUndefined(input)));
+        },
+        arbitrary: () => fc.anything(),
+        description: `should be rejected with ${TheExpectedError.name} if it's a non-meaningful string`,
+      },
+    };
+  },
+  plainObject: () => {
+    return {
+      validProperties: {
+        arbitrary: () => fc.object(),
+        description: "should be accepted if it's any plain object",
+      },
+      invalidProperties: {
+        pre: (input: any) => fc.pre(!_.isPlainObject(input)),
+        arbitrary: () => fc.anything(),
+        description: `should be rejected with ${TheExpectedError.name} if it's not a plain object`,
+      },
+    };
+  },
+  anyValue: () => {
+    return {
+      validProperties: {
+        arbitrary: () => fc.anything(),
+        description: "should be accepted if it's any value",
+      },
+    };
+  },
+};
+
 const fixtures: Fixture[] = [
   {
     mergedMessagesKey: "context",
@@ -76,11 +95,6 @@ const fixtures: Fixture[] = [
   },
   {
     mergedMessagesKey: "result",
-    ...propertyFixtures.anyValue(),
-    canBeUndefined: true,
-  },
-  {
-    mergedMessagesKey: "args",
     ...propertyFixtures.anyValue(),
     canBeUndefined: true,
   },
@@ -149,9 +163,17 @@ const fixtures: Fixture[] = [
     invalidProperties: {
       description:
         "should throw if it's any value other than a valid module path, or transformed module path",
-      pre: () => null,
       arbitrary: () => fc.anything(),
     },
+  },
+  {
+    mergedMessagesKey: "args",
+    invalidDirectValues: {
+      description: `should be rejected with ${TheExpectedError.name} if it's an object, but not a plain object: {}`,
+      values: [new Error(), new Set()],
+    },
+    ...propertyFixtures.plainObject(),
+    canBeUndefined: true,
   },
 ];
 
@@ -240,9 +262,10 @@ describe("validateMergedMessages()", () => {
 
         if (validProperties) {
           it(`${validProperties.description}`, () => {
+            const { arbitrary, pre } = validProperties;
             fc.assert(
-              fc.property(validProperties.arbitrary(), (input) => {
-                validProperties.pre(input);
+              fc.property(arbitrary(), (input) => {
+                pre && pre(input);
 
                 const messages = validMergedMessageValues({
                   modulePath: getTransformedTestModulePath(__filename),
@@ -258,9 +281,11 @@ describe("validateMergedMessages()", () => {
 
         if (invalidProperties) {
           it(`${invalidProperties.description}`, () => {
+            const { arbitrary, pre } = invalidProperties;
             fc.assert(
-              fc.property(invalidProperties.arbitrary(), (input) => {
-                invalidProperties.pre(input);
+              fc.property(arbitrary(), (input) => {
+                pre && pre(input);
+                canBeUndefined && fc.pre(!_.isUndefined(input));
 
                 // ! order of args matters, put [key]: input last, so that it overrides other args if necessary
                 const messages = validMergedMessageValues({

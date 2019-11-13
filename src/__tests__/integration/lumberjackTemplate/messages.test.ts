@@ -63,6 +63,7 @@ interface Fixture {
   invalidDirectValues?: InvalidDirectValues[];
   validProperties?: ValidProperties;
   invalidProperties?: PropertyValues;
+  canBeUndefined?: boolean;
 }
 
 // >>> MESSAGE >>>
@@ -372,6 +373,7 @@ const errorLevelFixtures: Fixture = {
 // >>> ARGS >>>
 const argFixtures: Fixture = {
   key: "args",
+  canBeUndefined: true,
   validDirectValues: [
     {
       description: "should be accepted when it's a valid object",
@@ -398,14 +400,13 @@ const argFixtures: Fixture = {
       messages: minimalMessages({ exclude: ["args"] }),
     },
   },
-  // FIXME: validate args as plain object first
-  // invalidProperties: {
-  //   description: "should be rejected when it's not an object",
-  //   preconditions: [(input) => fc.pre(!_.isPlainObject(input))],
-  //   arbitrary: () => fc.anything(),
-  //   template: minimalTemplate({ overrides: { modulePath: __filename } }),
-  //   TheExpectedError: LumberjackError,
-  // },
+  invalidProperties: {
+    description: "should be rejected when it's not an object",
+    preconditions: [(input) => fc.pre(!_.isPlainObject(input))],
+    arbitrary: () => fc.anything(),
+    template: minimalTemplate({ overrides: { modulePath: __filename } }),
+    TheExpectedError: LumberjackError,
+  },
   validProperties: {
     description: "should be accepted when it's any object",
     preconditions: [(input) => fc.pre(_.isPlainObject(input))], // not array, or null - must extends { }
@@ -499,6 +500,7 @@ describe("lumberjackTemplate, logger messages", () => {
 
   fixtures.forEach(
     ({
+      canBeUndefined,
       key,
       validDirectValues,
       validProperties,
@@ -649,6 +651,7 @@ describe("lumberjackTemplate, logger messages", () => {
                 }
 
                 preconditions && preconditions.forEach((pre) => pre(input));
+                canBeUndefined && fc.pre(!_.isUndefined(input));
 
                 const expected = { [key]: input };
 

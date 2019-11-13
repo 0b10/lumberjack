@@ -114,3 +114,7 @@ export const isValidSrcPathOrTransformedPathArg: PreconditionPredicate = (
 export const isValidErrorArg: PreconditionPredicate = (input, canBeUndefined?): boolean => {
   return isValidArg(input, isValidError, canBeUndefined);
 };
+
+export const isValidArgsArg: PreconditionPredicate = (input, canBeUndefined?) => {
+  return isValidArg(input, _.isPlainObject, canBeUndefined);
+};

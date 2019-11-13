@@ -23,6 +23,7 @@ import {
   isValidSrcPathArg,
   isValidSrcPathOrTransformedPathArg,
   PreconditionPredicate,
+  isValidArgsArg,
 } from "./helpers";
 
 interface ValidatorArgs<ObjectType> {
@@ -196,6 +197,15 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       messagePrefix: "Messages",
       canBeUndefined: true,
       printValue: false,
+    }),
+  (mergedMessages): boolean =>
+    validate<object, MergedMessages>(mergedMessages.args, {
+      propName: "args",
+      isValid: isValidArgsArg,
+      errorMessage: `args object is invalid - it must be a plain object - typically who props are function params`,
+      messagePrefix: "Messages",
+      canBeUndefined: true,
+      printValue: true,
     }),
 ];
 
