@@ -140,7 +140,7 @@ export const lumberjackTemplate = <Context>(
 
   const mergedTemplate: unknown = { ...defaultTemplate, ...templateArg };
   let validMergedTemplate: MergedTemplate<Context>; // TODO: rename type to validated template
-  if (validateMergedTemplate<Context>(mergedTemplate)) {
+  if (validateMergedTemplate<Context>(mergedTemplate, forTesting)) {
     validMergedTemplate = transformObjectModulePath(mergedTemplate);
   }
   const usableLogger = getLogger(forTesting);
@@ -155,7 +155,7 @@ export const lumberjackTemplate = <Context>(
       ...messages,
     };
 
-    if (validateMergedMessages(mergedMessages)) {
+    if (validateMergedMessages(mergedMessages, forTesting)) {
       logMessage(mergedMessages, id, usableLogger);
       const { stack } = logError(mergedMessages, id, usableLogger);
       logTrace(mergedMessages, id, usableLogger, stack, forTesting);

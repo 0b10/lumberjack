@@ -181,8 +181,16 @@ export const isNotValidLogLevel = (logLevel: any): boolean => !isValidLogLevel(l
 
 export const stringify = (anything: unknown): string => JSON.stringify(anything, undefined, 2);
 
-const _defaultConfigOptions = Object.freeze({
-  consoleMode: false,
+const _defaultConfigOptions: Config = Object.freeze({
+  consoleMode: false, // setting to true will cause args and result (trace) tests to possible fail
+
+  shouldValidate: true, // keep enabled, setting to false will cause all validation tests to fail
+
+  // if you enable this by default, you will cause some tests to break. if you need this, you need to
+  //  pass in forTesting.nodeEnv = test|testing into failing tests. There's no need for this, unless you
+  //  are specifically testing for it, in which case you can pass it in as an override.
+  // validateForNodeEnv: new Set(["test", "testing"]),
+
   logger: {
     critical: (message: any): null => null,
     debug: (message: any): null => null,
@@ -197,6 +205,8 @@ const _defaultConfigOptions = Object.freeze({
 export const getFakeConfig = (overrides?: Config): Config => {
   return Object.freeze({ ..._defaultConfigOptions, ...overrides });
 };
+
+export const getNewFakeConfig = fixture(_defaultConfigOptions);
 
 const RE_EXT = /\.(js|ts)/;
 

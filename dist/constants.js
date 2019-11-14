@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const error_1 = require("./error");
-exports.CACHED_NODE_ENV = process.env.NODE_ENV;
+// ! if you change this default value, change getNodeEnv() helper too, change the forTesting default
+exports.CACHED_NODE_ENV = process.env.NODE_ENV || "production"; // production by default
 exports.TEST_ENVS = new Set(["test", "testing", "debug"]);
 exports.LOG_LEVELS = Object.freeze(new Set(["critical", "debug", "error", "fatal", "info", "trace", "warn"]));
 exports.CONFIG_FILE_NAME = "lumberjack.config.js";

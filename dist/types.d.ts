@@ -15,6 +15,8 @@ export declare type Logger<T = LoggerFunc> = LogLevels<T>;
 export declare type Config = Partial<{
     logger: unknown;
     consoleMode?: boolean;
+    shouldValidate?: boolean;
+    validateForNodeEnv?: Set<string>;
 }>;
 export declare type DefaultTemplate = Required<Pick<Template, "messageLevel" | "errorLevel">>;
 export declare type Template<Context = string, T = StandardTemplate<Context>> = T extends undefined ? Record<keyof StandardTemplate<Context>, T> : StandardTemplate<Context>;
@@ -66,5 +68,6 @@ export declare type ForTesting = Readonly<{
     configDir?: string;
     logLevelEnv?: LogLevelEnv;
     fakeConfig?: Config;
+    nodeEnv?: string;
 }>;
 export {};

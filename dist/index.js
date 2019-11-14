@@ -124,7 +124,7 @@ exports.lumberjackTemplate = (template, forTesting) => {
     preconditions_1.isTestingAllowed(forTesting);
     const mergedTemplate = { ...defaultTemplate, ...templateArg };
     let validMergedTemplate; // TODO: rename type to validated template
-    if (preconditions_1.validateMergedTemplate(mergedTemplate)) {
+    if (preconditions_1.validateMergedTemplate(mergedTemplate, forTesting)) {
         validMergedTemplate = transformObjectModulePath_1.transformObjectModulePath(mergedTemplate);
     }
     const usableLogger = lib_1.getLogger(forTesting);
@@ -137,7 +137,7 @@ exports.lumberjackTemplate = (template, forTesting) => {
             ...validMergedTemplate,
             ...messages,
         };
-        if (preconditions_1.validateMergedMessages(mergedMessages)) {
+        if (preconditions_1.validateMergedMessages(mergedMessages, forTesting)) {
             lib_1.logMessage(mergedMessages, id, usableLogger);
             const { stack } = lib_1.logError(mergedMessages, id, usableLogger);
             lib_1.logTrace(mergedMessages, id, usableLogger, stack, forTesting);

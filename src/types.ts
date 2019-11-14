@@ -15,9 +15,12 @@ export type LogLevelEnv = LoggerKey | "silent";
 export type LogLevel = keyof LogLevels;
 export type Logger<T = LoggerFunc> = LogLevels<T>;
 
+// FIXME: use untrusted config, refactor
 export type Config = Partial<{
   logger: unknown;
   consoleMode?: boolean;
+  shouldValidate?: boolean;
+  validateForNodeEnv?: Set<string>;
 }>;
 
 // >>> TEMPLATE|MESSAGES >>>
@@ -118,4 +121,5 @@ export type ForTesting = Readonly<{
   configDir?: string; // a directory that contains the config file
   logLevelEnv?: LogLevelEnv; // directly injects the LOG_LEVEL into relevant functions
   fakeConfig?: Config; // goes through all the proper validation, it's just not loaded from disk
+  nodeEnv?: string; // artificially set the NODE_ENV
 }>;

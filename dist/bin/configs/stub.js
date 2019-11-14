@@ -5,6 +5,8 @@
 */
 module.exports = {
     consoleMode: false,
+    shouldValidate: true,
+    validateForNodeEnv: new Set(["debug", "trace"]),
     logger: {
         critical: (message) => console.error(message),
         debug: (message) => console.debug(message),

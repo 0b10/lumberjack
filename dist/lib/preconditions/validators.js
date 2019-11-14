@@ -7,6 +7,7 @@ const lodash_1 = __importDefault(require("lodash"));
 // TODO: validate result, and args. also test them in integeration tests
 const error_1 = require("../../error");
 const constants_1 = require("../../constants");
+const config_1 = require("../config");
 const helpers_1 = require("./helpers");
 exports.validate = (value, { propName, isValid, errorMessage, messagePrefix, printValue = false, canBeUndefined = false, }) => {
     if (!isValid(value, canBeUndefined)) {
@@ -71,13 +72,16 @@ const _mergedTemplatePreconditions = [
 const _verify = (obj, preconditions) => {
     preconditions.forEach((precondition) => precondition(obj));
 };
-exports.validateMergedTemplate = (template) => {
-    if (lodash_1.default.isPlainObject(template)) {
-        // type assertion isn't important here, each property is validated
-        _verify(template, _mergedTemplatePreconditions); // throws
-        return true;
+exports.validateMergedTemplate = (template, forTesting) => {
+    if (config_1.shouldValidate(forTesting)) {
+        if (lodash_1.default.isPlainObject(template)) {
+            // type assertion isn't important here, each property is validated
+            _verify(template, _mergedTemplatePreconditions); // throws
+            return true;
+        }
+        throw new error_1.LumberjackError(`The template is invalid - it must be an object`, { template });
     }
-    throw new error_1.LumberjackError(`The template is invalid - it must be an object`, { template });
+    return true; // always true, because above will throw anywhere in the stack
 };
 const _mergedMessagesPreconditions = [
     (mergedMessages) => exports.validate(mergedMessages.context, {
@@ -137,14 +141,25 @@ const _mergedMessagesPreconditions = [
         canBeUndefined: true,
         printValue: false,
     }),
+    (mergedMessages) => exports.validate(mergedMessages.args, {
+        propName: "args",
+        isValid: helpers_1.isValidArgsArg,
+        errorMessage: `args object is invalid - it must be a plain object, whose props are function params`,
+        messagePrefix: "Messages",
+        canBeUndefined: true,
+        printValue: true,
+    }),
 ];
-exports.validateMergedMessages = (messages) => {
-    if (helpers_1.isPlainObject(messages, "messages")) {
-        // type assertion isn't important here, each property is validated
-        _verify(messages, _mergedMessagesPreconditions); // throws
-        return true;
+exports.validateMergedMessages = (messages, forTesting) => {
+    if (config_1.shouldValidate(forTesting)) {
+        if (helpers_1.isPlainObject(messages, "messages")) {
+            // type assertion isn't important here, each property is validated
+            _verify(messages, _mergedMessagesPreconditions); // throws
+            return true;
+        }
+        throw new error_1.LumberjackError(`Messages is invalid after merging - it must be an object`, {
+            messages,
+        });
     }
-    throw new error_1.LumberjackError(`Messages is invalid after merging - it must be an object`, {
-        messages,
-    });
+    return true; // always true, because above will throw anywhere in the stack
 };

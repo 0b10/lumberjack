@@ -9,6 +9,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const constants_1 = require("../constants");
 const error_1 = require("../error");
 const preconditions_1 = require("./preconditions");
+const helpers_1 = require("./helpers");
 const _isFile = (filePath) => {
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     return fs_1.default.existsSync(filePath) && !fs_1.default.lstatSync(filePath).isDirectory();
@@ -29,32 +30,6 @@ exports.findConfig = (dirPath = __dirname) => {
         result = _configFilePath(dirPath);
     }
     return result;
-};
-const _isValidConsoleMode = (consoleMode) => {
-    if (lodash_1.default.isBoolean(consoleMode) || lodash_1.default.isUndefined(consoleMode)) {
-        return true;
-    }
-    throw new error_1.LumberjackError(`The config option "consoleMode" must be a boolean, or undefined`, {
-        consoleMode,
-    });
-};
-const _isValidLogger = (logger) => {
-    // Don't validate the logger interface here, just that an object exists, because getLogger() should
-    //  validate this. This potentially allows a logger to be initialised elsewhere, if it's necessary
-    //  in the future
-    if (lodash_1.default.isPlainObject(logger)) {
-        return true;
-    }
-    throw new error_1.LumberjackError("You must define a logger in the config file", { logger });
-};
-exports.isValidConfig = (configFile) => {
-    if (lodash_1.default.isPlainObject(configFile)) {
-        const conf = configFile;
-        _isValidConsoleMode(conf.consoleMode); // throws if invalid
-        _isValidLogger(conf.logger);
-        return true; // Config is Partial, so it could be empty object
-    }
-    throw new error_1.LumberjackError("The config file is invalid");
 };
 /**
  * Return the real config loaded from disk, or a fake testing config passed in as an arg - if it's
@@ -89,7 +64,7 @@ const _getConfigFromDisk = (forTesting) => {
     const configPath = _getRealOrFakePath(forTesting);
     if (configPath) {
         const configFile = _getRealOrFakeConfig(configPath, forTesting);
-        if (exports.isValidConfig(configFile)) {
+        if (preconditions_1.isValidConfig(configFile)) {
             return configFile;
         }
     }
@@ -112,4 +87,15 @@ exports.getCachedConfig = (forTesting) => {
         _getCachedConfig = _cacheConfig(forTesting);
     }
     return _getCachedConfig();
+};
+exports.shouldValidate = (forTesting) => {
+    const { shouldValidate, validateForNodeEnv } = exports.getCachedConfig(forTesting);
+    if (shouldValidate) {
+        if (validateForNodeEnv) {
+            // but only validate for correct node env
+            return validateForNodeEnv.has(helpers_1.getNodeEnv(forTesting));
+        }
+        return true; // should validate === true, but no node env specified, so validate anyway
+    }
+    return false; // validation off by default
 };

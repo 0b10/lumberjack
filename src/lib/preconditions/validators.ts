@@ -11,6 +11,7 @@ import {
   MergedMessages,
 } from "../../types";
 import { VALID_MESSAGE_LEVELS, VALID_ERROR_LEVELS } from "../../constants";
+import { shouldValidate, ForTestingConfig } from "../config";
 
 import {
   isPlainObject,
@@ -123,14 +124,18 @@ const _verify = <ObjectType>(obj: ObjectType, preconditions: Precondition<Object
 };
 
 export const validateMergedTemplate = <Context>(
-  template: unknown
+  template: unknown,
+  forTesting?: ForTestingConfig
 ): template is MergedTemplate<Context> => {
-  if (_.isPlainObject(template)) {
-    // type assertion isn't important here, each property is validated
-    _verify(template as any, _mergedTemplatePreconditions); // throws
-    return true;
+  if (shouldValidate(forTesting)) {
+    if (_.isPlainObject(template)) {
+      // type assertion isn't important here, each property is validated
+      _verify(template as any, _mergedTemplatePreconditions); // throws
+      return true;
+    }
+    throw new LumberjackError(`The template is invalid - it must be an object`, { template });
   }
-  throw new LumberjackError(`The template is invalid - it must be an object`, { template });
+  return true; // always true, because above will throw anywhere in the stack
 };
 
 const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
@@ -202,7 +207,7 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
     validate<object, MergedMessages>(mergedMessages.args, {
       propName: "args",
       isValid: isValidArgsArg,
-      errorMessage: `args object is invalid - it must be a plain object - typically who props are function params`,
+      errorMessage: `args object is invalid - it must be a plain object, whose props are function params`,
       messagePrefix: "Messages",
       canBeUndefined: true,
       printValue: true,
@@ -210,14 +215,18 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
 ];
 
 export const validateMergedMessages = <Context>(
-  messages: unknown
+  messages: unknown,
+  forTesting?: ForTestingConfig
 ): messages is ValidatedMessages<Context> => {
-  if (isPlainObject(messages, "messages")) {
-    // type assertion isn't important here, each property is validated
-    _verify(messages as MergedMessages, _mergedMessagesPreconditions); // throws
-    return true;
+  if (shouldValidate(forTesting)) {
+    if (isPlainObject(messages, "messages")) {
+      // type assertion isn't important here, each property is validated
+      _verify(messages as MergedMessages, _mergedMessagesPreconditions); // throws
+      return true;
+    }
+    throw new LumberjackError(`Messages is invalid after merging - it must be an object`, {
+      messages,
+    });
   }
-  throw new LumberjackError(`Messages is invalid after merging - it must be an object`, {
-    messages,
-  });
+  return true; // always true, because above will throw anywhere in the stack
 };

@@ -1,15 +1,15 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { Template, Messages, MessageKey, LoggerKey } from "../../../types";
+import { Template, Messages, MessageKey, LoggerKey, Config } from "../../../types";
 import {
-  minimalTemplate,
-  minimalMessages,
-  makeLoggerWithMocks,
-  getFakeConfig,
-  stringify,
+  getNewFakeConfig,
   getTransformedTestModulePath,
   getValidModulePath,
+  makeLoggerWithMocks,
+  minimalMessages,
+  minimalTemplate,
+  stringify,
 } from "../../helpers";
 import { lumberjackTemplate } from "../../..";
 import { LumberjackError } from "../../../error";
@@ -19,6 +19,7 @@ interface DirectValues {
   description: string;
   template: Template;
   messages: Messages;
+  fakeConfig: Config;
 }
 
 interface ValidDirectValues extends DirectValues {
@@ -31,6 +32,7 @@ interface StringifiedTest {
   targetLogger: LoggerKey;
   template: Template;
   messages: Messages;
+  fakeConfig: Config;
 }
 
 interface InvalidDirectValues extends DirectValues {
@@ -45,6 +47,7 @@ interface PropertyValues {
   extraMessagesArgs?: Messages;
   exclude?: MessageKey[];
   TheExpectedError?: typeof LumberjackError; // throws one of for negative tests, doesn't throw one of for positive tests
+  fakeConfig: Config;
 }
 
 interface ValidProperties extends PropertyValues {
@@ -76,6 +79,7 @@ const messageFixtures: Fixture = {
       messages: minimalMessages({ overrides: { message: "a test message ydunwyte" } }),
       expected: { message: "a test message ydunwyte" },
       targetLogger: "info",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -86,6 +90,7 @@ const messageFixtures: Fixture = {
         overrides: { modulePath: __filename, message: "a default template message" },
       }),
       messages: minimalMessages({ exclude: ["message"] }),
+      fakeConfig: getNewFakeConfig(),
     },
     invalid: {
       description:
@@ -95,6 +100,7 @@ const messageFixtures: Fixture = {
         exclude: ["message"],
       }),
       messages: minimalMessages({ exclude: ["message"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -103,6 +109,7 @@ const messageFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
   validProperties: {
     description: "should be accepted when it's any meaningful string",
@@ -110,6 +117,7 @@ const messageFixtures: Fixture = {
     arbitrary: () => fc.string(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     targetLogger: "info",
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -123,6 +131,7 @@ const messageLevelFixtures: Fixture = {
       messages: minimalMessages({ overrides: { message: "a test message ydunwyte" } }),
       expected: { message: "a test message ydunwyte" },
       targetLogger: "info",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause logging to occur @ debug level when set to debug",
@@ -132,6 +141,7 @@ const messageLevelFixtures: Fixture = {
       }),
       expected: { message: "a test message etyhywte" },
       targetLogger: "debug",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause logging to occur @ warn level when set to warn",
@@ -141,6 +151,7 @@ const messageLevelFixtures: Fixture = {
       }),
       expected: { message: "a test message ueyouq" },
       targetLogger: "warn",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause logging to occur @ info level when set to info",
@@ -150,6 +161,7 @@ const messageLevelFixtures: Fixture = {
       }),
       expected: { message: "a test message rwbwyroiu" },
       targetLogger: "info",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -160,6 +172,7 @@ const messageLevelFixtures: Fixture = {
         overrides: { modulePath: __filename },
       }),
       messages: minimalMessages({ exclude: ["messageLevel"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -168,6 +181,7 @@ const messageLevelFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -185,6 +199,7 @@ const contextFixtures: Fixture = {
       }),
       expected: { message: "CONTEXT: a test message yudqiwhd" },
       targetLogger: "info",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should be accepted when it's a meaningful string",
@@ -194,6 +209,7 @@ const contextFixtures: Fixture = {
       }),
       expected: { message: "C: a test message hdiuwqiud" },
       targetLogger: "info",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should still be logged @ debug messageLevel",
@@ -207,6 +223,7 @@ const contextFixtures: Fixture = {
       }),
       expected: { message: "DHUWUU: a test message wiuqowyeyt" },
       targetLogger: "debug",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should still be logged @ warn messageLevel",
@@ -220,6 +237,7 @@ const contextFixtures: Fixture = {
       }),
       expected: { message: "IRYWYTGS: a test message qwxgiwet" },
       targetLogger: "warn",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -228,6 +246,7 @@ const contextFixtures: Fixture = {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename }, exclude: ["context"] }),
       messages: minimalMessages({ overrides: { message: "ieuiuhdj" }, exclude: ["context"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidDirectValues: [
@@ -238,6 +257,7 @@ const contextFixtures: Fixture = {
         overrides: { message: "a test message ehahydwg", context: "" },
       }),
       TheExpectedError: LumberjackError,
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should be rejected when it's a meaningless string",
@@ -246,6 +266,7 @@ const contextFixtures: Fixture = {
         overrides: { message: "a test message ehahydwg", context: " " },
       }),
       TheExpectedError: LumberjackError,
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   invalidProperties: {
@@ -254,6 +275,7 @@ const contextFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -269,6 +291,7 @@ const errorFixtures: Fixture = {
       }),
       expected: { message: "an error message iwuepoioiu", name: "Error" },
       targetLogger: "error",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should be accepted when it's a valid RangeError object",
@@ -278,6 +301,7 @@ const errorFixtures: Fixture = {
       }),
       expected: { message: "an error message dqouweyyty", name: "RangeError" },
       targetLogger: "error",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -286,6 +310,7 @@ const errorFixtures: Fixture = {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename } }),
       messages: minimalMessages({ exclude: ["error"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -294,6 +319,7 @@ const errorFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -309,6 +335,7 @@ const errorLevelFixtures: Fixture = {
       }),
       expected: { message: "arbitrary message" },
       targetLogger: "error",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause error logging to occur with the warn logger, when set to warn",
@@ -318,6 +345,7 @@ const errorLevelFixtures: Fixture = {
       }),
       expected: { message: "arbitrary message" },
       targetLogger: "warn",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description:
@@ -328,6 +356,7 @@ const errorLevelFixtures: Fixture = {
       }),
       expected: { message: "arbitrary message" },
       targetLogger: "critical",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause error logging to occur with the fatal logger, when set to fatal",
@@ -337,6 +366,7 @@ const errorLevelFixtures: Fixture = {
       }),
       expected: { message: "arbitrary message" },
       targetLogger: "fatal",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should cause error logging to occur with the error logger by default",
@@ -346,6 +376,7 @@ const errorLevelFixtures: Fixture = {
       }),
       expected: { message: "arbitrary message" },
       targetLogger: "error",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -359,6 +390,7 @@ const errorLevelFixtures: Fixture = {
         overrides: { error: new Error("arbitrary message") },
         exclude: ["errorLevel"],
       }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -367,6 +399,7 @@ const errorLevelFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -383,6 +416,7 @@ const argFixtures: Fixture = {
       }),
       expected: { args: { a: "a", b: "b" } },
       targetLogger: "trace",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   stringifiedTest: {
@@ -391,6 +425,7 @@ const argFixtures: Fixture = {
       overrides: { args: { arg1: "an args string 1", args2: "an args string 2" } },
     }),
     targetLogger: "trace",
+    fakeConfig: getNewFakeConfig({ overrides: { consoleMode: true } }),
   },
   undefinedTest: {
     TheExpctedError: LumberjackError,
@@ -398,6 +433,7 @@ const argFixtures: Fixture = {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename } }),
       messages: minimalMessages({ exclude: ["args"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -406,6 +442,7 @@ const argFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
   validProperties: {
     description: "should be accepted when it's any object",
@@ -414,6 +451,7 @@ const argFixtures: Fixture = {
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     targetLogger: "trace",
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -426,6 +464,7 @@ const resultFixtures: Fixture = {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename } }),
       messages: minimalMessages({ exclude: ["result"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   stringifiedTest: {
@@ -434,6 +473,7 @@ const resultFixtures: Fixture = {
       overrides: { result: { result1: "a result string 1", result2: " a result string 2" } },
     }),
     targetLogger: "trace",
+    fakeConfig: getNewFakeConfig({ overrides: { consoleMode: true } }),
   },
   validProperties: {
     description: "should be accepted when it's any type",
@@ -441,6 +481,7 @@ const resultFixtures: Fixture = {
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     targetLogger: "trace",
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -456,6 +497,7 @@ const modulePathFixtures: Fixture = {
       }),
       expected: { modulePath: getTransformedTestModulePath(__filename) },
       targetLogger: "trace",
+      fakeConfig: getNewFakeConfig(),
     },
     {
       description: "should be a priority over the template value, when used",
@@ -467,6 +509,7 @@ const modulePathFixtures: Fixture = {
       }),
       expected: { modulePath: getTransformedTestModulePath(__filename, "ts") },
       targetLogger: "trace",
+      fakeConfig: getNewFakeConfig(),
     },
   ],
   undefinedTest: {
@@ -475,6 +518,7 @@ const modulePathFixtures: Fixture = {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename } }),
       messages: minimalMessages({ exclude: ["modulePath"] }),
+      fakeConfig: getNewFakeConfig(),
     },
   },
   invalidProperties: {
@@ -483,6 +527,7 @@ const modulePathFixtures: Fixture = {
     arbitrary: () => fc.anything(),
     template: minimalTemplate({ overrides: { modulePath: __filename } }),
     TheExpectedError: LumberjackError,
+    fakeConfig: getNewFakeConfig(),
   },
 };
 
@@ -516,10 +561,12 @@ describe("lumberjackTemplate, logger messages", () => {
           if (valid) {
             it(`${valid.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
-              const log = lumberjackTemplate(valid.template, { logger: mockLogger, fakeConfig });
+              const log = lumberjackTemplate(valid.template, {
+                logger: mockLogger,
+                fakeConfig: valid.fakeConfig,
+              });
               const failureMessage = stringify({
-                fakeConfig,
+                fakeConfig: valid.fakeConfig,
                 template: valid.template,
                 messages: valid.messages,
               });
@@ -533,10 +580,12 @@ describe("lumberjackTemplate, logger messages", () => {
           if (invalid) {
             it(`${invalid.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
-              const log = lumberjackTemplate(invalid.template, { logger: mockLogger, fakeConfig });
+              const log = lumberjackTemplate(invalid.template, {
+                logger: mockLogger,
+                fakeConfig: invalid.fakeConfig,
+              });
               const failureMessage = stringify({
-                fakeConfig,
+                fakeConfig: invalid.fakeConfig,
                 template: invalid.template,
                 messages: invalid.messages,
               });
@@ -553,10 +602,12 @@ describe("lumberjackTemplate, logger messages", () => {
             it(`${testCase.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
               const targetLogger = mockLogger[testCase.targetLogger];
-              const fakeConfig = getFakeConfig({ consoleMode: false });
-              const log = lumberjackTemplate(testCase.template, { logger: mockLogger, fakeConfig });
+              const log = lumberjackTemplate(testCase.template, {
+                logger: mockLogger,
+                fakeConfig: testCase.fakeConfig,
+              });
               const failureMessage = stringify({
-                fakeConfig,
+                fakeConfig: testCase.fakeConfig,
                 template: testCase.template,
                 messages: testCase.messages,
               });
@@ -576,10 +627,12 @@ describe("lumberjackTemplate, logger messages", () => {
           invalidDirectValues.forEach((testCase) => {
             it(`${testCase.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
-              const log = lumberjackTemplate(testCase.template, { logger: mockLogger, fakeConfig });
+              const log = lumberjackTemplate(testCase.template, {
+                logger: mockLogger,
+                fakeConfig: testCase.fakeConfig,
+              });
               const failureMessage = stringify({
-                fakeConfig,
+                fakeConfig: testCase.fakeConfig,
                 template: testCase.template,
                 messages: testCase.messages,
               });
@@ -607,8 +660,10 @@ describe("lumberjackTemplate, logger messages", () => {
 
                 const mockLogger = makeLoggerWithMocks();
                 const targetMockLogger = mockLogger[targetLogger];
-                const fakeConfig = getFakeConfig({ consoleMode: false });
-                const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+                const log = lumberjackTemplate(template, {
+                  logger: mockLogger,
+                  fakeConfig: validProperties.fakeConfig,
+                });
                 const messages = minimalMessages({
                   overrides: { ...extraMessagesArgs, ...expected },
                 });
@@ -656,8 +711,10 @@ describe("lumberjackTemplate, logger messages", () => {
                 const expected = { [key]: input };
 
                 const mockLogger = makeLoggerWithMocks();
-                const fakeConfig = getFakeConfig({ consoleMode: false });
-                const log = lumberjackTemplate(template, { logger: mockLogger, fakeConfig });
+                const log = lumberjackTemplate(template, {
+                  logger: mockLogger,
+                  fakeConfig: invalidProperties.fakeConfig,
+                });
                 const messages = minimalMessages({
                   overrides: { ...extraMessagesArgs, ...expected },
                 });
@@ -680,13 +737,12 @@ describe("lumberjackTemplate, logger messages", () => {
           it("should be an expected string value when stringified (consoleMode=true)", () => {
             const mockLogger = makeLoggerWithMocks();
             const targetLogger = mockLogger[stringifiedTest.targetLogger];
-            const fakeConfig = getFakeConfig({ consoleMode: true }); // make stringified
             const log = lumberjackTemplate(stringifiedTest.template, {
               logger: mockLogger,
-              fakeConfig,
+              fakeConfig: stringifiedTest.fakeConfig,
             });
             const failureMessage = stringify({
-              fakeConfig,
+              fakeConfig: stringifiedTest.fakeConfig,
               template: stringifiedTest.template,
               messages: stringifiedTest.messages,
             });
@@ -707,7 +763,7 @@ describe("lumberjackTemplate, logger messages", () => {
 
   it("should not throw when undefined, but a modulePath and message is provided to the template", () => {
     const mockLogger = makeLoggerWithMocks();
-    const fakeConfig = getFakeConfig({ consoleMode: false });
+    const fakeConfig = getNewFakeConfig();
     const template = minimalTemplate({
       overrides: { modulePath: __filename, message: "arbitrary message" },
     });
@@ -725,7 +781,7 @@ describe("lumberjackTemplate, logger messages", () => {
   it("should log a stack trace when an error is passed in", () => {
     const mockLogger = makeLoggerWithMocks();
     const template = minimalTemplate({ overrides: { modulePath: __filename } });
-    const fakeConfig = getFakeConfig({ consoleMode: false });
+    const fakeConfig = getNewFakeConfig();
     const messages = minimalMessages({
       overrides: { error: new Error("arbitrary message") },
     });

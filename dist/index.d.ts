@@ -111,9 +111,12 @@ export declare const lumberjackTemplate: <Context>(template: Partial<Pick<Messag
 }> & import("./types").RequiredTemplateArgs, forTesting?: Readonly<{
     logger?: import("./types").LogLevels<import("./types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
+    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
+        shouldValidate?: boolean | undefined;
+        validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
+    nodeEnv?: string | undefined;
 }> | undefined) => (messages?: Messages<Context> | undefined) => void;

@@ -3,13 +3,13 @@ import _ from "lodash";
 
 import { Template, Messages, MessageKey, LoggerKey, TemplateKey } from "../../../types";
 import {
-  minimalTemplate,
-  minimalMessages,
-  makeLoggerWithMocks,
-  getFakeConfig,
-  stringify,
-  getValidModulePath,
+  getNewFakeConfig,
   getTransformedTestModulePath,
+  getValidModulePath,
+  makeLoggerWithMocks,
+  minimalMessages,
+  minimalTemplate,
+  stringify,
 } from "../../helpers";
 import { lumberjackTemplate } from "../../..";
 import { LumberjackError } from "../../../error";
@@ -515,7 +515,7 @@ describe("lumberjackTemplate, logger messages", () => {
           if (valid) {
             it(`${valid.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const fakeConfig = getNewFakeConfig();
               const log = lumberjackTemplate(valid.template, { logger: mockLogger, fakeConfig });
               const failureMessage = stringify({
                 fakeConfig,
@@ -532,7 +532,7 @@ describe("lumberjackTemplate, logger messages", () => {
           if (invalid) {
             it(`${invalid.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const fakeConfig = getNewFakeConfig();
               const failureMessage = stringify({
                 fakeConfig,
                 template: invalid.template,
@@ -555,7 +555,7 @@ describe("lumberjackTemplate, logger messages", () => {
             it(`${testCase.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
               const targetLogger = mockLogger[testCase.targetLogger];
-              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const fakeConfig = getNewFakeConfig();
               const log = lumberjackTemplate(testCase.template, { logger: mockLogger, fakeConfig });
               const failureMessage = stringify({
                 fakeConfig,
@@ -578,7 +578,7 @@ describe("lumberjackTemplate, logger messages", () => {
           invalidDirectValues.forEach((testCase) => {
             it(`${testCase.description}`, () => {
               const mockLogger = makeLoggerWithMocks();
-              const fakeConfig = getFakeConfig({ consoleMode: false });
+              const fakeConfig = getNewFakeConfig();
               const failureMessage = stringify({
                 fakeConfig,
                 template: testCase.template,
@@ -612,7 +612,7 @@ describe("lumberjackTemplate, logger messages", () => {
 
                 const mockLogger = makeLoggerWithMocks();
                 const targetMockLogger = mockLogger[targetLogger];
-                const fakeConfig = getFakeConfig({ consoleMode: false });
+                const fakeConfig = getNewFakeConfig();
                 const template = minimalTemplate({
                   overrides: { modulePath: __filename, ...extraTemplateArgs, ...expected },
                 });
@@ -660,7 +660,7 @@ describe("lumberjackTemplate, logger messages", () => {
                 const expected = { [key]: input };
 
                 const mockLogger = makeLoggerWithMocks();
-                const fakeConfig = getFakeConfig({ consoleMode: false });
+                const fakeConfig = getNewFakeConfig();
                 const template = minimalTemplate({
                   overrides: { modulePath: __filename, ...extraTemplateArgs, ...expected },
                 });
@@ -687,7 +687,7 @@ describe("lumberjackTemplate, logger messages", () => {
 
   it("should throw when no template is passed in", () => {
     const mockLogger = makeLoggerWithMocks();
-    const fakeConfig = getFakeConfig({ consoleMode: false });
+    const fakeConfig = getNewFakeConfig();
     const failureMessage = stringify({
       fakeConfig,
       template: undefined,

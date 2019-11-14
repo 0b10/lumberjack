@@ -7,7 +7,8 @@ import { CONFIG_FILE_NAME } from "../constants";
 import { Config, ForTesting } from "../types";
 import { LumberjackError } from "../error";
 
-import { isTestingAllowed } from "./preconditions";
+import { isTestingAllowed, isValidConfig } from "./preconditions";
+import { getNodeEnv } from "./helpers";
 
 const _isFile = (filePath: string): boolean => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -30,35 +31,6 @@ export const findConfig = (dirPath = __dirname): string | false => {
     result = _configFilePath(dirPath);
   }
   return result;
-};
-
-const _isValidConsoleMode = (consoleMode: unknown): true => {
-  if (_.isBoolean(consoleMode) || _.isUndefined(consoleMode)) {
-    return true;
-  }
-  throw new LumberjackError(`The config option "consoleMode" must be a boolean, or undefined`, {
-    consoleMode,
-  });
-};
-
-const _isValidLogger = (logger: unknown): logger is object => {
-  // Don't validate the logger interface here, just that an object exists, because getLogger() should
-  //  validate this. This potentially allows a logger to be initialised elsewhere, if it's necessary
-  //  in the future
-  if (_.isPlainObject(logger)) {
-    return true;
-  }
-  throw new LumberjackError("You must define a logger in the config file", { logger });
-};
-
-export const isValidConfig = (configFile: unknown): configFile is Config => {
-  if (_.isPlainObject(configFile)) {
-    const conf = configFile as Config;
-    _isValidConsoleMode(conf.consoleMode); // throws if invalid
-    _isValidLogger(conf.logger);
-    return true; // Config is Partial, so it could be empty object
-  }
-  throw new LumberjackError("The config file is invalid");
 };
 
 /**
@@ -107,7 +79,7 @@ const _getConfigFromDisk = (forTesting?: ForTestingConfig): Config | never => {
 };
 
 type ClosedOverConfig = () => Readonly<Config>;
-type ForTestingConfig = Pick<ForTesting, "configDir" | "fakeConfig" | "logger">;
+export type ForTestingConfig = Pick<ForTesting, "configDir" | "fakeConfig" | "logger" | "nodeEnv">;
 
 const _cacheConfig = (forTesting?: ForTestingConfig): ClosedOverConfig => {
   let config: Config;
@@ -132,4 +104,16 @@ export const getCachedConfig = (forTesting?: ForTestingConfig): Config => {
   }
 
   return _getCachedConfig();
+};
+
+export const shouldValidate = (forTesting?: ForTestingConfig): boolean => {
+  const { shouldValidate, validateForNodeEnv } = getCachedConfig(forTesting);
+  if (shouldValidate) {
+    if (validateForNodeEnv) {
+      // but only validate for correct node env
+      return validateForNodeEnv.has(getNodeEnv(forTesting));
+    }
+    return true; // should validate === true, but no node env specified, so validate anyway
+  }
+  return false; // validation off by default
 };

@@ -6,7 +6,8 @@ import { validateMergedTemplate } from "../../../../../lib/preconditions";
 import { LumberjackError } from "../../../../../error";
 import { TemplateKey } from "../../../../../types";
 import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../../constants";
-import { validTemplateValues, stringify } from "../../../../helpers";
+import { validTemplateValues, stringify, getNewFakeConfig } from "../../../../helpers";
+import { ForTestingConfig } from "../../../../../lib";
 
 const TheExpectedError = LumberjackError;
 
@@ -30,14 +31,18 @@ const propertyFixtures = {
   },
 };
 
+const defaultForTesting: ForTestingConfig = Object.freeze({ fakeConfig: getNewFakeConfig() });
+
 interface PropertyTest {
   pre: (input: any) => ReturnType<typeof fc.pre>;
   arbitrary: () => fc.Arbitrary<any>;
   description: string;
+  forTesting?: ForTestingConfig;
 }
 interface DirectValueTests {
   values: any[];
   description: string;
+  forTesting?: ForTestingConfig;
 }
 
 interface Fixture {
@@ -46,7 +51,7 @@ interface Fixture {
   invalidDirectValues?: DirectValueTests;
   validProperties?: PropertyTest;
   invalidProperties?: PropertyTest;
-  canBeUndefined?: boolean;
+  canBeUndefined?: boolean; // if you need to change fakeConfig for these tests, you will need to refactor
 }
 
 const fixtures: Fixture[] = [
@@ -141,7 +146,7 @@ describe("validateMergedTemplate()", () => {
               [templateKey]: undefined,
             });
             expect(() => {
-              validateMergedTemplate(template);
+              validateMergedTemplate(template, defaultForTesting);
             }, stringify({ template, target: templateKey })).not.toThrow(TheExpectedError);
           });
         } else {
@@ -151,20 +156,21 @@ describe("validateMergedTemplate()", () => {
               [templateKey]: undefined,
             });
             expect(() => {
-              validateMergedTemplate(template);
+              validateMergedTemplate(template, defaultForTesting);
             }, stringify({ template, target: templateKey })).toThrow(TheExpectedError);
           });
         }
 
         if (validDirectValues) {
           it(`${validDirectValues.description}`, () => {
+            const { forTesting } = validDirectValues;
             for (let input of validDirectValues.values) {
               const template = validTemplateValues({
                 modulePath: __filename,
                 [templateKey]: input,
               });
               expect(() => {
-                validateMergedTemplate(template);
+                validateMergedTemplate(template, forTesting || defaultForTesting);
               }, stringify({ template, target: templateKey })).not.toThrow(TheExpectedError);
             }
           });
@@ -172,6 +178,7 @@ describe("validateMergedTemplate()", () => {
 
         if (invalidDirectValues) {
           it(`${invalidDirectValues.description}`, () => {
+            const { forTesting } = invalidDirectValues;
             for (let input of invalidDirectValues.values) {
               const template = validTemplateValues({
                 modulePath: __filename,
@@ -179,7 +186,7 @@ describe("validateMergedTemplate()", () => {
               });
 
               expect(() => {
-                validateMergedTemplate(template);
+                validateMergedTemplate(template, forTesting || defaultForTesting);
               }, stringify({ template, target: templateKey })).toThrow(TheExpectedError);
             }
           });
@@ -191,12 +198,13 @@ describe("validateMergedTemplate()", () => {
               fc.property(validProperties.arbitrary(), (input) => {
                 validProperties.pre(input);
 
+                const { forTesting } = validProperties;
                 const template = validTemplateValues({
                   modulePath: __filename,
                   [templateKey]: input,
                 });
 
-                return validateMergedTemplate(template) === true;
+                return validateMergedTemplate(template, forTesting || defaultForTesting) === true;
               }),
               { verbose: true }
             );
@@ -209,6 +217,7 @@ describe("validateMergedTemplate()", () => {
               fc.property(invalidProperties.arbitrary(), (input) => {
                 invalidProperties.pre(input);
 
+                const { forTesting } = invalidProperties;
                 // ! order of args matters, put [key]: input last, so that it overrides other args if necessary
                 const template = validTemplateValues({
                   modulePath: __filename,
@@ -216,7 +225,7 @@ describe("validateMergedTemplate()", () => {
                 });
 
                 try {
-                  validateMergedTemplate(template);
+                  validateMergedTemplate(template, forTesting || defaultForTesting);
                 } catch (error) {
                   if (error instanceof TheExpectedError) {
                     return true;

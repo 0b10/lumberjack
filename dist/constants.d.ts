@@ -1,5 +1,5 @@
 import { LogLevelEnv, MessageLevel, ErrorLevel, LogLevel } from "./types";
-export declare const CACHED_NODE_ENV: string | undefined;
+export declare const CACHED_NODE_ENV: string;
 export declare const TEST_ENVS: Set<string>;
 export declare const LOG_LEVELS: Readonly<Set<LogLevel>>;
 export declare const CONFIG_FILE_NAME = "lumberjack.config.js";

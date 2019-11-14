@@ -21,7 +21,9 @@ const logger = require("pino")({
 });
 
 module.exports = {
-  consoleMode: false,
+  consoleMode: false, // true, will stringify args, result, and stack trace data, false won't
+  shouldValidate: true, // each input is validated - which is expensive
+  validateForNodeEnv: new Set(["debug", "trace"]), // but only validated for these NODE_ENVs
   logger: {
     critical: (message) => logger.critical(message),
     debug: (message) => logger.debug(message),

@@ -15,6 +15,8 @@ const logger = require("pino")({
 });
 module.exports = {
     consoleMode: false,
+    shouldValidate: true,
+    validateForNodeEnv: new Set(["debug", "trace"]),
     logger: {
         critical: (message) => logger.critical(message),
         debug: (message) => logger.debug(message),

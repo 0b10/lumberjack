@@ -77,3 +77,6 @@ exports.isValidSrcPathOrTransformedPathArg = (input, canBeUndefined) => {
 exports.isValidErrorArg = (input, canBeUndefined) => {
     return isValidArg(input, exports.isValidError, canBeUndefined);
 };
+exports.isValidArgsArg = (input, canBeUndefined) => {
+    return isValidArg(input, lodash_1.default.isPlainObject, canBeUndefined);
+};

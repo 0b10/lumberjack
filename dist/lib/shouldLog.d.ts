@@ -13,12 +13,15 @@
  * @example shouldLog("info") // => true (LOG_LEVEL=info .. or a more verbose level)
  * @example shouldLog("info", { logLevelEnv: "fatal" }) // => false, only fatal logs allowed
  */
-export declare const shouldLog: (targetLevel: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace", forTesting?: Readonly<{
+export declare const shouldLog: (targetLevel: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn", forTesting?: Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
+    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
+        shouldValidate?: boolean | undefined;
+        validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
+    nodeEnv?: string | undefined;
 }> | undefined) => boolean;

@@ -1,7 +1,8 @@
 import { LumberjackError } from "./error";
 import { LogLevelEnv, MessageLevel, ErrorLevel, LogLevel } from "./types";
 
-export const CACHED_NODE_ENV = process.env.NODE_ENV;
+// ! if you change this default value, change getNodeEnv() helper too, change the forTesting default
+export const CACHED_NODE_ENV = process.env.NODE_ENV || "production"; // production by default
 
 export const TEST_ENVS = new Set(["test", "testing", "debug"]);
 

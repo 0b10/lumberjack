@@ -83,6 +83,7 @@
     "jest/no-disabled-tests": "warn",
     "jest/prefer-expect-assertions": "off",
     "jest/prefer-inline-snapshots": "off",
+    "jest/valid-describe": "off",
     "jest/valid-expect": "off",
     "jsdoc/no-undefined-types": "off",
     "max-depth": ["warn", { "max": 3 }],

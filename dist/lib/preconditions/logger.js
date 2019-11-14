@@ -41,3 +41,12 @@ exports.validateLoggerInterface = (logger) => {
     }
     return true;
 };
+exports.isValidLogger = (logger) => {
+    // Don't validate the logger interface here, just that an object exists, because getLogger() should
+    //  validate this. This potentially allows a logger to be initialised elsewhere, if it's necessary
+    //  in the future
+    if (lodash_1.default.isPlainObject(logger)) {
+        return true;
+    }
+    throw new error_1.LumberjackError("You must define a logger in the config file", { logger });
+};

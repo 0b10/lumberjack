@@ -11,16 +11,20 @@ import {
   stringify,
   getTransformedTestModulePath,
   getValidModulePath,
+  getNewFakeConfig,
 } from "../../../../helpers";
+import { ForTestingConfig } from "../../../../../lib";
 
 interface PropertyTest {
   pre?: (input: any) => ReturnType<typeof fc.pre>;
   arbitrary: () => fc.Arbitrary<any>;
   description: string;
+  forTesting?: ForTestingConfig; // shouldValidate() requires config option, but you can use a default instead
 }
 interface DirectValueTests {
   values: any[];
   description: string;
+  forTesting?: ForTestingConfig; // shouldValidate() requires config option, but you can use a default instead
 }
 
 interface Fixture {
@@ -40,6 +44,7 @@ interface PropertyFixtures {
 }
 
 const TheExpectedError = LumberjackError;
+const defaultForTesting: ForTestingConfig = Object.freeze({ fakeConfig: getNewFakeConfig() });
 
 const propertyFixtures: PropertyFixtures = {
   meaningfulString: () => {
@@ -216,7 +221,7 @@ describe("validateMergedMessages()", () => {
               [mergedMessagesKey]: undefined,
             });
             expect(() => {
-              validateMergedMessages(messages);
+              validateMergedMessages(messages, defaultForTesting);
             }, stringify({ messages, target: mergedMessagesKey })).not.toThrow(TheExpectedError);
           });
         } else {
@@ -226,20 +231,21 @@ describe("validateMergedMessages()", () => {
               [mergedMessagesKey]: undefined,
             });
             expect(() => {
-              validateMergedMessages(messages);
+              validateMergedMessages(messages, defaultForTesting);
             }, stringify({ messages, target: mergedMessagesKey })).toThrow(TheExpectedError);
           });
         }
 
         if (validDirectValues) {
           it(`${validDirectValues.description}`, () => {
+            const { forTesting } = validDirectValues;
             for (let input of validDirectValues.values) {
               const messages = validMergedMessageValues({
                 modulePath: getTransformedTestModulePath(__filename),
                 [mergedMessagesKey]: input,
               });
               expect(() => {
-                validateMergedMessages(messages);
+                validateMergedMessages(messages, forTesting || defaultForTesting);
               }, stringify({ messages, target: mergedMessagesKey })).not.toThrow(TheExpectedError);
             }
           });
@@ -247,6 +253,7 @@ describe("validateMergedMessages()", () => {
 
         if (invalidDirectValues) {
           it(`${invalidDirectValues.description}`, () => {
+            const { forTesting } = invalidDirectValues;
             for (let input of invalidDirectValues.values) {
               const messages = validMergedMessageValues({
                 modulePath: getTransformedTestModulePath(__filename),
@@ -254,7 +261,7 @@ describe("validateMergedMessages()", () => {
               });
 
               expect(() => {
-                validateMergedMessages(messages);
+                validateMergedMessages(messages, forTesting || defaultForTesting);
               }, stringify({ messages, target: mergedMessagesKey })).toThrow(TheExpectedError);
             }
           });
@@ -262,7 +269,7 @@ describe("validateMergedMessages()", () => {
 
         if (validProperties) {
           it(`${validProperties.description}`, () => {
-            const { arbitrary, pre } = validProperties;
+            const { arbitrary, pre, forTesting } = validProperties;
             fc.assert(
               fc.property(arbitrary(), (input) => {
                 pre && pre(input);
@@ -272,7 +279,7 @@ describe("validateMergedMessages()", () => {
                   [mergedMessagesKey]: input,
                 });
 
-                return validateMergedMessages(messages) === true;
+                return validateMergedMessages(messages, forTesting || defaultForTesting) === true;
               }),
               { verbose: true }
             );
@@ -281,7 +288,7 @@ describe("validateMergedMessages()", () => {
 
         if (invalidProperties) {
           it(`${invalidProperties.description}`, () => {
-            const { arbitrary, pre } = invalidProperties;
+            const { arbitrary, pre, forTesting } = invalidProperties;
             fc.assert(
               fc.property(arbitrary(), (input) => {
                 pre && pre(input);
@@ -294,7 +301,7 @@ describe("validateMergedMessages()", () => {
                 });
 
                 try {
-                  validateMergedMessages(messages);
+                  validateMergedMessages(messages, forTesting || defaultForTesting);
                 } catch (error) {
                   if (error instanceof TheExpectedError) {
                     return true;

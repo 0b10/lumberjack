@@ -50,3 +50,13 @@ export const validateLoggerInterface = (logger: unknown): logger is Logger => {
   }
   return true;
 };
+
+export const isValidLogger = (logger: unknown): logger is object => {
+  // Don't validate the logger interface here, just that an object exists, because getLogger() should
+  //  validate this. This potentially allows a logger to be initialised elsewhere, if it's necessary
+  //  in the future
+  if (_.isPlainObject(logger)) {
+    return true;
+  }
+  throw new LumberjackError("You must define a logger in the config file", { logger });
+};

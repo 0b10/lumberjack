@@ -1,17 +1,32 @@
+import { ForTesting } from "../types";
 export declare const findConfig: (dirPath?: string) => string | false;
-export declare const isValidConfig: (configFile: unknown) => configFile is Partial<{
-    logger: unknown;
-    consoleMode?: boolean | undefined;
-}>;
+export declare type ForTestingConfig = Pick<ForTesting, "configDir" | "fakeConfig" | "logger" | "nodeEnv">;
 export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
+    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
+        shouldValidate?: boolean | undefined;
+        validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
-}>, "configDir" | "fakeConfig" | "logger"> | undefined) => Partial<{
+    nodeEnv?: string | undefined;
+}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => Partial<{
     logger: unknown;
     consoleMode?: boolean | undefined;
+    shouldValidate?: boolean | undefined;
+    validateForNodeEnv?: Set<string> | undefined;
 }>;
+export declare const shouldValidate: (forTesting?: Pick<Readonly<{
+    logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
+    configDir?: string | undefined;
+    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    fakeConfig?: Partial<{
+        logger: unknown;
+        consoleMode?: boolean | undefined;
+        shouldValidate?: boolean | undefined;
+        validateForNodeEnv?: Set<string> | undefined;
+    }> | undefined;
+    nodeEnv?: string | undefined;
+}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => boolean;
