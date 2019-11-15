@@ -1,12 +1,12 @@
 import _ from "lodash";
 import fc from "fast-check";
 
-import { LumberjackError } from "../../../../../../error";
+import { LumberjackConfigValidationError } from "../../../../../../error";
 import { validateLoggerHasFunctions } from "../../../../../../lib/preconditions";
 import { LOG_LEVELS as VALID_KEYS } from "../../../../../../constants";
 import { makeLoggerWithCustomFuncs } from "../../../../../helpers";
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackConfigValidationError;
 
 describe("validateLoggerHasFunctions()", () => {
   describe("replace a single logger functions with a non-function", () => {

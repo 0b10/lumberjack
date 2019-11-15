@@ -14,7 +14,7 @@ exports.ALLOWED_ACTIVE_LOG_LEVEL_ENVS = [...exports.LOG_LEVELS, "SILENT"].map((l
 const ACTIVE_LOG_LEVEL_ENV = tempLogLevelEnv.toUpperCase();
 exports.ACTIVE_LOG_LEVEL_ENV = ACTIVE_LOG_LEVEL_ENV;
 if (!exports.ALLOWED_ACTIVE_LOG_LEVEL_ENVS.includes(ACTIVE_LOG_LEVEL_ENV)) {
-    throw new error_1.LumberjackError(`Invalid LOG_LEVEL env value: "${process.env.LOG_LEVEL}", must be one of: [${exports.ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`);
+    throw new error_1.LumberjackError(`Invalid LOG_LEVEL env value, must be one of: [${exports.ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`, { ACTIVE_LOG_LEVEL_ENV });
 }
 var LOG_LEVEL;
 (function (LOG_LEVEL) {

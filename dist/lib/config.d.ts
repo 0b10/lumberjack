@@ -4,7 +4,7 @@ export declare type ForTestingConfig = Pick<ForTesting, "configDir" | "fakeConfi
 export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -12,7 +12,7 @@ export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
         validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
     nodeEnv?: string | undefined;
-}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => Partial<{
+}>, "configDir" | "fakeConfig" | "logger" | "nodeEnv"> | undefined) => Partial<{
     logger: unknown;
     consoleMode?: boolean | undefined;
     shouldValidate?: boolean | undefined;
@@ -21,7 +21,7 @@ export declare const getCachedConfig: (forTesting?: Pick<Readonly<{
 export declare const shouldValidate: (forTesting?: Pick<Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -29,4 +29,4 @@ export declare const shouldValidate: (forTesting?: Pick<Readonly<{
         validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
     nodeEnv?: string | undefined;
-}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => boolean;
+}>, "configDir" | "fakeConfig" | "logger" | "nodeEnv"> | undefined) => boolean;

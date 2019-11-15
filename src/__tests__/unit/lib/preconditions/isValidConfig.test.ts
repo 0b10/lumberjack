@@ -4,7 +4,7 @@ import _ from "lodash";
 import { getNewFakeConfig } from "../../../helpers";
 import { Config } from "../../../../types";
 import { isValidConfig } from "../../../../lib/preconditions/config";
-import { LumberjackError } from "../../../../error";
+import { LumberjackConfigValidationError } from "../../../../error";
 
 interface DirectValues {
   description: string;
@@ -20,7 +20,7 @@ interface PropertyValues {
 interface Fixture {
   optionName: keyof Config;
   canBeUndefined?: boolean;
-  TheExpectedError: typeof LumberjackError;
+  TheExpectedError: typeof LumberjackConfigValidationError;
   validDirectValues?: DirectValues;
   invalidDirectValues?: DirectValues;
   invalidPropertyValues?: PropertyValues;
@@ -32,7 +32,7 @@ interface Fixture {
 const shouldValidateFixtures: Fixture = {
   optionName: "shouldValidate",
   canBeUndefined: true,
-  TheExpectedError: LumberjackError,
+  TheExpectedError: LumberjackConfigValidationError,
   validDirectValues: {
     description: "should be accepted if it's any boolean value",
     testCases: [
@@ -52,7 +52,7 @@ const validateForNodeEnv: Fixture = {
   optionName: "validateForNodeEnv",
   canBeUndefined: true,
   makeSet: true,
-  TheExpectedError: LumberjackError,
+  TheExpectedError: LumberjackConfigValidationError,
   invalidDirectValues: {
     description: "should be rejected for all invalid input",
     testCases: [

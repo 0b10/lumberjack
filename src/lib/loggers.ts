@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { LumberjackError } from "../error";
+import { LumberjackConfigValidationError } from "../error";
 import { ForTesting, Logger, Messages, ParsedError, ValidatedMessages } from "../types";
 
 import { isValidLogLevel } from "./helpers";
@@ -37,8 +37,9 @@ export const getLogger = (forTesting?: ForTesting): Logger => {
     return getConditionalLogger(config.logger);
   }
   // Keeps ts happy, because the return type cannot be undefined
-  throw new LumberjackError(
-    "validateLoggerInterface() did not throw for an invalid logger interface"
+  throw new LumberjackConfigValidationError(
+    "validateLoggerInterface() did not throw for an invalid logger interface",
+    { config }
   );
 };
 

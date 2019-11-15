@@ -3,13 +3,13 @@ import _ from "lodash";
 
 import { isValidMessageLevel, isValidErrorLevel } from "../../../../../lib/helpers";
 import { validateMergedTemplate } from "../../../../../lib/preconditions";
-import { LumberjackError } from "../../../../../error";
+import { LumberjackValidationError } from "../../../../../error";
 import { TemplateKey } from "../../../../../types";
 import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../../constants";
 import { validTemplateValues, stringify, getNewFakeConfig } from "../../../../helpers";
 import { ForTestingConfig } from "../../../../../lib";
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackValidationError;
 
 const propertyFixtures = {
   meaningfulString: () => {
@@ -114,14 +114,15 @@ describe("validateMergedTemplate()", () => {
 
   it("should reject all non-objects (except undefined)", () => {
     fc.assert(
-      fc.property(fc.anything(), (input) => {
+      fc.property(fc.anything(), fc.context(), (input, context) => {
         fc.pre(!_.isPlainObject(input) && !_.isUndefined(input));
         try {
-          validateMergedTemplate(input);
+          validateMergedTemplate(input, defaultForTesting);
         } catch (error) {
           if (error instanceof TheExpectedError) {
             return true;
           }
+          context.log(`${error.name}: ${error.message}`);
         }
         return false;
       }),

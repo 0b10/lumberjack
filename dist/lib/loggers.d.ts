@@ -11,7 +11,7 @@ import { Messages } from "../types";
 export declare const conditionalStringify: <T>(input: T, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -23,7 +23,7 @@ export declare const conditionalStringify: <T>(input: T, forTesting?: Readonly<{
 export declare const getLogger: (forTesting?: Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -36,18 +36,18 @@ export declare const logError: <Context>({ error, errorMessagePrefix, errorLevel
     errorMessagePrefix: string;
 }> & import("../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "message" | "error" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "error" | "errorLevel" | "errorMessagePrefix">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "critical" | "error" | "fatal" | "warn">) => {
+}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "message" | "context" | "errorMessagePrefix" | "args" | "error" | "result", "messageLevel" | "errorLevel" | "modulePath">, "context" | "errorMessagePrefix" | "args" | "error" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "errorLevel" | "errorMessagePrefix" | "error">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "error" | "warn" | "critical" | "fatal">) => {
     stack?: string | undefined;
 };
 export declare const logMessage: <Context>({ message, context, messageLevel, }: Pick<import("../types").PartialRequired<import("../types").PartialRequired<Partial<Pick<Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
 }> & import("../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "message" | "error" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "message" | "messageLevel" | "context">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "debug" | "info" | "warn">) => void;
+}> & import("../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & Messages<Context>, "message" | "context" | "errorMessagePrefix" | "args" | "error" | "result", "messageLevel" | "errorLevel" | "modulePath">, "context" | "errorMessagePrefix" | "args" | "error" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">, "message" | "messageLevel" | "context">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "info" | "debug" | "warn">) => void;
 export declare const logTrace: <Context>({ args, result, modulePath }: Pick<Messages<Context>, "modulePath" | "args" | "result">, id: string, logger: Pick<import("../types").LogLevels<import("../types").LoggerFunc>, "trace">, stackTrace?: string | undefined, forTesting?: Readonly<{
     logger?: import("../types").LogLevels<import("../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;

@@ -1,10 +1,10 @@
 import _ from "lodash";
 
-import { LumberjackError } from "../../../../../../error";
+import { LumberjackConfigValidationError } from "../../../../../../error";
 import { makeLoggerWithCustomKeys, makeLoggerWithCustomFuncs } from "../../../../../helpers";
 import { validateLoggerInterface } from "../../../../../../lib/preconditions";
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackConfigValidationError;
 
 describe("validateLoggerInterface()", () => {
   it(`should reject when a single key is invalid`, () => {

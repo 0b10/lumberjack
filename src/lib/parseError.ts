@@ -31,8 +31,12 @@ export const parseError = (error: unknown): ParsedError | never => {
     //  safety provided here, so that an invalid object can be used.
     // TODO: use a switch statement here for third party errors. throw for default case
     if (_objectHasName(error)) {
-      throw new LumberjackError(`Invalid error type: ${error.name}. Unable to parse error object`);
+      throw new LumberjackError(`Invalid error type: ${error.name}. Unable to parse error object`, {
+        error,
+      });
     }
-    throw new LumberjackError("Invalid, and unknown error type. Unable to parse error object");
+    throw new LumberjackError("Invalid, and unknown error type. Unable to parse error object", {
+      error,
+    });
   }
 };

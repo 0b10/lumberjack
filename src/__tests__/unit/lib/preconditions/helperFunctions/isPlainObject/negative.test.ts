@@ -1,9 +1,9 @@
 import fc from "fast-check";
 
 import { isPlainObject } from "../../../../../../lib/preconditions";
-import { LumberjackError } from "../../../../../../error";
+import { LumberjackValidationError } from "../../../../../../error";
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackValidationError;
 
 describe("isPlainObject()", () => {
   it(`should reject anything that isn't an object`, () => {

@@ -58,7 +58,9 @@ const _getRealOrFakePath = (forTesting) => {
         // real, default
         return exports.findConfig();
     }
-    throw new error_1.LumberjackError("Unable to determine the config path type - fake, or real");
+    throw new error_1.LumberjackConfigError("Unable to determine the config path type - fake, or real", {
+        forTesting,
+    });
 };
 const _getConfigFromDisk = (forTesting) => {
     const configPath = _getRealOrFakePath(forTesting);
@@ -68,7 +70,7 @@ const _getConfigFromDisk = (forTesting) => {
             return configFile;
         }
     }
-    throw new error_1.LumberjackError("Unable to find a config file, make a config at the root of your project", { configPath });
+    throw new error_1.LumberjackConfigError("Unable to find a config file, make a config at the root of your project", { configPath });
 };
 const _cacheConfig = (forTesting) => {
     let config;

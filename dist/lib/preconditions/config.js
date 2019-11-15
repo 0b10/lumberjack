@@ -11,9 +11,7 @@ const _isValidConsoleMode = (consoleMode) => {
     if (lodash_1.default.isBoolean(consoleMode) || lodash_1.default.isUndefined(consoleMode)) {
         return true;
     }
-    throw new error_1.LumberjackError(`The config option "consoleMode" must be a boolean, or undefined`, {
-        consoleMode,
-    });
+    throw new error_1.LumberjackConfigValidationError(`The config option "consoleMode" must be a boolean, or undefined`, { consoleMode });
 };
 exports.isValidConfig = (configFile) => {
     if (lodash_1.default.isPlainObject(configFile)) {
@@ -24,13 +22,15 @@ exports.isValidConfig = (configFile) => {
         logger_1.isValidLogger(conf.logger);
         return true; // Config is Partial, so it could be empty object
     }
-    throw new error_1.LumberjackError("The config file is invalid");
+    throw new error_1.LumberjackConfigValidationError("The config file is invalid", { configFile });
 };
 const _isValidShouldValidateOption = (shouldValidate) => {
     if (lodash_1.default.isBoolean(shouldValidate) || lodash_1.default.isUndefined(shouldValidate)) {
         return true;
     }
-    throw new error_1.LumberjackError("shouldValidate should be a boolean, or undefined", { shouldValidate });
+    throw new error_1.LumberjackConfigValidationError("shouldValidate should be a boolean, or undefined", {
+        shouldValidate,
+    });
 };
 const _isValidValidateForNodeEnvOption = (validateForNodeEnv) => {
     if (lodash_1.default.isUndefined(validateForNodeEnv)) {
@@ -40,7 +40,7 @@ const _isValidValidateForNodeEnvOption = (validateForNodeEnv) => {
         if (validateForNodeEnv.size > 0) {
             validateForNodeEnv.forEach((item) => {
                 if (!helpers_1.isMeaningfulString(item)) {
-                    throw new error_1.LumberjackError(`validateForNodeEnv should contain only meaningful strings`);
+                    throw new error_1.LumberjackConfigValidationError(`validateForNodeEnv should contain only meaningful strings`, { validateForNodeEnv });
                 }
             });
             return true;
@@ -49,7 +49,5 @@ const _isValidValidateForNodeEnvOption = (validateForNodeEnv) => {
             return true;
         }
     }
-    throw new error_1.LumberjackError("validateForNodeEnv should be an array - empty, or with strings", {
-        validateForNodeEnv,
-    });
+    throw new error_1.LumberjackConfigValidationError("validateForNodeEnv should be an array - empty, or with strings", { validateForNodeEnv });
 };

@@ -35,7 +35,7 @@ exports.getLogger = (forTesting) => {
         return _1.getConditionalLogger(config.logger);
     }
     // Keeps ts happy, because the return type cannot be undefined
-    throw new error_1.LumberjackError("validateLoggerInterface() did not throw for an invalid logger interface");
+    throw new error_1.LumberjackConfigValidationError("validateLoggerInterface() did not throw for an invalid logger interface", { config });
 };
 // >>> ERROR >>>
 const _setErrorPrefix = (parsedError, prefix) => {

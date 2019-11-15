@@ -26,7 +26,8 @@ const ACTIVE_LOG_LEVEL_ENV = tempLogLevelEnv.toUpperCase() as LogLevelEnv;
 
 if (!ALLOWED_ACTIVE_LOG_LEVEL_ENVS.includes(ACTIVE_LOG_LEVEL_ENV)) {
   throw new LumberjackError(
-    `Invalid LOG_LEVEL env value: "${process.env.LOG_LEVEL}", must be one of: [${ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`
+    `Invalid LOG_LEVEL env value, must be one of: [${ALLOWED_ACTIVE_LOG_LEVEL_ENVS}] or undefined (SILENT)`,
+    { ACTIVE_LOG_LEVEL_ENV }
   );
 }
 

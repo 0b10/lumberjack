@@ -1,11 +1,11 @@
 import fc from "fast-check";
 import _ from "lodash";
 
-import { LumberjackError } from "../../../../../error";
+import { LumberjackConfigValidationError, LumberjackConfigError } from "../../../../../error";
 import { getCachedConfig } from "../../../../../lib";
 import { getFakeConfig } from "../../../../helpers";
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackConfigValidationError;
 
 describe("getCachedConfig()", () => {
   it("should throw when a config is not found", () => {
@@ -13,7 +13,7 @@ describe("getCachedConfig()", () => {
     // TODO: allow configs to have different names, specifically for testing.
     expect(() => {
       getCachedConfig();
-    }).toThrow(TheExpectedError);
+    }).toThrow(LumberjackConfigError);
   });
 
   it("should throw when a logger is an invalid type", () => {

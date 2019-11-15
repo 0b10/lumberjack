@@ -1,47 +1,37 @@
 import _ from "lodash";
-
-interface Vars {
-  [key: string]: unknown;
-}
-
-type Type =
-  | "array"
-  | "function"
-  | "string"
-  | "number"
-  | "null"
-  | "undefined"
-  | "object"
-  | "bigint"
-  | "symbol"
-  | "boolean";
-
-const _getType = (value: unknown): Type => {
-  return _.isArray(value) ? "array" : _.isNull(value) ? "null" : typeof value;
-};
-
-const _appendSuffix = (message: string, vars?: Vars): string => {
-  if (_.isUndefined(vars)) {
-    return message;
-  }
-  let suffix = ": ";
-  for (let [k, v] of Object.entries(vars)) {
-    const type = _getType(v);
-    suffix += `\n\t${k}:${type}`;
-  }
-  return message + suffix;
-};
+import { appendErrorSuffix, ErrorValues } from "sir-helpalot";
 
 export class LumberjackError extends Error {
-  constructor(message: string, vars?: Vars) {
-    super(_appendSuffix(message, vars));
+  constructor(message: string, vars?: ErrorValues) {
+    super(appendErrorSuffix(message, vars ? { values: vars } : undefined));
     this.name = "LumberjackError";
   }
 }
 
 export class LumberjackMockError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, vars?: ErrorValues) {
+    super(appendErrorSuffix(message, vars ? { values: vars } : undefined));
     this.name = "LumberjackMockError";
+  }
+}
+
+export class LumberjackValidationError extends Error {
+  constructor(message: string, vars?: ErrorValues) {
+    super(appendErrorSuffix(message, vars ? { values: vars } : undefined));
+    this.name = "LumberjackValidationError";
+  }
+}
+
+export class LumberjackConfigValidationError extends Error {
+  constructor(message: string, vars?: ErrorValues) {
+    super(appendErrorSuffix(message, vars ? { values: vars } : undefined));
+    this.name = "LumberjackConfigValidationError";
+  }
+}
+
+export class LumberjackConfigError extends Error {
+  constructor(message: string, vars?: ErrorValues) {
+    super(appendErrorSuffix(message, vars ? { values: vars } : undefined));
+    this.name = "LumberjackConfigError";
   }
 }

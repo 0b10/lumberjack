@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import { isValidMessageLevel, isValidErrorLevel } from "../../../../../lib/helpers";
 import { validateMergedMessages } from "../../../../../lib/preconditions";
-import { LumberjackError } from "../../../../../error";
+import { LumberjackValidationError } from "../../../../../error";
 import { MergedMessagesKey } from "../../../../../types";
 import { VALID_ERROR_LEVELS, VALID_MESSAGE_LEVELS } from "../../../../../constants";
 import {
@@ -43,7 +43,7 @@ interface PropertyFixtures {
   };
 }
 
-const TheExpectedError = LumberjackError;
+const TheExpectedError = LumberjackValidationError;
 const defaultForTesting: ForTestingConfig = Object.freeze({ fakeConfig: getNewFakeConfig() });
 
 const propertyFixtures: PropertyFixtures = {
@@ -189,14 +189,15 @@ describe("validateMergedMessages()", () => {
 
   it("should reject all non-objects (except undefined)", () => {
     fc.assert(
-      fc.property(fc.anything(), (input) => {
+      fc.property(fc.anything(), fc.context(), (input, context) => {
         fc.pre(!_.isPlainObject(input) && !_.isUndefined(input));
         try {
-          validateMergedMessages(input);
+          validateMergedMessages(input, defaultForTesting);
         } catch (error) {
           if (error instanceof TheExpectedError) {
             return true;
           }
+          context.log(`${error.name}: ${error.message}`);
         }
         return false;
       }),

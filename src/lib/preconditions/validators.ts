@@ -2,7 +2,7 @@ import _ from "lodash";
 
 // TODO: validate result, and args. also test them in integeration tests
 
-import { LumberjackError } from "../../error";
+import { LumberjackValidationError } from "../../error";
 import {
   MergedTemplate,
   MessageLevel,
@@ -49,11 +49,9 @@ export const validate = <T, ObjectType>(
 ): value is T => {
   if (!isValid(value, canBeUndefined)) {
     // TODO: make error printValue part of the error class
-    throw new LumberjackError(
+    throw new LumberjackValidationError(
       `${messagePrefix}: ${errorMessage}:\nValue: ${printValue ? value : ""}`,
-      {
-        [propName]: value,
-      }
+      { [propName]: value }
     );
   }
   return true;
@@ -133,7 +131,9 @@ export const validateMergedTemplate = <Context>(
       _verify(template as any, _mergedTemplatePreconditions); // throws
       return true;
     }
-    throw new LumberjackError(`The template is invalid - it must be an object`, { template });
+    throw new LumberjackValidationError(`The template is invalid - it must be an object`, {
+      template,
+    });
   }
   return true; // always true, because above will throw anywhere in the stack
 };
@@ -224,9 +224,10 @@ export const validateMergedMessages = <Context>(
       _verify(messages as MergedMessages, _mergedMessagesPreconditions); // throws
       return true;
     }
-    throw new LumberjackError(`Messages is invalid after merging - it must be an object`, {
-      messages,
-    });
+    throw new LumberjackValidationError(
+      `messages is invalid after merging - it must be an object`,
+      { messages }
+    );
   }
   return true; // always true, because above will throw anywhere in the stack
 };

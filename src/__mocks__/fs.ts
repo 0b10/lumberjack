@@ -24,12 +24,16 @@ export class MockFs {
   }
 
   __pathExistsPredicateThrows(): never {
-    throw new LumberjackMockError("You need to initialise the pathExistsPredicate before using it");
+    throw new LumberjackMockError(
+      "You need to initialise the pathExistsPredicate before using it",
+      { pathExistsPredicate: this.pathExistsPredicate }
+    );
   }
 
   __isDirectoryPredicateThrows(): never {
     throw new LumberjackMockError(
-      "You need to initialise the isDirectoryPredicate before using it"
+      "You need to initialise the isDirectoryPredicate before using it",
+      { isDirectoryPredicate: this.isDirectoryPredicate }
     );
   }
 

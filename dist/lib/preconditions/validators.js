@@ -12,9 +12,7 @@ const helpers_1 = require("./helpers");
 exports.validate = (value, { propName, isValid, errorMessage, messagePrefix, printValue = false, canBeUndefined = false, }) => {
     if (!isValid(value, canBeUndefined)) {
         // TODO: make error printValue part of the error class
-        throw new error_1.LumberjackError(`${messagePrefix}: ${errorMessage}:\nValue: ${printValue ? value : ""}`, {
-            [propName]: value,
-        });
+        throw new error_1.LumberjackValidationError(`${messagePrefix}: ${errorMessage}:\nValue: ${printValue ? value : ""}`, { [propName]: value });
     }
     return true;
 };
@@ -79,7 +77,9 @@ exports.validateMergedTemplate = (template, forTesting) => {
             _verify(template, _mergedTemplatePreconditions); // throws
             return true;
         }
-        throw new error_1.LumberjackError(`The template is invalid - it must be an object`, { template });
+        throw new error_1.LumberjackValidationError(`The template is invalid - it must be an object`, {
+            template,
+        });
     }
     return true; // always true, because above will throw anywhere in the stack
 };
@@ -157,9 +157,7 @@ exports.validateMergedMessages = (messages, forTesting) => {
             _verify(messages, _mergedMessagesPreconditions); // throws
             return true;
         }
-        throw new error_1.LumberjackError(`Messages is invalid after merging - it must be an object`, {
-            messages,
-        });
+        throw new error_1.LumberjackValidationError(`messages is invalid after merging - it must be an object`, { messages });
     }
     return true; // always true, because above will throw anywhere in the stack
 };

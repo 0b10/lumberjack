@@ -5,7 +5,7 @@ import _ from "lodash";
 
 import { CONFIG_FILE_NAME } from "../constants";
 import { Config, ForTesting } from "../types";
-import { LumberjackError } from "../error";
+import { LumberjackConfigError } from "../error";
 
 import { isTestingAllowed, isValidConfig } from "./preconditions";
 import { getNodeEnv } from "./helpers";
@@ -60,7 +60,9 @@ const _getRealOrFakePath = (forTesting?: ForTestingConfig): string | false => {
     // real, default
     return findConfig();
   }
-  throw new LumberjackError("Unable to determine the config path type - fake, or real");
+  throw new LumberjackConfigError("Unable to determine the config path type - fake, or real", {
+    forTesting,
+  });
 };
 
 const _getConfigFromDisk = (forTesting?: ForTestingConfig): Config | never => {
@@ -72,7 +74,7 @@ const _getConfigFromDisk = (forTesting?: ForTestingConfig): Config | never => {
       return configFile;
     }
   }
-  throw new LumberjackError(
+  throw new LumberjackConfigError(
     "Unable to find a config file, make a config at the root of your project",
     { configPath }
   );

@@ -12,7 +12,7 @@ export declare const validate: <T, ObjectType>(value: unknown, { propName, isVal
 export declare const validateMergedTemplate: <Context>(template: unknown, forTesting?: Pick<Readonly<{
     logger?: import("../../types").LogLevels<import("../../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -20,11 +20,11 @@ export declare const validateMergedTemplate: <Context>(template: unknown, forTes
         validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
     nodeEnv?: string | undefined;
-}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => template is MergedTemplate<Context>;
+}>, "configDir" | "fakeConfig" | "logger" | "nodeEnv"> | undefined) => template is MergedTemplate<Context>;
 export declare const validateMergedMessages: <Context>(messages: unknown, forTesting?: Pick<Readonly<{
     logger?: import("../../types").LogLevels<import("../../types").LoggerFunc> | undefined;
     configDir?: string | undefined;
-    logLevelEnv?: "critical" | "debug" | "error" | "fatal" | "info" | "trace" | "warn" | "silent" | undefined;
+    logLevelEnv?: "error" | "info" | "debug" | "warn" | "critical" | "fatal" | "trace" | "silent" | undefined;
     fakeConfig?: Partial<{
         logger: unknown;
         consoleMode?: boolean | undefined;
@@ -32,9 +32,9 @@ export declare const validateMergedMessages: <Context>(messages: unknown, forTes
         validateForNodeEnv?: Set<string> | undefined;
     }> | undefined;
     nodeEnv?: string | undefined;
-}>, "nodeEnv" | "logger" | "configDir" | "fakeConfig"> | undefined) => messages is import("../../types").PartialRequired<import("../../types").PartialRequired<Partial<Pick<import("../../types").Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
+}>, "configDir" | "fakeConfig" | "logger" | "nodeEnv"> | undefined) => messages is import("../../types").PartialRequired<import("../../types").PartialRequired<Partial<Pick<import("../../types").Messages<Context>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
 }> & import("../../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<import("../../types").Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}> & import("../../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & import("../../types").Messages<Context>, "message" | "error" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">;
+}> & import("../../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & import("../../types").Messages<Context>, "message" | "context" | "errorMessagePrefix" | "args" | "error" | "result", "messageLevel" | "errorLevel" | "modulePath">, "context" | "errorMessagePrefix" | "args" | "error" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">;
 export {};

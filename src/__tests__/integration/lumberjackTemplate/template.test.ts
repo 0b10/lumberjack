@@ -12,7 +12,7 @@ import {
   stringify,
 } from "../../helpers";
 import { lumberjackTemplate } from "../../..";
-import { LumberjackError } from "../../../error";
+import { LumberjackValidationError } from "../../../error";
 import { isValidErrorLevel, isValidMessageLevel } from "../../../lib/helpers";
 
 interface DirectValues {
@@ -28,7 +28,7 @@ interface ValidDirectValues extends DirectValues {
 }
 
 interface InvalidDirectValues extends DirectValues {
-  TheExpectedError: typeof LumberjackError;
+  TheExpectedError: typeof LumberjackValidationError;
 }
 
 interface PropertyValues {
@@ -38,7 +38,7 @@ interface PropertyValues {
   messages: Messages;
   extraTemplateArgs?: Messages;
   exclude?: MessageKey[];
-  TheExpectedError?: typeof LumberjackError; // throws one of for negative tests, doesn't throw one of for positive tests
+  TheExpectedError?: typeof LumberjackValidationError; // throws one of for negative tests, doesn't throw one of for positive tests
 }
 
 interface ValidProperties extends PropertyValues {
@@ -48,7 +48,7 @@ interface ValidProperties extends PropertyValues {
 interface Fixture {
   key: TemplateKey;
   undefinedTest: {
-    TheExpctedError: typeof LumberjackError;
+    TheExpctedError: typeof LumberjackValidationError;
     valid?: DirectValues;
     invalid?: DirectValues;
   };
@@ -75,7 +75,7 @@ const messageFixtures: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     valid: {
       description: "should be accepted when it's undefined, but there's a defined template message",
       template: minimalTemplate({
@@ -101,7 +101,7 @@ const messageFixtures: Fixture = {
       overrides: { modulePath: __filename },
       exclude: ["message", "modulePath"],
     }),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
   validProperties: {
     description: "should be accepted when it's any meaningful string",
@@ -161,7 +161,7 @@ const messageLevelFixtures: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     valid: {
       description: "should be accepted when it's undefined - which uses the default",
       template: minimalTemplate({
@@ -176,7 +176,7 @@ const messageLevelFixtures: Fixture = {
     preconditions: [(input: any) => fc.pre(!isValidMessageLevel(input))],
     arbitrary: () => fc.anything(),
     messages: minimalMessages({ overrides: { modulePath: __filename } }),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
 };
 
@@ -231,7 +231,7 @@ const contextFixtures: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     valid: {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({ overrides: { modulePath: __filename }, exclude: ["context"] }),
@@ -245,7 +245,7 @@ const contextFixtures: Fixture = {
       template: minimalTemplate({
         overrides: { message: "a test message ehahydwg", context: "" },
       }),
-      TheExpectedError: LumberjackError,
+      TheExpectedError: LumberjackValidationError,
     },
     {
       description: "should be rejected when it's a meaningless string",
@@ -253,7 +253,7 @@ const contextFixtures: Fixture = {
       template: minimalTemplate({
         overrides: { message: "a test message ehahydwg", context: " " },
       }),
-      TheExpectedError: LumberjackError,
+      TheExpectedError: LumberjackValidationError,
     },
   ],
   invalidProperties: {
@@ -261,7 +261,7 @@ const contextFixtures: Fixture = {
     preconditions: [(input: any) => fc.pre(!_.isString(input) && !_.isUndefined(input))],
     arbitrary: () => fc.anything(),
     messages: minimalTemplate({ exclude: ["modulePath", "context"] }),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
 };
 
@@ -322,7 +322,7 @@ const errorLevelFixtures: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     valid: {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({
@@ -340,7 +340,7 @@ const errorLevelFixtures: Fixture = {
     preconditions: [(input: any) => fc.pre(!isValidErrorLevel(input))],
     arbitrary: () => fc.anything(),
     messages: minimalMessages({ exclude: ["errorLevel"] }),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
 };
 
@@ -414,7 +414,7 @@ const errorMessagePrefix: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     valid: {
       description: "should be accepted when it's undefined",
       template: minimalTemplate({
@@ -433,7 +433,7 @@ const errorMessagePrefix: Fixture = {
     ],
     arbitrary: () => fc.anything(),
     messages: minimalMessages(),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
 };
 
@@ -473,7 +473,7 @@ const modulePathFixtures: Fixture = {
     },
   ],
   undefinedTest: {
-    TheExpctedError: LumberjackError,
+    TheExpctedError: LumberjackValidationError,
     invalid: {
       description: "should throw when it's undefined",
       template: minimalTemplate({ exclude: ["modulePath"] }) as Template, // because modulePath is missing
@@ -485,7 +485,7 @@ const modulePathFixtures: Fixture = {
       "should be rejected when it's any value other than a path that points to a module under the src directory",
     arbitrary: () => fc.anything(),
     messages: minimalMessages({ exclude: ["modulePath"] }),
-    TheExpectedError: LumberjackError,
+    TheExpectedError: LumberjackValidationError,
   },
 };
 
@@ -695,6 +695,6 @@ describe("lumberjackTemplate, logger messages", () => {
 
     expect(() => {
       lumberjackTemplate((undefined as unknown) as Template, { logger: mockLogger, fakeConfig });
-    }, failureMessage).toThrow(LumberjackError);
+    }, failureMessage).toThrow(LumberjackValidationError);
   });
 });

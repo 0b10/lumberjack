@@ -6,16 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const error_1 = require("../../error");
 const helpers_1 = require("../helpers");
+const constants_1 = require("../../constants");
 const transformModulePath_1 = require("../transformModulePath");
 exports.isTestingAllowed = (forTesting) => {
     if (forTesting && !helpers_1.isTestEnv()) {
-        throw new error_1.LumberjackError(`You cannot use forTesting outside of a test env - set NODE_ENV to "test", or "testing"`);
+        throw new error_1.LumberjackError(`You cannot use forTesting outside of a test env - set NODE_ENV to "test", or "testing"`, { CACHED_NODE_ENV: constants_1.CACHED_NODE_ENV, forTesting });
     }
     return true;
 };
 exports.isPlainObject = (subject, subjectName) => {
     if (!lodash_1.default.isPlainObject(subject)) {
-        throw new error_1.LumberjackError(`${subjectName} should be a plain object`, {
+        throw new error_1.LumberjackValidationError(`${subjectName} should be a plain object`, {
             [subjectName]: subject,
         });
     }

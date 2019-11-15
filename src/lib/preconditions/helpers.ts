@@ -1,14 +1,16 @@
 import _ from "lodash";
 
-import { LumberjackError } from "../../error";
+import { LumberjackError, LumberjackValidationError } from "../../error";
 import { isValidMessageLevel, isValidErrorLevel, isTestEnv } from "../helpers";
+import { CACHED_NODE_ENV } from "../../constants";
 import { RE_ROOT_PATH, ROOT_PATH_SUBSTITUTE } from "../transformModulePath";
 import { ForTesting } from "../../types";
 
 export const isTestingAllowed = (forTesting?: ForTesting): boolean | never => {
   if (forTesting && !isTestEnv()) {
     throw new LumberjackError(
-      `You cannot use forTesting outside of a test env - set NODE_ENV to "test", or "testing"`
+      `You cannot use forTesting outside of a test env - set NODE_ENV to "test", or "testing"`,
+      { CACHED_NODE_ENV, forTesting }
     );
   }
   return true;
@@ -16,7 +18,7 @@ export const isTestingAllowed = (forTesting?: ForTesting): boolean | never => {
 
 export const isPlainObject = (subject: unknown, subjectName: string): subject is object => {
   if (!_.isPlainObject(subject)) {
-    throw new LumberjackError(`${subjectName} should be a plain object`, {
+    throw new LumberjackValidationError(`${subjectName} should be a plain object`, {
       [subjectName]: subject,
     });
   }
