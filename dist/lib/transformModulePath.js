@@ -40,7 +40,8 @@ function transformModulePath(path) {
             //  path will be passed here
             return path;
         }
-        return getRelativePath(path);
+        // when validation id disabled, path might be any value, an tranforming a non-string is a bad idea
+        return lodash_1.default.isString(path) ? getRelativePath(path) : undefined;
     }
     return undefined;
 }

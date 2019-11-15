@@ -36,5 +36,5 @@ export declare const validateMergedMessages: <Context>(messages: unknown, forTes
     errorMessagePrefix: string;
 }> & import("../../types").RequiredTemplateArgs & Required<Pick<Partial<Pick<import("../../types").Messages<string>, "message" | "messageLevel" | "errorLevel" | "context"> & {
     errorMessagePrefix: string;
-}> & import("../../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & import("../../types").Messages<Context>, "error" | "message" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">;
+}> & import("../../types").RequiredTemplateArgs, "messageLevel" | "errorLevel">> & import("../../types").Messages<Context>, "message" | "error" | "context" | "errorMessagePrefix" | "args" | "result", "messageLevel" | "errorLevel" | "modulePath">, "error" | "context" | "errorMessagePrefix" | "args" | "result", "message" | "messageLevel" | "errorLevel" | "modulePath">;
 export {};

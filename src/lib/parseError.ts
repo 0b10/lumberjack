@@ -25,8 +25,11 @@ export const parseError = (error: unknown): ParsedError | never => {
   if (error instanceof Error) {
     return _parseErrorObject(error);
   } else {
+    // error must be validated by here, because there are contractual obligations elsewhere -
+    //  for instance, destructuring of the result, or further parsing of the result. This is
+    //  too much of a headache to work around, and it's just a bad approach to remove the type
+    //  safety provided here, so that an invalid object can be used.
     // TODO: use a switch statement here for third party errors. throw for default case
-    // TODO: remove errors, because error objects go through validation
     if (_objectHasName(error)) {
       throw new LumberjackError(`Invalid error type: ${error.name}. Unable to parse error object`);
     }
