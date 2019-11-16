@@ -9,10 +9,9 @@ const error_1 = require("../../error");
 const constants_1 = require("../../constants");
 const config_1 = require("../config");
 const helpers_1 = require("./helpers");
-exports.validate = (value, { propName, isValid, errorMessage, messagePrefix, printValue = false, canBeUndefined = false, }) => {
+exports.validate = (value, { propName, isValid, errorMessage, messagePrefix, canBeUndefined = false, }) => {
     if (!isValid(value, canBeUndefined)) {
-        // TODO: make error printValue part of the error class
-        throw new error_1.LumberjackValidationError(`${messagePrefix}: ${errorMessage}:\nValue: ${printValue ? value : ""}`, { [propName]: value });
+        throw new error_1.LumberjackValidationError(`${messagePrefix}: ${errorMessage}`, { [propName]: value });
     }
     return true;
 };
@@ -23,7 +22,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: "context is invalid - it must be undefined, or a meaningful string",
         messagePrefix: "Template",
         canBeUndefined: true,
-        printValue: true,
     }),
     (mergedTemplate) => exports.validate(mergedTemplate.errorLevel, {
         propName: "errorLevel",
@@ -31,7 +29,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: `errorLevel is invalid - it must one of [${[...constants_1.VALID_ERROR_LEVELS]}]`,
         messagePrefix: "Template",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedTemplate) => exports.validate(mergedTemplate.errorMessagePrefix, {
         propName: "errorMessagePrefix",
@@ -39,7 +36,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: `errorMessagePrefix is invalid - it must undefined, or a meaningful string`,
         messagePrefix: "Template",
         canBeUndefined: true,
-        printValue: true,
     }),
     (mergedTemplate) => exports.validate(mergedTemplate.message, {
         propName: "message",
@@ -47,7 +43,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: `message is invalid - it must undefined, or a meaningful string`,
         messagePrefix: "Template",
         canBeUndefined: true,
-        printValue: true,
     }),
     (mergedTemplate) => exports.validate(mergedTemplate.messageLevel, {
         propName: "messageLevel",
@@ -55,7 +50,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: `messageLevel is invalid - it must one of ${[...constants_1.VALID_MESSAGE_LEVELS]}`,
         messagePrefix: "Template",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedTemplate) => exports.validate(mergedTemplate.modulePath, {
         // This must be a full module path, with no transformations. Transformation occurs after validation
@@ -64,7 +58,6 @@ const _mergedTemplatePreconditions = [
         errorMessage: `modulePath is invalid - it must point to a js|ts file under <srcRoot>`,
         messagePrefix: "Template",
         canBeUndefined: false,
-        printValue: true,
     }),
 ];
 const _verify = (obj, preconditions) => {
@@ -90,7 +83,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: "context is invalid - it must be undefined, or a meaningful string",
         messagePrefix: "Messages",
         canBeUndefined: true,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.errorLevel, {
         propName: "errorLevel",
@@ -98,7 +90,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `errorLevel is invalid - it must one of [${[...constants_1.VALID_ERROR_LEVELS]}]`,
         messagePrefix: "Messages",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.errorMessagePrefix, {
         propName: "errorMessagePrefix",
@@ -106,7 +97,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `errorMessagePrefix is invalid - it must undefined, or a meaningful string`,
         messagePrefix: "Messages",
         canBeUndefined: true,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.message, {
         propName: "message",
@@ -114,7 +104,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `message is invalid - it must be a meaningful string`,
         messagePrefix: "Messages",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.messageLevel, {
         propName: "messageLevel",
@@ -122,7 +111,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `messageLevel is invalid - it must one of ${[...constants_1.VALID_MESSAGE_LEVELS]}`,
         messagePrefix: "Messages",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.modulePath, {
         // This must be in the form <srcRoot>/path.js|ts, so must be transformed path
@@ -131,7 +119,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `modulePath is invalid - it must point to a js|ts file under <srcRoot>, or be transformed`,
         messagePrefix: "Messages",
         canBeUndefined: false,
-        printValue: true,
     }),
     (mergedMessages) => exports.validate(mergedMessages.error, {
         propName: "error",
@@ -139,7 +126,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `error object is invalid - it must be an instance of Error, and have an error message set`,
         messagePrefix: "Messages",
         canBeUndefined: true,
-        printValue: false,
     }),
     (mergedMessages) => exports.validate(mergedMessages.args, {
         propName: "args",
@@ -147,7 +133,6 @@ const _mergedMessagesPreconditions = [
         errorMessage: `args object is invalid - it must be a plain object, whose props are function params`,
         messagePrefix: "Messages",
         canBeUndefined: true,
-        printValue: true,
     }),
 ];
 exports.validateMergedMessages = (messages, forTesting) => {

@@ -6,9 +6,8 @@ interface ValidatorArgs<ObjectType> {
     errorMessage: string;
     messagePrefix: "Template" | "Messages" | "Merged messages";
     canBeUndefined?: boolean;
-    printValue?: boolean;
 }
-export declare const validate: <T, ObjectType>(value: unknown, { propName, isValid, errorMessage, messagePrefix, printValue, canBeUndefined, }: ValidatorArgs<ObjectType>) => value is T;
+export declare const validate: <T, ObjectType>(value: unknown, { propName, isValid, errorMessage, messagePrefix, canBeUndefined, }: ValidatorArgs<ObjectType>) => value is T;
 export declare const validateMergedTemplate: <Context>(template: unknown, forTesting?: Pick<Readonly<{
     logger?: import("../../types").LogLevels<import("../../types").LoggerFunc> | undefined;
     configDir?: string | undefined;

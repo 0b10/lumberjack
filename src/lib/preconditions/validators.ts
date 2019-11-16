@@ -33,7 +33,6 @@ interface ValidatorArgs<ObjectType> {
   errorMessage: string;
   messagePrefix: "Template" | "Messages" | "Merged messages";
   canBeUndefined?: boolean;
-  printValue?: boolean; // display the value in the error message - defaults to false
 }
 
 export const validate = <T, ObjectType>(
@@ -43,16 +42,11 @@ export const validate = <T, ObjectType>(
     isValid,
     errorMessage,
     messagePrefix,
-    printValue = false,
     canBeUndefined = false,
   }: ValidatorArgs<ObjectType>
 ): value is T => {
   if (!isValid(value, canBeUndefined)) {
-    // TODO: make error printValue part of the error class
-    throw new LumberjackValidationError(
-      `${messagePrefix}: ${errorMessage}:\nValue: ${printValue ? value : ""}`,
-      { [propName]: value }
-    );
+    throw new LumberjackValidationError(`${messagePrefix}: ${errorMessage}`, { [propName]: value });
   }
   return true;
 };
@@ -67,7 +61,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: "context is invalid - it must be undefined, or a meaningful string",
       messagePrefix: "Template",
       canBeUndefined: true,
-      printValue: true,
     }),
   (mergedTemplate): boolean =>
     validate<ErrorLevel, MergedTemplate>(mergedTemplate.errorLevel, {
@@ -76,7 +69,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: `errorLevel is invalid - it must one of [${[...VALID_ERROR_LEVELS]}]`,
       messagePrefix: "Template",
       canBeUndefined: false, // errorLevel is merged with default values
-      printValue: true,
     }),
   (mergedTemplate): boolean =>
     validate<string | undefined, MergedTemplate>(mergedTemplate.errorMessagePrefix, {
@@ -85,7 +77,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: `errorMessagePrefix is invalid - it must undefined, or a meaningful string`,
       messagePrefix: "Template",
       canBeUndefined: true,
-      printValue: true,
     }),
   (mergedTemplate): boolean =>
     validate<string | undefined, MergedTemplate>(mergedTemplate.message, {
@@ -94,7 +85,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: `message is invalid - it must undefined, or a meaningful string`,
       messagePrefix: "Template",
       canBeUndefined: true,
-      printValue: true,
     }),
   (mergedTemplate): boolean =>
     validate<MessageLevel, MergedTemplate>(mergedTemplate.messageLevel, {
@@ -103,7 +93,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: `messageLevel is invalid - it must one of ${[...VALID_MESSAGE_LEVELS]}`,
       messagePrefix: "Template",
       canBeUndefined: false, // messageLevel is merged with defaults, always defined
-      printValue: true,
     }),
   (mergedTemplate): boolean =>
     validate<string, MergedTemplate>(mergedTemplate.modulePath, {
@@ -113,7 +102,6 @@ const _mergedTemplatePreconditions: Array<Precondition<MergedTemplate>> = [
       errorMessage: `modulePath is invalid - it must point to a js|ts file under <srcRoot>`,
       messagePrefix: "Template",
       canBeUndefined: false, // always a module path with template
-      printValue: true,
     }),
 ];
 
@@ -146,7 +134,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: "context is invalid - it must be undefined, or a meaningful string",
       messagePrefix: "Messages",
       canBeUndefined: true,
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<ErrorLevel, MergedMessages>(mergedMessages.errorLevel, {
@@ -155,7 +142,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `errorLevel is invalid - it must one of [${[...VALID_ERROR_LEVELS]}]`,
       messagePrefix: "Messages",
       canBeUndefined: false, // errorLevel is merged with default values
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<string | undefined, MergedMessages>(mergedMessages.errorMessagePrefix, {
@@ -164,7 +150,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `errorMessagePrefix is invalid - it must undefined, or a meaningful string`,
       messagePrefix: "Messages",
       canBeUndefined: true,
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<string | undefined, MergedMessages>(mergedMessages.message, {
@@ -173,7 +158,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `message is invalid - it must be a meaningful string`,
       messagePrefix: "Messages",
       canBeUndefined: false,
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<MessageLevel, MergedMessages>(mergedMessages.messageLevel, {
@@ -182,7 +166,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `messageLevel is invalid - it must one of ${[...VALID_MESSAGE_LEVELS]}`,
       messagePrefix: "Messages",
       canBeUndefined: false, // messageLevel is merged with defaults, always defined
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<string, MergedMessages>(mergedMessages.modulePath, {
@@ -192,7 +175,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `modulePath is invalid - it must point to a js|ts file under <srcRoot>, or be transformed`,
       messagePrefix: "Messages",
       canBeUndefined: false, // always a module path with template
-      printValue: true,
     }),
   (mergedMessages): boolean =>
     validate<Error, MergedMessages>(mergedMessages.error, {
@@ -201,7 +183,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `error object is invalid - it must be an instance of Error, and have an error message set`,
       messagePrefix: "Messages",
       canBeUndefined: true,
-      printValue: false,
     }),
   (mergedMessages): boolean =>
     validate<object, MergedMessages>(mergedMessages.args, {
@@ -210,7 +191,6 @@ const _mergedMessagesPreconditions: Array<Precondition<MergedMessages>> = [
       errorMessage: `args object is invalid - it must be a plain object, whose props are function params`,
       messagePrefix: "Messages",
       canBeUndefined: true,
-      printValue: true,
     }),
 ];
 
