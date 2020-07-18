@@ -37,7 +37,7 @@
     "test:changed": "LOG_LEVEL=trace jest --onlyChanged"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "sir-helpalot": "git+https://github.com/0b10/sir-helpalot.git#master"
   },
   "devDependencies": {
